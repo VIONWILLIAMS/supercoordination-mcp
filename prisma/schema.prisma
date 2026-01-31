@@ -20,6 +20,18 @@ model User {
   pwpProfile    Json     @default("{\"wuxing\": {\"fire\": 0, \"metal\": 0, \"wood\": 0, \"water\": 0, \"earth\": 0}, \"skills\": [], \"pain_points\": [], \"work_status\": \"\", \"ideal_state\": \"\"}") @map("pwp_profile")
   pwpCompleted  Boolean  @default(false) @map("pwp_completed")
   pointsBalance Int      @default(50) @map("points_balance")
+
+  // AI守门人机制字段
+  status        String   @default("candidate") // candidate | member
+  serialNumber  Int?     @unique @map("serial_number") // 超协体序号（正式成员才有）
+  candidateData Json?    @map("candidate_data") // 候选者观察数据
+  invitedAt     DateTime? @map("invited_at") // 何时收到门票
+  evaluatedAt   DateTime? @map("evaluated_at") // AI最后评估时间
+  aiScore       Int?     @map("ai_score") // AI评分
+  approvedAt    DateTime? @map("approved_at") // 何时被AI批准
+  approvedBy    String?  @map("approved_by") // 批准者（"AI"）
+  invitedById   String?  @map("invited_by_id") // 谁发的门票
+
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -28,8 +40,13 @@ model User {
   pointsTransactions   PointsTransaction[]
   solutionRatings      SolutionRating[]
   assignedTasks        Task[]
+  issuedTickets        Ticket[]           @relation("TicketIssuer")
+  aiEvaluations        AIEvaluation[]
+  invitedBy            User?              @relation("Inviter", fields: [invitedById], references: [id])
+  invitedUsers         User[]             @relation("Inviter")
 
   @@index([pwpCompleted])
+  @@index([status])
   @@map("users")
 }
 
@@ -125,4 +142,39 @@ model Task {
   assignedUser    User?    @relation(fields: [assignedTo], references: [id])
 
   @@map("tasks")
+}
+
+// 门票表（AI守门人机制）
+model Ticket {
+  id             String   @id @default(uuid())
+  issuerId       String   @map("issuer_id")
+  recipientEmail String   @map("recipient_email")
+  token          String   @unique
+  status         String   @default("pending") // pending | accepted | expired
+  createdAt      DateTime @default(now()) @map("created_at")
+  expiresAt      DateTime @map("expires_at")
+
+  // 关联
+  issuer         User     @relation("TicketIssuer", fields: [issuerId], references: [id])
+
+  @@index([token])
+  @@index([recipientEmail])
+  @@map("tickets")
+}
+
+// AI评估表（AI守门人机制）
+model AIEvaluation {
+  id          String   @id @default(uuid())
+  candidateId String   @map("candidate_id")
+  score       Int
+  reasoning   String   @db.Text // AI生成的评估理由
+  decision    String   // approved | rejected | pending
+  evaluatedAt DateTime @default(now()) @map("evaluated_at")
+
+  // 关联
+  candidate   User     @relation(fields: [candidateId], references: [id])
+
+  @@index([candidateId])
+  @@index([evaluatedAt(sort: Desc)])
+  @@map("ai_evaluations")
 }
