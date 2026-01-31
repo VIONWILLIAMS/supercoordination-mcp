@@ -473,11 +473,44 @@
         // 加载仪表盘数据
         async function loadDashboardData() {
             try {
-                // TODO: 调用MCP API获取任务和成员数据
-                // 暂时显示占位数据
+                // 调用MCP API获取任务数据
+                const tasksResponse = await authFetch('/mcp/tools/call', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: 'list_all_tasks',
+                        arguments: {}
+                    })
+                });
+                const tasksData = await tasksResponse.json();
+
+                // 调用MCP API获取成员数据
+                const membersResponse = await authFetch('/mcp/tools/call', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: 'list_all_members',
+                        arguments: {}
+                    })
+                });
+                const membersData = await membersResponse.json();
+
+                // 更新统计数据
+                const tasks = tasksData.content?.[0]?.text ? JSON.parse(tasksData.content[0].text).tasks || [] : [];
+                const members = membersData.content?.[0]?.text ? JSON.parse(membersData.content[0].text).members || [] : [];
+
+                const myTasks = tasks.filter(t => t.status === 'in_progress' || t.status === 'pending');
+                document.getElementById('myTaskCount').textContent = myTasks.length;
+                document.getElementById('memberCount').textContent = members.length;
+
+                // 渲染任务列表
+                renderTaskList(tasks.slice(0, 5)); // 显示最近5个任务
+
+                // 更新五行能量
+                updateWuxingEnergy(tasks, members);
+
+            } catch (error) {
+                console.error('加载数据失败:', error);
                 document.getElementById('myTaskCount').textContent = '0';
                 document.getElementById('memberCount').textContent = '0';
-
                 document.getElementById('taskList').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📭</div>
@@ -485,26 +518,202 @@
                         <div style="font-size: 13px; margin-top: 8px;">点击"创建任务"开始协作</div>
                     </div>
                 `;
-            } catch (error) {
-                console.error('加载数据失败:', error);
             }
         }
 
+        // 渲染任务列表
+        function renderTaskList(tasks) {
+            const taskListEl = document.getElementById('taskList');
+
+            if (!tasks || tasks.length === 0) {
+                taskListEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div>暂无任务</div>
+                        <div style="font-size: 13px; margin-top: 8px;">点击"创建任务"开始协作</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const statusMap = {
+                'pending': { class: '', label: '待分配' },
+                'in_progress': { class: 'in-progress', label: '进行中' },
+                'completed': { class: 'completed', label: '已完成' }
+            };
+
+            taskListEl.innerHTML = tasks.map(task => {
+                const status = statusMap[task.status] || statusMap['pending'];
+                return `
+                    <div class="task-item">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span class="task-status ${status.class}">${status.label}</span>
+                            <span>需求: ${task.requiredWuxing}</span>
+                            ${task.assignedTo ? `<span>👤 ${task.assignedTo}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 更新五行能量分布
+        function updateWuxingEnergy(tasks, members) {
+            // 计算五行能量分布
+            const wuxingCount = { fire: 0, metal: 0, wood: 0, water: 0, earth: 0 };
+            const wuxingMap = { '火': 'fire', '金': 'metal', '木': 'wood', '水': 'water', '土': 'earth' };
+
+            members.forEach(member => {
+                const mainWuxing = wuxingMap[member.mainWuxing];
+                if (mainWuxing) wuxingCount[mainWuxing]++;
+            });
+
+            const total = Math.max(members.length, 1);
+            const updateBar = (id, count) => {
+                const percent = Math.round((count / total) * 100);
+                document.getElementById(`${id}Percent`).textContent = `${percent}%`;
+                document.getElementById(`${id}Fill`).style.width = `${percent}%`;
+            };
+
+            updateBar('fire', wuxingCount.fire);
+            updateBar('metal', wuxingCount.metal);
+            updateBar('wood', wuxingCount.wood);
+            updateBar('water', wuxingCount.water);
+            updateBar('earth', wuxingCount.earth);
+        }
+
         // 快速操作函数
-        function createTaskDialog() {
-            alert('创建任务功能开发中...\n\n提示：当前需要通过MCP工具调用API');
+        async function createTaskDialog() {
+            const title = prompt('请输入任务标题：');
+            if (!title) return;
+
+            const description = prompt('请输入任务描述：');
+            if (!description) return;
+
+            const requiredWuxing = prompt('请输入需要的五行属性（火/金/木/水/土）：');
+            if (!requiredWuxing || !['火', '金', '木', '水', '土'].includes(requiredWuxing)) {
+                alert('无效的五行属性');
+                return;
+            }
+
+            try {
+                const response = await authFetch('/mcp/tools/call', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: 'create_task',
+                        arguments: { title, description, requiredWuxing }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.content?.[0]?.text) {
+                    const result = JSON.parse(data.content[0].text);
+                    alert(`✅ 任务创建成功！\n\n任务ID: ${result.task.id}`);
+                    await loadDashboardData(); // 刷新数据
+                }
+            } catch (error) {
+                console.error('创建任务失败:', error);
+                alert('创建任务失败，请重试');
+            }
         }
 
-        function registerMemberDialog() {
-            alert('注册成员功能开发中...\n\n提示：当前需要通过MCP工具调用API');
+        async function registerMemberDialog() {
+            const name = prompt('请输入成员姓名：');
+            if (!name) return;
+
+            const mainWuxing = prompt('请输入主五行属性（火/金/木/水/土）：');
+            if (!mainWuxing || !['火', '金', '木', '水', '土'].includes(mainWuxing)) {
+                alert('无效的五行属性');
+                return;
+            }
+
+            const skills = prompt('请输入技能（用逗号分隔）：');
+            const skillList = skills ? skills.split(',').map(s => s.trim()) : [];
+
+            try {
+                const response = await authFetch('/mcp/tools/call', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: 'register_member',
+                        arguments: { name, mainWuxing, skills: skillList }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.content?.[0]?.text) {
+                    const result = JSON.parse(data.content[0].text);
+                    alert(`✅ 成员注册成功！\n\n成员ID: ${result.member.id}\n姓名: ${result.member.name}\n五行: ${result.member.mainWuxing}`);
+                    await loadDashboardData(); // 刷新数据
+                }
+            } catch (error) {
+                console.error('注册成员失败:', error);
+                alert('注册成员失败，请重试');
+            }
         }
 
-        function viewTeamDashboard() {
-            alert('团队看板功能开发中...\n\n提示：将展示团队协作数据可视化');
+        async function viewTeamDashboard() {
+            try {
+                const response = await authFetch('/mcp/tools/call', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: 'get_team_dashboard',
+                        arguments: {}
+                    })
+                });
+
+                const data = await response.json();
+                if (data.content?.[0]?.text) {
+                    const dashboard = JSON.parse(data.content[0].text);
+
+                    let message = '📊 团队协作看板\n\n';
+                    message += `总任务数: ${dashboard.totalTasks}\n`;
+                    message += `已完成: ${dashboard.completedTasks}\n`;
+                    message += `进行中: ${dashboard.inProgressTasks}\n`;
+                    message += `待分配: ${dashboard.pendingTasks}\n`;
+                    message += `\n总成员数: ${dashboard.totalMembers}\n`;
+                    message += `活跃成员: ${dashboard.activeMembers}\n`;
+                    message += `平均任务完成率: ${dashboard.completionRate}%`;
+
+                    alert(message);
+                }
+            } catch (error) {
+                console.error('获取团队看板失败:', error);
+                alert('获取团队看板失败，请重试');
+            }
         }
 
-        function checkWuxingBalance() {
-            alert('五行平衡分析功能开发中...\n\n提示：将分析团队五行能量分布');
+        async function checkWuxingBalance() {
+            try {
+                const response = await authFetch('/mcp/tools/call', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: 'check_wuxing_balance',
+                        arguments: {}
+                    })
+                });
+
+                const data = await response.json();
+                if (data.content?.[0]?.text) {
+                    const balance = JSON.parse(data.content[0].text);
+
+                    let message = '☯️ 五行平衡分析\n\n';
+                    message += `火: ${balance.distribution.fire} (${balance.percentages.fire}%)\n`;
+                    message += `金: ${balance.distribution.metal} (${balance.percentages.metal}%)\n`;
+                    message += `木: ${balance.distribution.wood} (${balance.percentages.wood}%)\n`;
+                    message += `水: ${balance.distribution.water} (${balance.percentages.water}%)\n`;
+                    message += `土: ${balance.distribution.earth} (${balance.percentages.earth}%)\n`;
+                    message += `\n平衡状态: ${balance.isBalanced ? '✅ 平衡' : '⚠️ 不平衡'}\n`;
+
+                    if (balance.recommendations?.length > 0) {
+                        message += `\n建议:\n${balance.recommendations.join('\n')}`;
+                    }
+
+                    alert(message);
+                }
+            } catch (error) {
+                console.error('五行平衡检查失败:', error);
+                alert('五行平衡检查失败，请重试');
+            }
         }
     </script>
 </body>
