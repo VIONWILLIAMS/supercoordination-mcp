@@ -5,6 +5,17 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 
+// 引入认证模块
+const {
+  register,
+  login,
+  getCurrentUser,
+  registerValidation,
+  loginValidation,
+  authenticateToken,
+  optionalAuth
+} = require('./auth');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, '../data/store.json');
@@ -64,11 +75,24 @@ function loadData() {
 }
 
 // ========================================
+// 用户认证API
+// ========================================
+
+// 注册
+app.post('/api/auth/register', registerValidation, register);
+
+// 登录
+app.post('/api/auth/login', loginValidation, login);
+
+// 获取当前用户信息（需要认证）
+app.get('/api/auth/me', authenticateToken, getCurrentUser);
+
+// ========================================
 // MCP协议端点
 // ========================================
 
 // 0. MCP服务发现端点（根端点）
-app.get('/mcp', (req, res) => {
+app.get('/mcp', optionalAuth, (req, res) => {
   res.json({
     name: "超协体协作中枢",
     version: "1.0.0",
