@@ -1,0 +1,128 @@
+// 超协体产品1.0 - Prisma Schema
+// 数据库：PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表（扩展原members表）
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  username      String   @unique
+  avatarUrl     String?  @map("avatar_url")
+  pwpProfile    Json     @default("{\"wuxing\": {\"fire\": 0, \"metal\": 0, \"wood\": 0, \"water\": 0, \"earth\": 0}, \"skills\": [], \"pain_points\": [], \"work_status\": \"\", \"ideal_state\": \"\"}") @map("pwp_profile")
+  pwpCompleted  Boolean  @default(false) @map("pwp_completed")
+  pointsBalance Int      @default(50) @map("points_balance")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // 关联
+  solutions            Solution[]
+  pointsTransactions   PointsTransaction[]
+  solutionRatings      SolutionRating[]
+  assignedTasks        Task[]
+
+  @@index([pwpCompleted])
+  @@map("users")
+}
+
+// 解决方案表（新增）
+model Solution {
+  id                 String   @id @default(uuid())
+  authorId           String   @map("author_id")
+  title              String
+  problemDefinition  String   @map("problem_definition") @db.Text
+  solutionContent    String   @map("solution_content") @db.Text
+  autoTags           Json     @default("[]") @map("auto_tags")
+  manualTags         Json     @default("[]") @map("manual_tags")
+  difficultyLevel    Int?     @map("difficulty_level")
+  avgRating          Decimal? @default(0) @map("avg_rating") @db.Decimal(3, 2)
+  referenceCount     Int      @default(0) @map("reference_count")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // 关联
+  author             User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  ratings            SolutionRating[]
+  referencedBy       SolutionReference[] @relation("ReferencedSolution")
+  references         SolutionReference[] @relation("ReferencingSolution")
+
+  @@index([authorId])
+  @@index([createdAt(sort: Desc)])
+  @@map("solutions")
+}
+
+// 积分交易表（新增）
+model PointsTransaction {
+  id                 String   @id @default(uuid())
+  userId             String   @map("user_id")
+  amount             Int
+  transactionType    String   @map("transaction_type")
+  relatedEntityType  String?  @map("related_entity_type")
+  relatedEntityId    String?  @map("related_entity_id")
+  description        String?  @db.Text
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  // 关联
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("points_transactions")
+}
+
+// 方案引用表（新增，多对多）
+model SolutionReference {
+  id                      String   @id @default(uuid())
+  referencingSolutionId   String   @map("referencing_solution_id")
+  referencedSolutionId    String   @map("referenced_solution_id")
+  createdAt               DateTime @default(now()) @map("created_at")
+
+  // 关联
+  referencingSolution     Solution @relation("ReferencingSolution", fields: [referencingSolutionId], references: [id], onDelete: Cascade)
+  referencedSolution      Solution @relation("ReferencedSolution", fields: [referencedSolutionId], references: [id], onDelete: Cascade)
+
+  @@unique([referencingSolutionId, referencedSolutionId])
+  @@map("solution_references")
+}
+
+// 方案评分表（新增）
+model SolutionRating {
+  id         String   @id @default(uuid())
+  solutionId String   @map("solution_id")
+  userId     String   @map("user_id")
+  rating     Int
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // 关联
+  solution   Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([solutionId, userId])
+  @@map("solution_ratings")
+}
+
+// 任务表（保留并扩展）
+model Task {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?  @db.Text
+  requiredSkills  Json     @default("[]") @map("required_skills")
+  requiredWuxing  Json     @default("{}") @map("required_wuxing")
+  assignedTo      String?  @map("assigned_to")
+  status          String   @default("pending")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // 关联
+  assignedUser    User?    @relation(fields: [assignedTo], references: [id])
+
+  @@map("tasks")
+}

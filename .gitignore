@@ -30,3 +30,11 @@ backups/
 test-*.js
 diagnose-*.sh
 open-dashboard.sh
+
+# Prisma
+prisma/.env
+prisma/*.db
+prisma/*.db-journal
+
+# 数据备份
+data/store.json.backup

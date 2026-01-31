@@ -5,15 +5,29 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js"
+    "dev": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "migrate:data": "node scripts/migrate-data.js",
+    "postinstall": "prisma generate"
   },
-  "keywords": ["mcp", "collaboration", "ai", "wuxing", "supercoordination"],
+  "keywords": [
+    "mcp",
+    "collaboration",
+    "ai",
+    "wuxing",
+    "supercoordination"
+  ],
   "author": "超协体团队",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
+    "@prisma/client": "^7.3.0",
     "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "prisma": "^7.3.0",
     "uuid": "^9.0.0"
   }
 }
