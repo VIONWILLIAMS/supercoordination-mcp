@@ -384,7 +384,7 @@
                     <div class="avatar" id="userAvatar">U</div>
                     <div class="user-details">
                         <div class="username" id="username">加载中...</div>
-                        <div class="points">
+                        <div class="points" style="cursor: pointer;" onclick="viewPointsHistory()" title="点击查看积分历史">
                             积分：<span class="points-value" id="pointsBalance">--</span>
                         </div>
                     </div>
@@ -971,6 +971,40 @@
             } catch (error) {
                 console.error('发放门票失败:', error);
                 alert('发放门票失败，请重试');
+            }
+        }
+
+        // ========================================
+        // 积分系统
+        // ========================================
+
+        // 查看积分历史
+        async function viewPointsHistory() {
+            try {
+                const response = await authFetch('/api/points/history?limit=10');
+                const data = await response.json();
+
+                if (data.success) {
+                    let message = `💰 积分历史（当前余额：${data.balance}）\n\n`;
+
+                    if (data.transactions.length === 0) {
+                        message += '暂无交易记录';
+                    } else {
+                        data.transactions.forEach(tx => {
+                            const date = new Date(tx.createdAt).toLocaleDateString();
+                            const sign = tx.amount > 0 ? '+' : '';
+                            message += `${date} ${sign}${tx.amount}积分\n`;
+                            message += `  ${tx.description}\n\n`;
+                        });
+                    }
+
+                    alert(message);
+                } else {
+                    alert('加载失败：' + data.message);
+                }
+            } catch (error) {
+                console.error('查看积分历史失败:', error);
+                alert('查看积分历史失败，请重试');
             }
         }
 

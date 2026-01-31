@@ -192,6 +192,41 @@ app.post('/api/profile/update', authenticateToken, async (req, res) => {
   }
 });
 
+// 获取积分交易历史
+app.get('/api/points/history', authenticateToken, async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    const limit = parseInt(req.query.limit) || 20;
+
+    const transactions = await prisma.pointsTransaction.findMany({
+      where: { userId: req.userId },
+      orderBy: { createdAt: 'desc' },
+      take: limit
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { pointsBalance: true }
+    });
+
+    res.json({
+      success: true,
+      balance: user.pointsBalance,
+      transactions
+    });
+
+    await prisma.$disconnect();
+  } catch (error) {
+    console.error('获取积分历史失败:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // ========================================
 // AI守门人API
 // ========================================
@@ -758,32 +793,82 @@ async function registerMember(args, userId) {
 }
 
 async function createTask(args, userId) {
-  const taskId = uuidv4();
-  const task = {
-    id: taskId,
-    title: args.title,
-    description: args.description,
-    wuxing: args.wuxing || null,
-    priority: args.priority || 'B',
-    skills_required: args.skills_required || [],
-    status: 'pending',
-    progress: 0,
-    assigned_to: null,
-    created_by: userId,  // 创建者
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
+  const { PrismaClient } = require('@prisma/client');
+  const prisma = new PrismaClient();
 
-  const userTasks = getUserStore('tasks', userId);
-  userTasks.set(taskId, task);
-  saveData();
+  try {
+    // 检查用户积分
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { pointsBalance: true }
+    });
 
-  return {
-    success: true,
-    task_id: taskId,
-    message: `✅ 任务创建成功：${args.title}`,
-    task: task
-  };
+    const TASK_COST = 10; // 创建任务消耗10积分
+
+    if (user.pointsBalance < TASK_COST) {
+      await prisma.$disconnect();
+      return {
+        success: false,
+        message: `❌ 积分不足！创建任务需要${TASK_COST}积分，当前余额${user.pointsBalance}积分`
+      };
+    }
+
+    // 扣除积分
+    await prisma.user.update({
+      where: { id: userId },
+      data: { pointsBalance: { decrement: TASK_COST } }
+    });
+
+    // 记录交易
+    const taskId = uuidv4();
+    await prisma.pointsTransaction.create({
+      data: {
+        userId,
+        amount: -TASK_COST,
+        transactionType: 'create_task',
+        relatedEntityType: 'task',
+        relatedEntityId: taskId,
+        description: `创建任务：${args.title}`
+      }
+    });
+
+    await prisma.$disconnect();
+
+    // 创建任务
+    const task = {
+      id: taskId,
+      title: args.title,
+      description: args.description,
+      wuxing: args.wuxing || null,
+      priority: args.priority || 'B',
+      skills_required: args.skills_required || [],
+      status: 'pending',
+      progress: 0,
+      assigned_to: null,
+      created_by: userId,  // 创建者
+      reward_points: 20,   // 完成任务奖励积分
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    const userTasks = getUserStore('tasks', userId);
+    userTasks.set(taskId, task);
+    saveData();
+
+    return {
+      success: true,
+      task_id: taskId,
+      message: `✅ 任务创建成功（消耗${TASK_COST}积分）：${args.title}`,
+      task: task,
+      points_spent: TASK_COST,
+      remaining_balance: user.pointsBalance - TASK_COST
+    };
+  } catch (error) {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    await prisma.$disconnect();
+    throw error;
+  }
 }
 
 async function findBestMatch(args, userId) {
@@ -969,13 +1054,50 @@ async function updateTaskStatus(args, userId) {
     task.notes = args.notes;
   }
   task.updated_at = new Date().toISOString();
+
+  // 如果任务完成，发放积分奖励
+  let pointsAwarded = 0;
+  if (args.status === 'completed' && oldStatus !== 'completed' && task.assigned_to) {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    try {
+      const REWARD_POINTS = task.reward_points || 20;
+
+      // 给执行者发放积分
+      await prisma.user.update({
+        where: { id: userId },
+        data: { pointsBalance: { increment: REWARD_POINTS } }
+      });
+
+      // 记录交易
+      await prisma.pointsTransaction.create({
+        data: {
+          userId,
+          amount: REWARD_POINTS,
+          transactionType: 'complete_task',
+          relatedEntityType: 'task',
+          relatedEntityId: task.id,
+          description: `完成任务：${task.title}`
+        }
+      });
+
+      pointsAwarded = REWARD_POINTS;
+      await prisma.$disconnect();
+    } catch (error) {
+      await prisma.$disconnect();
+      console.error('积分发放失败:', error);
+    }
+  }
+
   saveData();
 
   return {
     success: true,
-    message: `✅ 任务《${task.title}》状态已更新：${oldStatus} → ${args.status}`,
+    message: `✅ 任务《${task.title}》状态已更新：${oldStatus} → ${args.status}${pointsAwarded > 0 ? `\n🎁 获得奖励：${pointsAwarded}积分` : ''}`,
     task: task,
-    assigned_to: task.assigned_to ? userMembers.get(task.assigned_to)?.name : '未分配'
+    assigned_to: task.assigned_to ? userMembers.get(task.assigned_to)?.name : '未分配',
+    points_awarded: pointsAwarded
   };
 }
 
