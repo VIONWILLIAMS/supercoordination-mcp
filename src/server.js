@@ -28,40 +28,87 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
 // ========================================
-// 数据存储（JSON持久化）
+// 数据存储（JSON持久化 - 按用户隔离）
 // ========================================
 
+// 数据结构：userId -> Map(itemId -> item)
 const store = {
-  tasks: new Map(),
-  members: new Map(),
-  resources: new Map()
+  tasks: new Map(),     // Map<userId, Map<taskId, task>>
+  members: new Map(),   // Map<userId, Map<memberId, member>>
+  resources: new Map()  // Map<userId, Map<resourceId, resource>>
 };
 
-// 保存数据到JSON文件
+// 获取或创建用户的数据Map
+function getUserStore(storeType, userId) {
+  if (!store[storeType].has(userId)) {
+    store[storeType].set(userId, new Map());
+  }
+  return store[storeType].get(userId);
+}
+
+// 保存数据到JSON文件（用户隔离版本）
 function saveData() {
   try {
     const data = {
-      tasks: Array.from(store.tasks.entries()),
-      members: Array.from(store.members.entries()),
-      resources: Array.from(store.resources.entries()),
+      tasks: Array.from(store.tasks.entries()).map(([userId, userTasks]) =>
+        [userId, Array.from(userTasks.entries())]
+      ),
+      members: Array.from(store.members.entries()).map(([userId, userMembers]) =>
+        [userId, Array.from(userMembers.entries())]
+      ),
+      resources: Array.from(store.resources.entries()).map(([userId, userResources]) =>
+        [userId, Array.from(userResources.entries())]
+      ),
       saved_at: new Date().toISOString()
     };
+
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
-    console.log('[数据持久化] 已保存:', data.tasks.length, '个任务,', data.members.length, '个成员');
+
+    let totalTasks = 0, totalMembers = 0;
+    store.tasks.forEach(userTasks => totalTasks += userTasks.size);
+    store.members.forEach(userMembers => totalMembers += userMembers.size);
+
+    console.log('[数据持久化] 已保存:', totalTasks, '个任务,', totalMembers, '个成员,', store.tasks.size, '个用户');
   } catch (error) {
     console.error('[数据持久化] 保存失败:', error.message);
   }
 }
 
-// 从JSON文件加载数据
+// 从JSON文件加载数据（用户隔离版本）
 function loadData() {
   try {
     if (fs.existsSync(DATA_FILE)) {
       const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-      store.tasks = new Map(data.tasks);
-      store.members = new Map(data.members);
-      store.resources = new Map(data.resources);
-      console.log('[数据持久化] 已加载:', data.tasks.length, '个任务,', data.members.length, '个成员');
+
+      // 检查数据格式，兼容旧格式
+      if (data.tasks && Array.isArray(data.tasks) && data.tasks.length > 0) {
+        // 检查是否是新格式（用户隔离）
+        if (Array.isArray(data.tasks[0]) && data.tasks[0].length === 2 && typeof data.tasks[0][0] === 'string') {
+          // 新格式：[[userId, [[taskId, task]]]]
+          store.tasks = new Map(data.tasks.map(([userId, userTasks]) =>
+            [userId, new Map(userTasks)]
+          ));
+          store.members = new Map(data.members.map(([userId, userMembers]) =>
+            [userId, new Map(userMembers)]
+          ));
+          store.resources = new Map(data.resources.map(([userId, userResources]) =>
+            [userId, new Map(userResources)]
+          ));
+        } else {
+          // 旧格式：[[taskId, task]] - 迁移到默认用户
+          console.log('[数据持久化] 检测到旧格式数据，迁移到用户隔离模式');
+          const defaultUserId = 'legacy-user';
+          store.tasks.set(defaultUserId, new Map(data.tasks));
+          store.members.set(defaultUserId, new Map(data.members));
+          store.resources.set(defaultUserId, new Map(data.resources || []));
+        }
+      }
+
+      let totalTasks = 0, totalMembers = 0;
+      store.tasks.forEach(userTasks => totalTasks += userTasks.size);
+      store.members.forEach(userMembers => totalMembers += userMembers.size);
+
+      console.log('[数据持久化] 已加载:', totalTasks, '个任务,', totalMembers, '个成员,', store.tasks.size, '个用户');
       console.log('[数据持久化] 上次保存时间:', data.saved_at);
       return true;
     } else {
@@ -295,46 +342,48 @@ app.get('/mcp/manifest', (req, res) => {
   });
 });
 
-// 2. MCP工具调用端点
-app.post('/mcp/tools/call', async (req, res) => {
+// 2. MCP工具调用端点（需要认证）
+app.post('/mcp/tools/call', authenticateToken, async (req, res) => {
   const { name, arguments: args } = req.body;
+  const userId = req.userId;  // 从token获取用户ID
 
-  console.log('[MCP] Tool call:', name);  // 调试日志
-  console.log('[MCP] Arguments:', args);  // 调试日志
+  console.log('[MCP] Tool call:', name, 'by user:', userId);
+  console.log('[MCP] Arguments:', args);
 
   try {
     let result;
 
+    // 所有工具函数都传入userId进行数据隔离
     switch (name) {
       case 'register_member':
-        result = await registerMember(args);
+        result = await registerMember(args, userId);
         break;
       case 'create_task':
-        result = await createTask(args);
+        result = await createTask(args, userId);
         break;
       case 'find_best_match':
-        result = await findBestMatch(args);
+        result = await findBestMatch(args, userId);
         break;
       case 'assign_task':
-        result = await assignTask(args);
+        result = await assignTask(args, userId);
         break;
       case 'get_my_tasks':
-        result = await getMyTasks(args);
+        result = await getMyTasks(args, userId);
         break;
       case 'update_task_status':
-        result = await updateTaskStatus(args);
+        result = await updateTaskStatus(args, userId);
         break;
       case 'get_team_dashboard':
-        result = await getTeamDashboard(args);
+        result = await getTeamDashboard(args, userId);
         break;
       case 'check_wuxing_balance':
-        result = await checkWuxingBalance(args);
+        result = await checkWuxingBalance(args, userId);
         break;
       case 'list_all_members':
-        result = await listAllMembers(args);
+        result = await listAllMembers(args, userId);
         break;
       case 'list_all_tasks':
-        result = await listAllTasks(args);
+        result = await listAllTasks(args, userId);
         break;
       default:
         return res.status(404).json({
@@ -362,7 +411,7 @@ app.post('/mcp/tools/call', async (req, res) => {
 // 工具实现函数
 // ========================================
 
-async function registerMember(args) {
+async function registerMember(args, userId) {
   const memberId = uuidv4();
   const member = {
     id: memberId,
@@ -372,11 +421,13 @@ async function registerMember(args) {
       火: 20, 金: 20, 木: 20, 水: 20, 土: 20
     },
     status: 'active',
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    user_id: userId  // 关联到用户
   };
 
-  store.members.set(memberId, member);
-  saveData(); // 持久化保存
+  const userMembers = getUserStore('members', userId);
+  userMembers.set(memberId, member);
+  saveData();
 
   return {
     success: true,
@@ -386,7 +437,7 @@ async function registerMember(args) {
   };
 }
 
-async function createTask(args) {
+async function createTask(args, userId) {
   const taskId = uuidv4();
   const task = {
     id: taskId,
@@ -398,12 +449,14 @@ async function createTask(args) {
     status: 'pending',
     progress: 0,
     assigned_to: null,
+    created_by: userId,  // 创建者
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
 
-  store.tasks.set(taskId, task);
-  saveData(); // 持久化保存
+  const userTasks = getUserStore('tasks', userId);
+  userTasks.set(taskId, task);
+  saveData();
 
   return {
     success: true,
@@ -413,14 +466,16 @@ async function createTask(args) {
   };
 }
 
-async function findBestMatch(args) {
-  const task = store.tasks.get(args.task_id);
+async function findBestMatch(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+  const task = userTasks.get(args.task_id);
   if (!task) {
     throw new Error('❌ 任务不存在');
   }
 
   const strategy = args.strategy || 'hybrid';
-  const members = Array.from(store.members.values());
+  const userMembers = getUserStore('members', userId);
+  const members = Array.from(userMembers.values());
 
   if (members.length === 0) {
     return {
@@ -462,7 +517,7 @@ async function findBestMatch(args) {
 
     // 3. 负载分数（30%权重）
     if (strategy === 'load' || strategy === 'hybrid') {
-      const memberTasks = Array.from(store.tasks.values())
+      const memberTasks = Array.from(userTasks.values())
         .filter(t => t.assigned_to === member.id && t.status !== 'completed');
       const loadScore = Math.max(0, 30 - (memberTasks.length * 5));
       score += loadScore;
@@ -497,8 +552,11 @@ async function findBestMatch(args) {
   };
 }
 
-async function assignTask(args) {
-  const task = store.tasks.get(args.task_id);
+async function assignTask(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
+  const task = userTasks.get(args.task_id);
   if (!task) {
     throw new Error('❌ 任务不存在');
   }
@@ -507,23 +565,23 @@ async function assignTask(args) {
 
   if (args.member_id) {
     // 手动指定成员
-    assignedMember = store.members.get(args.member_id);
+    assignedMember = userMembers.get(args.member_id);
     if (!assignedMember) {
       throw new Error('❌ 指定成员不存在');
     }
   } else {
     // 智能匹配最佳成员
-    const match = await findBestMatch({ task_id: args.task_id, strategy: 'hybrid' });
+    const match = await findBestMatch({ task_id: args.task_id, strategy: 'hybrid' }, userId);
     if (!match.best_match) {
       throw new Error('❌ 未找到合适的成员');
     }
-    assignedMember = store.members.get(match.best_match.member_id);
+    assignedMember = userMembers.get(match.best_match.member_id);
   }
 
   task.assigned_to = assignedMember.id;
   task.status = 'in_progress';
   task.updated_at = new Date().toISOString();
-  saveData(); // 持久化保存
+  saveData();
 
   return {
     success: true,
@@ -537,13 +595,16 @@ async function assignTask(args) {
   };
 }
 
-async function getMyTasks(args) {
-  const member = store.members.get(args.member_id);
+async function getMyTasks(args, userId) {
+  const userMembers = getUserStore('members', userId);
+  const userTasks = getUserStore('tasks', userId);
+
+  const member = userMembers.get(args.member_id);
   if (!member) {
     throw new Error('❌ 成员不存在');
   }
 
-  const tasks = Array.from(store.tasks.values())
+  const tasks = Array.from(userTasks.values())
     .filter(task => {
       if (task.assigned_to !== args.member_id) return false;
       if (args.status && args.status !== 'all' && task.status !== args.status) return false;
@@ -569,8 +630,11 @@ async function getMyTasks(args) {
   };
 }
 
-async function updateTaskStatus(args) {
-  const task = store.tasks.get(args.task_id);
+async function updateTaskStatus(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
+  const task = userTasks.get(args.task_id);
   if (!task) {
     throw new Error('❌ 任务不存在');
   }
@@ -585,20 +649,23 @@ async function updateTaskStatus(args) {
     task.notes = args.notes;
   }
   task.updated_at = new Date().toISOString();
-  saveData(); // 持久化保存
+  saveData();
 
   return {
     success: true,
     message: `✅ 任务《${task.title}》状态已更新：${oldStatus} → ${args.status}`,
     task: task,
-    assigned_to: task.assigned_to ? store.members.get(task.assigned_to)?.name : '未分配'
+    assigned_to: task.assigned_to ? userMembers.get(task.assigned_to)?.name : '未分配'
   };
 }
 
-async function getTeamDashboard(args) {
+async function getTeamDashboard(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
   const view = args.view || 'overview';
-  const tasks = Array.from(store.tasks.values());
-  const members = Array.from(store.members.values());
+  const tasks = Array.from(userTasks.values());
+  const members = Array.from(userMembers.values());
 
   const dashboard = {
     view: view,
@@ -661,7 +728,7 @@ async function getTeamDashboard(args) {
         .map(t => ({
           task_id: t.id,
           title: t.title,
-          assigned_to: store.members.get(t.assigned_to)?.name || '未分配',
+          assigned_to: userMembers.get(t.assigned_to)?.name || '未分配',
           blocked_since: t.updated_at
         }));
       break;
@@ -670,9 +737,11 @@ async function getTeamDashboard(args) {
   return dashboard;
 }
 
-async function checkWuxingBalance(args) {
+async function checkWuxingBalance(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+
   const timeframe = args.timeframe || 'week';
-  const tasks = Array.from(store.tasks.values());
+  const tasks = Array.from(userTasks.values());
 
   // 计算当前五行分布
   const currentDistribution = {
@@ -729,13 +798,16 @@ async function checkWuxingBalance(args) {
   };
 }
 
-async function listAllMembers(args) {
-  const members = Array.from(store.members.values()).map(m => ({
+async function listAllMembers(args, userId) {
+  const userMembers = getUserStore('members', userId);
+  const userTasks = getUserStore('tasks', userId);
+
+  const members = Array.from(userMembers.values()).map(m => ({
     id: m.id,
     name: m.name,
     skills: m.skills,
     wuxing_profile: m.wuxing_profile,
-    task_count: Array.from(store.tasks.values()).filter(t => t.assigned_to === m.id && t.status !== 'completed').length
+    task_count: Array.from(userTasks.values()).filter(t => t.assigned_to === m.id && t.status !== 'completed').length
   }));
 
   return {
@@ -745,10 +817,13 @@ async function listAllMembers(args) {
   };
 }
 
-async function listAllTasks(args) {
+async function listAllTasks(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
   const statusFilter = args.status || 'all';
 
-  let tasks = Array.from(store.tasks.values());
+  let tasks = Array.from(userTasks.values());
 
   if (statusFilter !== 'all') {
     tasks = tasks.filter(t => t.status === statusFilter);
@@ -757,7 +832,7 @@ async function listAllTasks(args) {
   // 添加成员名称
   tasks = tasks.map(t => ({
     ...t,
-    assigned_to_name: t.assigned_to ? store.members.get(t.assigned_to)?.name : '未分配'
+    assigned_to_name: t.assigned_to ? userMembers.get(t.assigned_to)?.name : '未分配'
   }));
 
   return {
