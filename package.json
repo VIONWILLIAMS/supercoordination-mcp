@@ -4,8 +4,9 @@
   "description": "超协体人机协同MCP服务器",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "npm run db:push && node src/server.js",
     "dev": "node src/server.js",
+    "db:push": "prisma db push --accept-data-loss --skip-generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
