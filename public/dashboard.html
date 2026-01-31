@@ -150,8 +150,14 @@
         /* 快速操作卡片 */
         .quick-actions {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         .action-btn {
@@ -344,6 +350,10 @@
                         <span class="action-icon">👥</span>
                         <span>注册成员</span>
                     </button>
+                    <button class="action-btn" onclick="issueTicketDialog()">
+                        <span class="action-icon">🎫</span>
+                        <span>发门票</span>
+                    </button>
                     <button class="action-btn" onclick="viewTeamDashboard()">
                         <span class="action-icon">📊</span>
                         <span>团队看板</span>
@@ -351,6 +361,10 @@
                     <button class="action-btn" onclick="checkWuxingBalance()">
                         <span class="action-icon">☯️</span>
                         <span>五行平衡</span>
+                    </button>
+                    <button class="action-btn" onclick="alert('五行画像填写功能开发中...')">
+                        <span class="action-icon">🎨</span>
+                        <span>填写画像</span>
                     </button>
                 </div>
             </div>
@@ -454,11 +468,99 @@
             window.location.href = '/login.html';
         }
 
+        // 全局状态
+        let userStatus = null;
+        let aiEvaluation = null;
+
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', async () => {
             await loadUserInfo();
+            await checkUserStatus();
             await loadDashboardData();
         });
+
+        // 检查用户状态（候选者 vs 正式成员）
+        async function checkUserStatus() {
+            try {
+                const response = await authFetch('/api/my/status');
+                const data = await response.json();
+
+                if (data.success) {
+                    userStatus = data.user.status;
+                    aiEvaluation = data.evaluation;
+
+                    // 如果是候选者，显示提示横幅
+                    if (userStatus === 'candidate') {
+                        showCandidateBanner();
+                    }
+                }
+            } catch (error) {
+                console.error('检查用户状态失败:', error);
+            }
+        }
+
+        // 显示候选者横幅
+        function showCandidateBanner() {
+            const topbar = document.querySelector('.topbar');
+            const banner = document.createElement('div');
+            banner.style.cssText = `
+                background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+                padding: 12px 24px;
+                margin-bottom: 20px;
+                border-radius: 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            `;
+
+            const aiScore = aiEvaluation?.score || 0;
+            const progress = Math.min(Math.floor((aiScore / 80) * 100), 100);
+
+            banner.innerHTML = `
+                <div>
+                    <strong style="font-size: 15px; color: #333;">🎫 观察者模式</strong>
+                    <div style="font-size: 13px; color: #666; margin-top: 4px;">
+                        AI评估进度：${aiScore}/80分 (${progress}%) ${progress >= 100 ? '- 即将收到邀请！' : ''}
+                    </div>
+                </div>
+                ${aiScore >= 80 ? `
+                    <button onclick="acceptInvitation()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">接受AI邀请</button>
+                ` : ''}
+            `;
+
+            topbar.parentNode.insertBefore(banner, topbar.nextSibling);
+        }
+
+        // 接受AI邀请
+        async function acceptInvitation() {
+            if (!confirm('确认接受AI邀请，正式加入超协体？')) return;
+
+            try {
+                const response = await authFetch('/api/ai/accept-invitation', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('🎉 ' + data.message + '\n\n你的超协体序号：#' + data.member.serialNumber);
+                    location.reload();
+                } else {
+                    alert('接受邀请失败：' + data.message);
+                }
+            } catch (error) {
+                console.error('接受邀请失败:', error);
+                alert('操作失败，请重试');
+            }
+        }
 
         // 加载用户信息
         async function loadUserInfo() {
@@ -481,6 +583,13 @@
                         arguments: {}
                     })
                 });
+
+                // 检查是否是候选者权限不足
+                if (tasksResponse.status === 403) {
+                    showCandidateView();
+                    return;
+                }
+
                 const tasksData = await tasksResponse.json();
 
                 // 调用MCP API获取成员数据
@@ -514,11 +623,35 @@
                 document.getElementById('taskList').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📭</div>
-                        <div>暂无任务</div>
-                        <div style="font-size: 13px; margin-top: 8px;">点击"创建任务"开始协作</div>
+                        <div>暂无数据</div>
                     </div>
                 `;
             }
+        }
+
+        // 显示候选者视图（权限受限）
+        function showCandidateView() {
+            document.getElementById('myTaskCount').textContent = '--';
+            document.getElementById('memberCount').textContent = '--';
+
+            document.getElementById('taskList').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔒</div>
+                    <div>观察者模式</div>
+                    <div style="font-size: 13px; margin-top: 8px; color: #888;">
+                        完善你的五行画像，等待AI评估后可解锁全部功能
+                    </div>
+                </div>
+            `;
+
+            // 禁用快速操作按钮
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+                const originalOnclick = btn.getAttribute('onclick');
+                btn.setAttribute('data-original-onclick', originalOnclick);
+                btn.setAttribute('onclick', 'alert("此功能仅对正式成员开放\\n\\n提示：完善五行画像可提高AI评估分数")');
+            });
         }
 
         // 渲染任务列表
@@ -713,6 +846,48 @@
             } catch (error) {
                 console.error('五行平衡检查失败:', error);
                 alert('五行平衡检查失败，请重试');
+            }
+        }
+
+        // 发放门票（正式成员才能使用）
+        async function issueTicketDialog() {
+            if (userStatus === 'candidate') {
+                alert('此功能仅对正式成员开放');
+                return;
+            }
+
+            const recipientEmail = prompt('请输入接收者的邮箱：');
+            if (!recipientEmail) return;
+
+            // 简单的邮箱验证
+            if (!recipientEmail.includes('@')) {
+                alert('请输入有效的邮箱地址');
+                return;
+            }
+
+            try {
+                const response = await authFetch('/api/ticket/issue', {
+                    method: 'POST',
+                    body: JSON.stringify({ recipientEmail })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const ticketUrl = data.ticketUrl;
+                    alert(`✅ 门票发放成功！\n\n接收者：${recipientEmail}\n\n门票链接：\n${ticketUrl}\n\n请将此链接发送给对方。`);
+
+                    // 可选：复制到剪贴板
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(ticketUrl);
+                        console.log('门票链接已复制到剪贴板');
+                    }
+                } else {
+                    alert('发放失败：' + data.message);
+                }
+            } catch (error) {
+                console.error('发放门票失败:', error);
+                alert('发放门票失败，请重试');
             }
         }
     </script>
