@@ -1,0 +1,70 @@
+{
+  "tasks": [
+    [
+      "ccb2b9cb-3a5f-4b38-b40e-99f7092ba5c7",
+      {
+        "id": "ccb2b9cb-3a5f-4b38-b40e-99f7092ba5c7",
+        "title": "撰写超协体社区推广文案",
+        "description": "向楼里邻居介绍超协体的核心价值，包括朋友圈文案、楼栋群公告、邀请短信",
+        "wuxing": "火",
+        "priority": "A",
+        "skills_required": [
+          "写作",
+          "内容创作",
+          "文案策划"
+        ],
+        "status": "pending",
+        "progress": 0,
+        "assigned_to": null,
+        "created_at": "2026-01-20T17:41:21.279Z",
+        "updated_at": "2026-01-20T17:41:21.279Z"
+      }
+    ]
+  ],
+  "members": [
+    [
+      "8587f8bb-a740-467e-9a8e-ccc80eec04a2",
+      {
+        "id": "8587f8bb-a740-467e-9a8e-ccc80eec04a2",
+        "name": "十笔",
+        "skills": [
+          "写作",
+          "内容创作",
+          "文案"
+        ],
+        "wuxing_profile": {
+          "木": 25,
+          "水": 25,
+          "火": 20,
+          "金": 15,
+          "土": 15
+        },
+        "status": "active",
+        "created_at": "2026-01-20T17:40:37.970Z"
+      }
+    ],
+    [
+      "728a1bc4-789b-4afc-87f7-d4b2990b1f17",
+      {
+        "id": "728a1bc4-789b-4afc-87f7-d4b2990b1f17",
+        "name": "Claude_助手",
+        "skills": [
+          "AI协作",
+          "代码生成",
+          "架构设计"
+        ],
+        "wuxing_profile": {
+          "火": 5,
+          "金": 30,
+          "木": 40,
+          "水": 20,
+          "土": 5
+        },
+        "status": "active",
+        "created_at": "2026-01-31T00:30:57.119Z"
+      }
+    ]
+  ],
+  "resources": [],
+  "saved_at": "2026-01-31T00:30:57.119Z"
+}

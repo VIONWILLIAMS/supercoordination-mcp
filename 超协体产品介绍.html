@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超协体 · 人机协同社区操作系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --fire: #FF6B6B;
+            --metal: #FFD93D;
+            --wood: #6BCF7F;
+            --water: #4ECDC4;
+            --earth: #95A5A6;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero .cta {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: var(--primary);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero .cta:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Content Cards */
+        .content {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 1.3rem;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        /* Wuxing Circle */
+        .wuxing-circle {
+            width: 400px;
+            height: 400px;
+            margin: 40px auto;
+            position: relative;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .wuxing-item {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .wuxing-item.fire { background: var(--fire); top: 0; left: 50%; transform: translateX(-50%); }
+        .wuxing-item.metal { background: var(--metal); top: 30%; right: 10%; }
+        .wuxing-item.wood { background: var(--wood); bottom: 20%; right: 5%; }
+        .wuxing-item.water { background: var(--water); bottom: 0; left: 50%; transform: translateX(-50%); }
+        .wuxing-item.earth { background: var(--earth); top: 30%; left: 10%; }
+
+        /* Stats Grid */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .stat-card {
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .stat-card .number {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Comparison Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 40px 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline-item {
+            padding: 20px 40px;
+            margin: 20px 0;
+            position: relative;
+            border-left: 3px solid var(--primary);
+        }
+
+        .timeline-item h3 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .wuxing-circle {
+                width: 300px;
+                height: 300px;
+            }
+
+            .wuxing-item {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <h1>超协体</h1>
+            <p class="tagline">人机协同社区操作系统</p>
+            <p class="tagline">让每个人都拥有AI助手，通过智能中枢实现跨节点协同</p>
+            <a href="#join" class="cta">2分钟加入超协体 🚀</a>
+        </div>
+    </div>
+
+    <!-- What is it -->
+    <div class="container">
+        <div class="content">
+            <h2 class="section-title">🌟 这是什么？</h2>
+            <p class="section-subtitle">不是一个工具，而是协作范式的革命</p>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h3>🤖 每人都有AI助手</h3>
+                    <p>不是共享一个AI，而是每个团队成员都配备专属的Claude助手，24小时在线待命。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 AI助手互联互通</h3>
+                    <p>通过MCP智能中枢，所有AI助手形成协作网络，实现跨节点实时同步。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 智能任务匹配</h3>
+                    <p>基于五行算法，自动分析技能、能量、负载，将任务分配给最合适的人。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 同栋楼降维打击</h3>
+                    <p>局域网零延迟、30秒敲门响应、数据不出楼，物理距离成为竞争优势。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wuxing System -->
+        <div class="content">
+            <h2 class="section-title">⚡ 五行智能匹配</h2>
+            <p class="section-subtitle">东方哲学驱动的资源配置系统</p>
+
+            <div class="wuxing-circle">
+                <div class="wuxing-item fire">🔥</div>
+                <div class="wuxing-item metal">⚙️</div>
+                <div class="wuxing-item wood">🌳</div>
+                <div class="wuxing-item water">💧</div>
+                <div class="wuxing-item earth">🏔️</div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card" style="border-left-color: var(--wood);">
+                    <h3>🌳 木 (40%)</h3>
+                    <p>技术创造、系统开发、产品构建</p>
+                </div>
+                <div class="feature-card" style="border-left-color: var(--water);">
+                    <h3>💧 水 (35%)</h3>
+                    <p>商业运营、资源流转、市场拓展</p>
+                </div>
+                <div class="feature-card" style="border-left-color: var(--fire);">
+                    <h3>🔥 火 (15%)</h3>
+                    <p>内容创作、品牌传播、社群运营</p>
+                </div>
+                <div class="feature-card" style="border-left-color: var(--metal);">
+                    <h3>⚙️ 金 (7%)</h3>
+                    <p>研究分析、标准制定、法则设计</p>
+                </div>
+                <div class="feature-card" style="border-left-color: var(--earth);">
+                    <h3>🏔️ 土 (3%)</h3>
+                    <p>基础设施、生态培育、平台建设</p>
+                </div>
+            </div>
+
+            <p style="text-align: center; font-size: 1.2rem; margin-top: 30px;">
+                <strong>匹配算法:</strong> 技能匹配(40%) + 五行能量(30%) + 负载平衡(30%)
+            </p>
+        </div>
+
+        <!-- Stats -->
+        <div class="content">
+            <h2 class="section-title">📊 当前状态</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="number">1</div>
+                    <div class="label">团队成员</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">10</div>
+                    <div class="label">可用工具</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">&lt;1ms</div>
+                    <div class="label">局域网延迟</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">30秒</div>
+                    <div class="label">现场响应速度</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison -->
+        <div class="content">
+            <h2 class="section-title">🆚 竞品对比</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>特性</th>
+                        <th>Slack/飞书</th>
+                        <th>Notion</th>
+                        <th>Jira</th>
+                        <th>超协体</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI角色</td>
+                        <td>插件助手</td>
+                        <td>内容生成</td>
+                        <td>无</td>
+                        <td><strong>协作节点 ✨</strong></td>
+                    </tr>
+                    <tr>
+                        <td>任务分配</td>
+                        <td>人工指定</td>
+                        <td>人工认领</td>
+                        <td>规则引擎</td>
+                        <td><strong>AI智能匹配 ✨</strong></td>
+                    </tr>
+                    <tr>
+                        <td>能力评估</td>
+                        <td>技能标签</td>
+                        <td>无</td>
+                        <td>工时统计</td>
+                        <td><strong>五行能量画像 ✨</strong></td>
+                    </tr>
+                    <tr>
+                        <td>物理距离</td>
+                        <td>不考虑</td>
+                        <td>不考虑</td>
+                        <td>不考虑</td>
+                        <td><strong>同栋楼优势 ✨</strong></td>
+                    </tr>
+                    <tr>
+                        <td>数据隐私</td>
+                        <td>云端</td>
+                        <td>云端</td>
+                        <td>云端</td>
+                        <td><strong>局域网不出楼 ✨</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Roadmap -->
+        <div class="content">
+            <h2 class="section-title">🚀 2026战略路线图</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Q1-Q2: MVP验证（当前）</h3>
+                    <p>✅ 技术实现：MCP服务器 + 五行算法<br>
+                    🔄 社区验证：10-20人同栋楼网络<br>
+                    🎯 目标：完成100个协作任务</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Q3: 规模化复制</h3>
+                    <p>📈 横向扩展：5-10个社区部署<br>
+                    🔧 产品优化：数据持久化、移动端、可视化<br>
+                    🤝 生态建设：与GitHub/Notion/Slack集成</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Q4: 平台化升级</h3>
+                    <p>🌐 SaaS化：订阅制服务，任何社区可部署<br>
+                    🏆 标准输出：五行协作协议成为行业标准<br>
+                    💰 商业闭环：咨询服务 + 技术授权 + 生态分成</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>2027-2028: 生态繁荣</h3>
+                    <p>🌍 全球网络：1000+社区，50000+成员<br>
+                    🤖 AI进化：自主协调、预测任务、智能组队<br>
+                    🏛️ DAO化：去中心化治理、代币经济、价值分配</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-section" id="join">
+            <h2>🎯 加入超协体</h2>
+            <p>从邻居到超协体，只需一个配置文件</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary">社区成员接入</a>
+                <a href="#" class="btn btn-secondary">合作伙伴咨询</a>
+                <a href="#" class="btn btn-secondary">投资人BP</a>
+            </div>
+            <div style="margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                <p style="font-size: 0.9rem; opacity: 0.9;">
+                    <strong>服务器地址:</strong> http://192.168.1.3:3000/mcp<br>
+                    <strong>当前状态:</strong> MVP运行中，1个成员已接入<br>
+                    <strong>接入时间:</strong> < 2分钟
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">
+                <strong>明道而不迷 · 立法而不散 · 修术而不虚 · 观势而不躁 · 造器而不执</strong>
+            </p>
+            <p>超协体 v1.0 · 2026人机协同元年</p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                五行飞轮已启动，等待你的加入 🚀
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

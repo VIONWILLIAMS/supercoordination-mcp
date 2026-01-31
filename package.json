@@ -1,0 +1,19 @@
+{
+  "name": "supercoordination-mcp-server",
+  "version": "1.0.0",
+  "description": "超协体人机协同MCP服务器",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "keywords": ["mcp", "collaboration", "ai", "wuxing", "supercoordination"],
+  "author": "超协体团队",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "uuid": "^9.0.0"
+  }
+}
