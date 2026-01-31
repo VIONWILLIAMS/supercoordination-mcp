@@ -116,8 +116,13 @@ function displayUserInfo() {
 // 页面加载时自动执行
 if (typeof window !== 'undefined') {
     // 在受保护的页面自动检查登录状态
-    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+    if (window.location.pathname === '/dashboard.html') {
         requireAuth();
         displayUserInfo();
+    }
+
+    // 首页重定向到工作台（如果已登录）
+    if ((window.location.pathname === '/' || window.location.pathname === '/index.html') && isLoggedIn()) {
+        window.location.href = '/dashboard.html';
     }
 }

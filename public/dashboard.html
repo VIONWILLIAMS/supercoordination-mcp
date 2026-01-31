@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的工作台 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 顶部导航栏 */
+        .topbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .points {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .points-value {
+            color: #ffa726;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon {
+            font-size: 20px;
+        }
+
+        /* 快速操作卡片 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-icon {
+            font-size: 24px;
+        }
+
+        /* 统计卡片 */
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 任务列表 */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .task-status {
+            padding: 2px 8px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .task-status.completed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .task-status.in-progress {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* 五行能量条 */
+        .wuxing-bar {
+            margin-bottom: 12px;
+        }
+
+        .wuxing-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .wuxing-progress {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .wuxing-fill {
+            height: 100%;
+            transition: width 0.5s;
+        }
+
+        .wuxing-fire { background: linear-gradient(90deg, #ff6b6b, #ff2e63); }
+        .wuxing-metal { background: linear-gradient(90deg, #ffd93d, #f9ca24); }
+        .wuxing-wood { background: linear-gradient(90deg, #6bff92, #06d6a0); }
+        .wuxing-water { background: linear-gradient(90deg, #00d9ff, #4facfe); }
+        .wuxing-earth { background: linear-gradient(90deg, #c77dff, #9d4edd); }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 顶部导航栏 -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="logo">超协体</div>
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">U</div>
+                    <div class="user-details">
+                        <div class="username" id="username">加载中...</div>
+                        <div class="points">
+                            积分：<span class="points-value" id="pointsBalance">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="logout()">登出</button>
+        </div>
+
+        <!-- 快速操作区 -->
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">⚡</span>
+                    快速操作
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="createTaskDialog()">
+                        <span class="action-icon">📝</span>
+                        <span>创建任务</span>
+                    </button>
+                    <button class="action-btn" onclick="registerMemberDialog()">
+                        <span class="action-icon">👥</span>
+                        <span>注册成员</span>
+                    </button>
+                    <button class="action-btn" onclick="viewTeamDashboard()">
+                        <span class="action-icon">📊</span>
+                        <span>团队看板</span>
+                    </button>
+                    <button class="action-btn" onclick="checkWuxingBalance()">
+                        <span class="action-icon">☯️</span>
+                        <span>五行平衡</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 统计数据 -->
+            <div class="card stat-card">
+                <div class="card-title">
+                    <span class="card-icon">📋</span>
+                    我的任务
+                </div>
+                <div class="stat-value" id="myTaskCount">--</div>
+                <div class="stat-label">进行中的任务</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="card-title">
+                    <span class="card-icon">👥</span>
+                    团队成员
+                </div>
+                <div class="stat-value" id="memberCount">--</div>
+                <div class="stat-label">已注册成员</div>
+            </div>
+        </div>
+
+        <!-- 任务列表 & 五行分析 -->
+        <div class="grid">
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-title">
+                    <span class="card-icon">📌</span>
+                    最近任务
+                </div>
+                <div id="taskList" class="task-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        正在加载任务...
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">☯️</span>
+                    五行能量
+                </div>
+                <div id="wuxingEnergy">
+                    <div class="wuxing-bar">
+                        <div class="wuxing-label">
+                            <span>🔥 火</span>
+                            <span id="firePercent">20%</span>
+                        </div>
+                        <div class="wuxing-progress">
+                            <div class="wuxing-fill wuxing-fire" id="fireFill" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="wuxing-bar">
+                        <div class="wuxing-label">
+                            <span>⚙️ 金</span>
+                            <span id="metalPercent">20%</span>
+                        </div>
+                        <div class="wuxing-progress">
+                            <div class="wuxing-fill wuxing-metal" id="metalFill" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="wuxing-bar">
+                        <div class="wuxing-label">
+                            <span>🌳 木</span>
+                            <span id="woodPercent">20%</span>
+                        </div>
+                        <div class="wuxing-progress">
+                            <div class="wuxing-fill wuxing-wood" id="woodFill" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="wuxing-bar">
+                        <div class="wuxing-label">
+                            <span>💧 水</span>
+                            <span id="waterPercent">20%</span>
+                        </div>
+                        <div class="wuxing-progress">
+                            <div class="wuxing-fill wuxing-water" id="waterFill" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="wuxing-bar">
+                        <div class="wuxing-label">
+                            <span>🏔️ 土</span>
+                            <span id="earthPercent">20%</span>
+                        </div>
+                        <div class="wuxing-progress">
+                            <div class="wuxing-fill wuxing-earth" id="earthFill" style="width: 20%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // 检查登录状态
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadUserInfo();
+            await loadDashboardData();
+        });
+
+        // 加载用户信息
+        async function loadUserInfo() {
+            const user = getUser();
+            if (user) {
+                document.getElementById('username').textContent = user.username;
+                document.getElementById('pointsBalance').textContent = user.pointsBalance;
+                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+            }
+        }
+
+        // 加载仪表盘数据
+        async function loadDashboardData() {
+            try {
+                // TODO: 调用MCP API获取任务和成员数据
+                // 暂时显示占位数据
+                document.getElementById('myTaskCount').textContent = '0';
+                document.getElementById('memberCount').textContent = '0';
+
+                document.getElementById('taskList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div>暂无任务</div>
+                        <div style="font-size: 13px; margin-top: 8px;">点击"创建任务"开始协作</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('加载数据失败:', error);
+            }
+        }
+
+        // 快速操作函数
+        function createTaskDialog() {
+            alert('创建任务功能开发中...\n\n提示：当前需要通过MCP工具调用API');
+        }
+
+        function registerMemberDialog() {
+            alert('注册成员功能开发中...\n\n提示：当前需要通过MCP工具调用API');
+        }
+
+        function viewTeamDashboard() {
+            alert('团队看板功能开发中...\n\n提示：将展示团队协作数据可视化');
+        }
+
+        function checkWuxingBalance() {
+            alert('五行平衡分析功能开发中...\n\n提示：将分析团队五行能量分布');
+        }
+    </script>
+</body>
+</html>
