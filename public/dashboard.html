@@ -313,6 +313,65 @@
         .wuxing-wood { background: linear-gradient(90deg, #6bff92, #06d6a0); }
         .wuxing-water { background: linear-gradient(90deg, #00d9ff, #4facfe); }
         .wuxing-earth { background: linear-gradient(90deg, #c77dff, #9d4edd); }
+
+        /* 候选者列表 */
+        .candidate-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .candidate-meta {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .candidate-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-approve, .btn-reject {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            opacity: 0.9;
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -386,6 +445,22 @@
                 </div>
                 <div class="stat-value" id="memberCount">--</div>
                 <div class="stat-label">已注册成员</div>
+            </div>
+        </div>
+
+        <!-- 管理员专用：候选者管理 -->
+        <div class="grid" id="adminPanel" style="display: none;">
+            <div class="card" style="grid-column: span 3;">
+                <div class="card-title">
+                    <span class="card-icon">🛡️</span>
+                    候选者管理（管理员）
+                </div>
+                <div id="candidatesList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        正在加载候选者...
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -470,6 +545,7 @@
 
         // 全局状态
         let userStatus = null;
+        let userRole = null;
         let aiEvaluation = null;
 
         // 页面加载时初始化
@@ -477,6 +553,12 @@
             await loadUserInfo();
             await checkUserStatus();
             await loadDashboardData();
+
+            // 如果是管理员，加载候选者列表
+            if (userRole === 'admin') {
+                document.getElementById('adminPanel').style.display = 'grid';
+                await loadCandidates();
+            }
         });
 
         // 检查用户状态（候选者 vs 正式成员）
@@ -487,6 +569,7 @@
 
                 if (data.success) {
                     userStatus = data.user.status;
+                    userRole = data.user.role || 'member';
                     aiEvaluation = data.evaluation;
 
                     // 如果是候选者，显示提示横幅
@@ -888,6 +971,123 @@
             } catch (error) {
                 console.error('发放门票失败:', error);
                 alert('发放门票失败，请重试');
+            }
+        }
+
+        // ========================================
+        // 管理员功能
+        // ========================================
+
+        // 加载候选者列表
+        async function loadCandidates() {
+            try {
+                const response = await authFetch('/api/admin/candidates');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderCandidates(data.candidates);
+                } else {
+                    document.getElementById('candidatesList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">❌</div>
+                            <div>加载失败：${data.message}</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载候选者失败:', error);
+                document.getElementById('candidatesList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div>加载失败，请刷新重试</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染候选者列表
+        function renderCandidates(candidates) {
+            const listEl = document.getElementById('candidatesList');
+
+            if (!candidates || candidates.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <div>暂无待审核候选者</div>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = candidates.map(candidate => {
+                const joinedDate = new Date(candidate.createdAt).toLocaleDateString();
+                return `
+                    <div class="candidate-item">
+                        <div class="candidate-info">
+                            <div class="candidate-name">${candidate.username}</div>
+                            <div class="candidate-meta">
+                                📧 ${candidate.email} | 📅 ${joinedDate}
+                            </div>
+                        </div>
+                        <div class="candidate-actions">
+                            <button class="btn-approve" onclick="approveCandidate('${candidate.id}', '${candidate.username}')">
+                                ✅ 批准
+                            </button>
+                            <button class="btn-reject" onclick="rejectCandidate('${candidate.id}', '${candidate.username}')">
+                                ❌ 拒绝
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 批准候选者
+        async function approveCandidate(candidateId, candidateName) {
+            if (!confirm(`确认批准 ${candidateName} 加入超协体？`)) return;
+
+            try {
+                const response = await authFetch('/api/admin/approve-candidate', {
+                    method: 'POST',
+                    body: JSON.stringify({ candidateId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`✅ 已批准 ${candidateName}！\n\n超协体序号：#${data.member.serialNumber}`);
+                    await loadCandidates(); // 刷新列表
+                } else {
+                    alert('批准失败：' + data.message);
+                }
+            } catch (error) {
+                console.error('批准候选者失败:', error);
+                alert('批准失败，请重试');
+            }
+        }
+
+        // 拒绝候选者
+        async function rejectCandidate(candidateId, candidateName) {
+            const reason = prompt(`确认拒绝 ${candidateName}？\n\n请输入拒绝理由（可选）：`);
+            if (reason === null) return; // 用户取消
+
+            try {
+                const response = await authFetch('/api/admin/reject-candidate', {
+                    method: 'POST',
+                    body: JSON.stringify({ candidateId, reason })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`❌ 已拒绝 ${candidateName}`);
+                    await loadCandidates(); // 刷新列表
+                } else {
+                    alert('拒绝失败：' + data.message);
+                }
+            } catch (error) {
+                console.error('拒绝候选者失败:', error);
+                alert('拒绝失败，请重试');
             }
         }
     </script>

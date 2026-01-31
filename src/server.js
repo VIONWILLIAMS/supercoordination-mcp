@@ -23,7 +23,11 @@ const {
   evaluateCandidate,
   evaluateAllCandidates,
   acceptAIInvitation,
-  requireMember
+  adminApproveCandidate,
+  adminRejectCandidate,
+  getAllCandidates,
+  requireMember,
+  requireAdmin
 } = require('./aiGatekeeper');
 
 const app = express();
@@ -243,6 +247,7 @@ app.get('/api/my/status', authenticateToken, async (req, res) => {
         id: true,
         email: true,
         username: true,
+        role: true,
         status: true,
         serialNumber: true,
         aiScore: true,
@@ -313,6 +318,88 @@ app.post('/api/ai/accept-invitation', authenticateToken, async (req, res) => {
         pointsBalance: member.pointsBalance,
         approvedAt: member.approvedAt
       }
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// ========================================
+// 管理员API（仅管理员可访问）
+// ========================================
+
+// 获取所有候选者列表
+app.get('/api/admin/candidates', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const candidates = await getAllCandidates();
+
+    res.json({
+      success: true,
+      candidates,
+      count: candidates.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// 批准候选者
+app.post('/api/admin/approve-candidate', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { candidateId } = req.body;
+
+    if (!candidateId) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供候选者ID'
+      });
+    }
+
+    const member = await adminApproveCandidate(req.userId, candidateId);
+
+    res.json({
+      success: true,
+      message: '候选者已批准',
+      member: {
+        id: member.id,
+        username: member.username,
+        email: member.email,
+        serialNumber: member.serialNumber,
+        status: member.status
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// 拒绝候选者
+app.post('/api/admin/reject-candidate', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { candidateId, reason } = req.body;
+
+    if (!candidateId) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供候选者ID'
+      });
+    }
+
+    const result = await adminRejectCandidate(req.userId, candidateId, reason);
+
+    res.json({
+      success: true,
+      message: '候选者已拒绝',
+      result
     });
   } catch (error) {
     res.status(400).json({

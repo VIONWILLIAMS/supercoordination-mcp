@@ -71,12 +71,19 @@ async function register(req, res) {
     // 加密密码
     const passwordHash = await bcrypt.hash(password, 10);
 
+    // 检查是否是第1个用户（管理员）
+    const userCount = await prisma.user.count();
+    const isFirstUser = userCount === 0;
+
     // 创建用户
     const user = await prisma.user.create({
       data: {
         email,
         passwordHash,
         username,
+        role: isFirstUser ? 'admin' : 'member',
+        status: isFirstUser ? 'member' : 'candidate',
+        serialNumber: isFirstUser ? 1 : null,
         pwpProfile: {
           wuxing: { fire: 20, metal: 20, wood: 20, water: 20, earth: 20 },
           skills: [],

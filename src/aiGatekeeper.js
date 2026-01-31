@@ -412,6 +412,182 @@ async function acceptAIInvitation(candidateId) {
 }
 
 /**
+ * 管理员批准候选者（手动审核）
+ */
+async function adminApproveCandidate(adminId, candidateId) {
+  // 检查操作者是否是管理员
+  const admin = await prisma.user.findUnique({
+    where: { id: adminId }
+  });
+
+  if (!admin || admin.role !== 'admin') {
+    throw new Error('只有管理员才能批准候选者');
+  }
+
+  // 检查候选者
+  const candidate = await prisma.user.findUnique({
+    where: { id: candidateId }
+  });
+
+  if (!candidate) {
+    throw new Error('候选者不存在');
+  }
+
+  if (candidate.status !== 'candidate') {
+    throw new Error('该用户已经是正式成员');
+  }
+
+  // 分配超协体序号
+  const maxSerialNumber = await prisma.user.findFirst({
+    where: { serialNumber: { not: null } },
+    orderBy: { serialNumber: 'desc' },
+    select: { serialNumber: true }
+  });
+
+  const newSerialNumber = (maxSerialNumber?.serialNumber || 0) + 1;
+
+  // 升级为正式成员
+  const member = await prisma.user.update({
+    where: { id: candidateId },
+    data: {
+      status: 'member',
+      serialNumber: newSerialNumber,
+      approvedAt: new Date(),
+      approvedBy: `admin:${adminId}`,
+      pointsBalance: { increment: 50 } // 新人礼包
+    }
+  });
+
+  // 创建积分交易记录
+  await prisma.pointsTransaction.create({
+    data: {
+      userId: candidateId,
+      amount: 50,
+      transactionType: 'admin_approval_bonus',
+      description: '管理员批准加入，新人礼包'
+    }
+  });
+
+  // 返还门票发起者积分+奖励
+  if (candidate.invitedById) {
+    await prisma.user.update({
+      where: { id: candidate.invitedById },
+      data: { pointsBalance: { increment: 25 } } // 返还5+奖励20
+    });
+
+    await prisma.pointsTransaction.create({
+      data: {
+        userId: candidate.invitedById,
+        amount: 25,
+        transactionType: 'ticket_success_reward',
+        description: `邀请 ${member.username} 成功加入`
+      }
+    });
+  }
+
+  return member;
+}
+
+/**
+ * 管理员拒绝候选者
+ */
+async function adminRejectCandidate(adminId, candidateId, reason) {
+  // 检查操作者是否是管理员
+  const admin = await prisma.user.findUnique({
+    where: { id: adminId }
+  });
+
+  if (!admin || admin.role !== 'admin') {
+    throw new Error('只有管理员才能拒绝候选者');
+  }
+
+  // 检查候选者
+  const candidate = await prisma.user.findUnique({
+    where: { id: candidateId }
+  });
+
+  if (!candidate) {
+    throw new Error('候选者不存在');
+  }
+
+  if (candidate.status !== 'candidate') {
+    throw new Error('该用户已经是正式成员');
+  }
+
+  // 可以选择删除账号或标记为rejected
+  // 这里简单地删除候选者账号
+  await prisma.user.delete({
+    where: { id: candidateId }
+  });
+
+  return { success: true, reason };
+}
+
+/**
+ * 获取所有候选者（管理员用）
+ */
+async function getAllCandidates() {
+  const candidates = await prisma.user.findMany({
+    where: { status: 'candidate' },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      createdAt: true,
+      invitedAt: true,
+      invitedById: true,
+      pwpProfile: true,
+      aiScore: true,
+      candidateData: true
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  return candidates;
+}
+
+/**
+ * 权限中间件：只允许管理员
+ */
+async function requireAdmin(req, res, next) {
+  if (!req.userId) {
+    return res.status(401).json({
+      success: false,
+      message: '请先登录'
+    });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { id: true, role: true }
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: '用户不存在'
+      });
+    }
+
+    if (user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: '此功能仅对管理员开放'
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: '权限检查失败'
+    });
+  }
+}
+
+/**
  * 权限中间件：只允许正式成员
  */
 async function requireMember(req, res, next) {
@@ -470,7 +646,11 @@ module.exports = {
   evaluateCandidate,
   evaluateAllCandidates,
   acceptAIInvitation,
+  adminApproveCandidate,
+  adminRejectCandidate,
+  getAllCandidates,
   requireMember,
+  requireAdmin,
   calculateTeamWuxingGap,
   calculateWuxingComplementScore
 };
