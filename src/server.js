@@ -149,6 +149,50 @@ app.post('/api/auth/login', loginValidation, login);
 app.get('/api/auth/me', authenticateToken, getCurrentUser);
 
 // ========================================
+// 用户画像API
+// ========================================
+
+// 更新PWP五行画像
+app.post('/api/profile/update', authenticateToken, async (req, res) => {
+  try {
+    const { profile } = req.body;
+
+    if (!profile || !profile.wuxing) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供完整的画像数据'
+      });
+    }
+
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    // 更新用户画像
+    const user = await prisma.user.update({
+      where: { id: req.userId },
+      data: {
+        pwpProfile: profile,
+        pwpCompleted: true
+      }
+    });
+
+    res.json({
+      success: true,
+      message: '画像保存成功',
+      profile: user.pwpProfile
+    });
+
+    await prisma.$disconnect();
+  } catch (error) {
+    console.error('保存画像失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '保存失败：' + error.message
+    });
+  }
+});
+
+// ========================================
 // AI守门人API
 // ========================================
 
