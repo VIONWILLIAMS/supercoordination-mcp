@@ -16,6 +16,16 @@ const {
   optionalAuth
 } = require('./auth');
 
+// 引入AI守门人模块
+const {
+  issueTicket,
+  redeemTicket,
+  evaluateCandidate,
+  evaluateAllCandidates,
+  acceptAIInvitation,
+  requireMember
+} = require('./aiGatekeeper');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, '../data/store.json');
@@ -133,6 +143,184 @@ app.post('/api/auth/login', loginValidation, login);
 
 // 获取当前用户信息（需要认证）
 app.get('/api/auth/me', authenticateToken, getCurrentUser);
+
+// ========================================
+// AI守门人API
+// ========================================
+
+// 发放门票（正式成员才能发）
+app.post('/api/ticket/issue', authenticateToken, async (req, res) => {
+  try {
+    const { recipientEmail } = req.body;
+
+    if (!recipientEmail) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供接收者邮箱'
+      });
+    }
+
+    const ticket = await issueTicket(req.userId, recipientEmail);
+
+    res.json({
+      success: true,
+      message: '门票发放成功',
+      ticket: {
+        token: ticket.token,
+        recipientEmail: ticket.recipientEmail,
+        expiresAt: ticket.expiresAt
+      },
+      ticketUrl: `${req.protocol}://${req.get('host')}/ticket/${ticket.token}`
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// 使用门票注册（创建候选者账号）
+app.post('/api/ticket/redeem', async (req, res) => {
+  try {
+    const { token, email, password, username } = req.body;
+
+    if (!token || !email || !password || !username) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供完整信息'
+      });
+    }
+
+    // 调用auth模块的密码哈希功能
+    const bcrypt = require('bcryptjs');
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await redeemTicket(token, {
+      email,
+      passwordHash,
+      username
+    });
+
+    // 生成token
+    const jwt = require('jsonwebtoken');
+    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+    const authToken = jwt.sign(
+      { userId: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      success: true,
+      message: '注册成功！你现在是候选者，等待AI评估。',
+      token: authToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        status: user.status,
+        pointsBalance: user.pointsBalance
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// 查看我的状态和AI评估进度
+app.get('/api/my/status', authenticateToken, async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        status: true,
+        serialNumber: true,
+        aiScore: true,
+        evaluatedAt: true,
+        approvedAt: true,
+        invitedAt: true,
+        pwpProfile: true
+      }
+    });
+
+    // 获取最新的AI评估
+    let latestEvaluation = null;
+    if (user.status === 'candidate') {
+      latestEvaluation = await prisma.aIEvaluation.findFirst({
+        where: { candidateId: req.userId },
+        orderBy: { evaluatedAt: 'desc' }
+      });
+    }
+
+    res.json({
+      success: true,
+      user,
+      evaluation: latestEvaluation
+    });
+
+    await prisma.$disconnect();
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// AI评估所有候选者（Cron Job或手动触发）
+app.post('/api/ai/evaluate-candidates', async (req, res) => {
+  try {
+    // 这个接口可以设置为只允许内部调用，或者需要管理员权限
+    const results = await evaluateAllCandidates();
+
+    res.json({
+      success: true,
+      message: `已评估 ${results.length} 位候选者`,
+      results
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// 接受AI邀请（候选者升级为正式成员）
+app.post('/api/ai/accept-invitation', authenticateToken, async (req, res) => {
+  try {
+    const member = await acceptAIInvitation(req.userId);
+
+    res.json({
+      success: true,
+      message: '🎉 欢迎正式加入超协体！',
+      member: {
+        id: member.id,
+        email: member.email,
+        username: member.username,
+        status: member.status,
+        serialNumber: member.serialNumber,
+        pointsBalance: member.pointsBalance,
+        approvedAt: member.approvedAt
+      }
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
 
 // ========================================
 // MCP协议端点
@@ -343,11 +531,12 @@ app.get('/mcp/manifest', (req, res) => {
 });
 
 // 2. MCP工具调用端点（需要认证）
-app.post('/mcp/tools/call', authenticateToken, async (req, res) => {
+app.post('/mcp/tools/call', authenticateToken, requireMember, async (req, res) => {
   const { name, arguments: args } = req.body;
   const userId = req.userId;  // 从token获取用户ID
+  const userStatus = req.user.status;  // 从用户对象获取状态
 
-  console.log('[MCP] Tool call:', name, 'by user:', userId);
+  console.log('[MCP] Tool call:', name, 'by user:', userId, 'status:', userStatus);
   console.log('[MCP] Arguments:', args);
 
   try {
