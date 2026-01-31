@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 // 引入认证模块
 const {
@@ -34,9 +35,63 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, '../data/store.json');
 
-// 中间件
+// ========================================
+// 安全中间件
+// ========================================
+
+// 请求日志中间件
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const method = req.method;
+  const url = req.url;
+  const ip = req.ip || req.connection.remoteAddress;
+
+  console.log(`[${timestamp}] ${method} ${url} - ${ip}`);
+
+  // 记录响应时间
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`[${timestamp}] ${method} ${url} - ${res.statusCode} (${duration}ms)`);
+  });
+
+  next();
+});
+
+// 通用限流器（所有API）
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15分钟
+  max: 100, // 限制100个请求
+  message: { success: false, message: '请求过于频繁，请稍后再试' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// 认证API限流器（防暴力破解）
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15分钟
+  max: 5, // 限制5次登录尝试
+  skipSuccessfulRequests: true,
+  message: { success: false, message: '登录尝试过多，请15分钟后再试' },
+});
+
+// 应用限流
+app.use('/api/', generalLimiter);
+
+// 基础中间件
 app.use(cors());
 app.use(bodyParser.json());
+
+// 统一错误处理中间件
+app.use((err, req, res, next) => {
+  console.error('[ERROR]', err);
+
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || '服务器内部错误',
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
 
 // 静态文件服务（Web仪表盘）
 app.use(express.static(path.join(__dirname, '../public')));
@@ -139,11 +194,11 @@ function loadData() {
 // 用户认证API
 // ========================================
 
-// 注册
-app.post('/api/auth/register', registerValidation, register);
+// 注册（带限流）
+app.post('/api/auth/register', authLimiter, registerValidation, register);
 
-// 登录
-app.post('/api/auth/login', loginValidation, login);
+// 登录（带限流）
+app.post('/api/auth/login', authLimiter, loginValidation, login);
 
 // 获取当前用户信息（需要认证）
 app.get('/api/auth/me', authenticateToken, getCurrentUser);
