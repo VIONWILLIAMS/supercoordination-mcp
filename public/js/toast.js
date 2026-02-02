@@ -209,7 +209,7 @@ style.textContent = `
     flex: 1;
     font-size: 14px;
     line-height: 1.5;
-    color: #1F2332;
+    color: #333;
     word-break: break-word;
 }
 
@@ -220,7 +220,7 @@ style.textContent = `
     height: 20px;
     border: none;
     background: transparent;
-    color: #64748B;
+    color: #999;
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
@@ -229,43 +229,43 @@ style.textContent = `
 }
 
 .toast-close:hover {
-    color: #1F2332;
+    color: #333;
 }
 
 /* 成功样式 */
 .toast-success {
-    border-left: 4px solid #74E8AC;
+    border-left: 4px solid #10b981;
 }
 
 .toast-success .toast-icon {
-    background: linear-gradient(135deg, #74E8AC 0%, #22C55E 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 /* 错误样式 */
 .toast-error {
-    border-left: 4px solid #EF4444;
+    border-left: 4px solid #ef4444;
 }
 
 .toast-error .toast-icon {
-    background: linear-gradient(135deg, #EF4444 0%, #EF4444 100%);
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
 }
 
 /* 警告样式 */
 .toast-warning {
-    border-left: 4px solid #F59E0B;
+    border-left: 4px solid #f59e0b;
 }
 
 .toast-warning .toast-icon {
-    background: linear-gradient(135deg, #F59E0B 0%, #F59E0B 100%);
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 }
 
 /* 信息样式 */
 .toast-info {
-    border-left: 4px solid #3B82F6;
+    border-left: 4px solid #3b82f6;
 }
 
 .toast-info .toast-icon {
-    background: linear-gradient(135deg, #3B82F6 0%, #3B82F6 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
 }
 
 /* 移动端适配 */

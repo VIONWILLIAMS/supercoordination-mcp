@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI组件演示 - 超协体</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        body {
+            padding: var(--space-8) var(--space-4);
+        }
+
+        .demo-section {
+            margin-bottom: var(--space-12);
+        }
+
+        .demo-section h2 {
+            font-size: var(--font-3xl);
+            margin-bottom: var(--space-2);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-section p {
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-6);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .code-block {
+            background: var(--color-gray-800);
+            color: #10b981;
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-sm);
+            overflow-x: auto;
+            margin: var(--space-4) 0;
+        }
+
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .color-box {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar {
+            background: var(--gradient-primary);
+            color: white;
+            padding: var(--space-4) var(--space-6);
+            border-radius: var(--radius-2xl);
+            margin-bottom: var(--space-8);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .navbar h1 {
+            font-size: var(--font-3xl);
+            font-weight: var(--font-weight-bold);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <h1>🎨 超协体 UI 组件演示</h1>
+            <p style="margin-top: var(--space-2); opacity: 0.9;">探索全新的设计系统和交互组件</p>
+        </div>
+
+        <!-- Toast演示 -->
+        <div class="demo-section">
+            <h2>1. Toast 通知组件</h2>
+            <p>优雅的消息提示，替代原生alert()</p>
+
+            <div class="demo-grid">
+                <button class="btn btn-success" onclick="Toast.success('操作成功！')">
+                    ✓ 成功提示
+                </button>
+                <button class="btn btn-danger" onclick="Toast.error('操作失败，请重试')">
+                    ✕ 错误提示
+                </button>
+                <button class="btn btn-warning" onclick="Toast.warning('请注意安全风险')">
+                    ⚠ 警告提示
+                </button>
+                <button class="btn btn-primary" onclick="Toast.info('这是一条普通消息')">
+                    ℹ 信息提示
+                </button>
+            </div>
+
+            <div class="code-block">
+Toast.success('操作成功！');
+Toast.error('操作失败，请重试');
+Toast.warning('请注意安全风险');
+Toast.info('这是一条普通消息');
+            </div>
+        </div>
+
+        <!-- Modal演示 -->
+        <div class="demo-section">
+            <h2>2. Modal 对话框组件</h2>
+            <p>可定制的对话框，替代confirm()和prompt()</p>
+
+            <div class="demo-grid">
+                <button class="btn btn-primary" onclick="testConfirm()">
+                    确认对话框
+                </button>
+                <button class="btn btn-danger" onclick="testDangerConfirm()">
+                    危险操作确认
+                </button>
+                <button class="btn btn-success" onclick="testPrompt()">
+                    输入对话框
+                </button>
+                <button class="btn btn-secondary" onclick="testAlert()">
+                    警告对话框
+                </button>
+            </div>
+
+            <div class="code-block">
+const confirmed = await Modal.confirm('确认删除吗？', '删除后无法恢复');
+if (confirmed) { /* 用户点击确认 */ }
+
+const value = await Modal.prompt('请输入任务名称', '默认值');
+if (value !== null) { /* 用户输入了内容 */ }
+
+await Modal.alert('操作完成！');
+            </div>
+        </div>
+
+        <!-- 按钮样式 -->
+        <div class="demo-section">
+            <h2>3. 按钮组件</h2>
+            <p>统一的按钮样式，支持多种状态和尺寸</p>
+
+            <h3 style="margin-top: var(--space-6); margin-bottom: var(--space-3);">按钮类型</h3>
+            <div class="demo-grid">
+                <button class="btn btn-primary">主要按钮</button>
+                <button class="btn btn-success">成功按钮</button>
+                <button class="btn btn-danger">危险按钮</button>
+                <button class="btn btn-secondary">次要按钮</button>
+                <button class="btn btn-ghost">幽灵按钮</button>
+                <button class="btn btn-primary" disabled>禁用状态</button>
+            </div>
+
+            <h3 style="margin-top: var(--space-6); margin-bottom: var(--space-3);">按钮尺寸</h3>
+            <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
+                <button class="btn btn-primary btn-sm">小按钮</button>
+                <button class="btn btn-primary">默认按钮</button>
+                <button class="btn btn-primary btn-lg">大按钮</button>
+            </div>
+
+            <h3 style="margin-top: var(--space-6); margin-bottom: var(--space-3);">块级按钮</h3>
+            <button class="btn btn-primary btn-block">全宽按钮</button>
+        </div>
+
+        <!-- 表单组件 -->
+        <div class="demo-section">
+            <h2>4. 表单组件</h2>
+            <p>统一的表单样式，提升输入体验</p>
+
+            <div style="max-width: 600px;">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-input" placeholder="请输入用户名">
+                    <span class="form-help">用户名需要6-20个字符</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-input" placeholder="请输入密码">
+                    <span class="form-error">密码强度不足</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">描述</label>
+                    <textarea class="form-textarea" placeholder="请输入描述"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">选择类型</label>
+                    <select class="form-select">
+                        <option>选项1</option>
+                        <option>选项2</option>
+                        <option>选项3</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片组件 -->
+        <div class="demo-section">
+            <h2>5. 卡片组件</h2>
+            <p>统一的卡片样式，适合各种内容展示</p>
+
+            <div class="grid grid-cols-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">卡片标题</h3>
+                    </div>
+                    <div class="card-body">
+                        这是卡片的主要内容区域，可以放置任何内容。
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary btn-sm">操作</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">统计卡片</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: var(--font-4xl); font-weight: var(--font-weight-bold); background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            42
+                        </div>
+                        <div style="color: var(--color-text-tertiary); margin-top: var(--space-2);">
+                            完成的任务
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div style="text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: var(--space-3);">🎯</div>
+                            <h4 style="margin-bottom: var(--space-2);">目标达成</h4>
+                            <p style="color: var(--color-text-tertiary); margin: 0;">本月已完成85%的目标</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 徽章组件 -->
+        <div class="demo-section">
+            <h2>6. 徽章组件</h2>
+            <p>标签和状态指示器</p>
+
+            <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+                <span class="badge badge-primary">主要</span>
+                <span class="badge badge-success">成功</span>
+                <span class="badge badge-error">错误</span>
+                <span class="badge badge-warning">警告</span>
+                <span class="badge badge-info">信息</span>
+                <span class="badge badge-gray">灰色</span>
+            </div>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="demo-section">
+            <h2>7. 加载状态</h2>
+            <p>统一的加载动画</p>
+
+            <div class="grid grid-cols-3">
+                <div class="card">
+                    <div class="loading">
+                        <div class="spinner spinner-sm"></div>
+                        <div>加载中...</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div>加载中...</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="loading">
+                        <div class="spinner spinner-lg"></div>
+                        <div>加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 空状态 -->
+        <div class="demo-section">
+            <h2>8. 空状态</h2>
+            <p>友好的空数据提示</p>
+
+            <div class="card">
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div class="empty-title">暂无数据</div>
+                    <div class="empty-description">还没有创建任何内容，点击下方按钮开始</div>
+                    <button class="btn btn-primary">创建第一个</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 颜色系统 -->
+        <div class="demo-section">
+            <h2>9. 颜色系统</h2>
+            <p>统一的CSS变量颜色体系</p>
+
+            <div class="grid grid-cols-2">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--gradient-primary);"></div>
+                    <div>
+                        <div style="font-weight: var(--font-weight-medium);">主色调</div>
+                        <div style="font-size: var(--font-xs); color: var(--color-text-tertiary);">--gradient-primary</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--gradient-success);"></div>
+                    <div>
+                        <div style="font-weight: var(--font-weight-medium);">成功色</div>
+                        <div style="font-size: var(--font-xs); color: var(--color-text-tertiary);">--gradient-success</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--gradient-error);"></div>
+                    <div>
+                        <div style="font-weight: var(--font-weight-medium);">错误色</div>
+                        <div style="font-size: var(--font-xs); color: var(--color-text-tertiary);">--gradient-error</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-box" style="background: var(--gradient-warning);"></div>
+                    <div>
+                        <div style="font-weight: var(--font-weight-medium);">警告色</div>
+                        <div style="font-size: var(--font-xs); color: var(--color-text-tertiary);">--gradient-warning</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动画演示 -->
+        <div class="demo-section">
+            <h2>10. 动画效果</h2>
+            <p>流畅的过渡动画</p>
+
+            <button class="btn btn-primary" onclick="demonstrateAnimations()">
+                触发动画演示
+            </button>
+
+            <div id="animationDemo" style="margin-top: var(--space-4);"></div>
+        </div>
+
+        <div style="text-align: center; padding: var(--space-8) 0; color: var(--color-text-tertiary);">
+            <p>🎉 超协体 v2.0 UI组件库</p>
+            <p style="font-size: var(--font-xs); margin-top: var(--space-2);">基于设计令牌的统一视觉系统</p>
+        </div>
+    </div>
+
+    <script src="/js/toast.js"></script>
+    <script src="/js/modal.js"></script>
+    <script>
+        // Modal测试函数
+        async function testConfirm() {
+            const confirmed = await Modal.confirm(
+                '确认执行此操作吗？',
+                '此操作可能需要一些时间完成'
+            );
+
+            if (confirmed) {
+                Toast.success('用户点击了确认');
+            } else {
+                Toast.info('用户点击了取消');
+            }
+        }
+
+        async function testDangerConfirm() {
+            const confirmed = await Modal.confirm(
+                '确认删除所有数据？',
+                '此操作不可逆，所有数据将永久丢失',
+                {
+                    title: '危险操作',
+                    icon: '⚠️',
+                    confirmText: '确认删除',
+                    danger: true
+                }
+            );
+
+            if (confirmed) {
+                Toast.error('执行删除操作');
+            }
+        }
+
+        async function testPrompt() {
+            const value = await Modal.prompt('请输入任务名称', '默认任务名');
+
+            if (value !== null) {
+                Toast.success(`您输入的内容是：${value}`);
+            } else {
+                Toast.info('用户取消了输入');
+            }
+        }
+
+        async function testAlert() {
+            await Modal.alert('这是一个警告对话框示例', {
+                title: '提示',
+                icon: '💡'
+            });
+            Toast.info('对话框已关闭');
+        }
+
+        // 动画演示
+        function demonstrateAnimations() {
+            const demoDiv = document.getElementById('animationDemo');
+            demoDiv.innerHTML = '';
+
+            const animations = [
+                { name: '淡入', class: 'animate-fade-in', text: 'Fade In' },
+                { name: '上浮淡入', class: 'animate-fade-in-up', text: 'Fade In Up' },
+                { name: '下滑淡入', class: 'animate-fade-in-down', text: 'Fade In Down' }
+            ];
+
+            animations.forEach((anim, index) => {
+                setTimeout(() => {
+                    const card = document.createElement('div');
+                    card.className = `card ${anim.class}`;
+                    card.style.marginBottom = 'var(--space-3)';
+                    card.innerHTML = `
+                        <div style="text-align: center; padding: var(--space-4);">
+                            <strong>${anim.name}</strong>
+                        </div>
+                    `;
+                    demoDiv.appendChild(card);
+                }, index * 300);
+            });
+
+            setTimeout(() => {
+                Toast.success('动画演示完成！');
+            }, animations.length * 300 + 500);
+        }
+    </script>
+</body>
+</html>
