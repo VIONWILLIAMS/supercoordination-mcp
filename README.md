@@ -265,6 +265,16 @@ HEALTHCHECK_URL="https://your-app.up.railway.app/health" npm run check:deploy
 
 ---
 
+## 📱 PWA 支持
+已内置 PWA（manifest + service worker）：
+- `public/manifest.json`
+- `public/sw.js`
+- `public/js/pwa.js`
+
+访问站点后即可“添加到主屏幕”。
+
+---
+
 ## 🎓 学习路径
 
 ### 新手入门（1小时）
