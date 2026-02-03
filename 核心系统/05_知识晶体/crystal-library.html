@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晶体库 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/js/websocket-client.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* 头部 */
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-create {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 过滤器 */
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-select, .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            border-color: #667eea;
+        }
+
+        .filter-input {
+            width: 250px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        /* 晶体卡片 */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .solution-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .solution-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .solution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .solution-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            margin-right: 12px;
+            line-height: 1.4;
+        }
+
+        .solution-rating {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .solution-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .solution-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+
+        .solution-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .solution-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .solution-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .author-name {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .solution-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 3px 10px;
+            background: #f0f4ff;
+            color: #667eea;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-hint {
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .page-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .solutions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <nav class="navbar-nav">
+                <a href="/dashboard.html" class="nav-link">工作台</a>
+                <a href="/task-create.html" class="nav-link">创建任务</a>
+                <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                <a href="/crystal-library.html" class="nav-link active">晶体库</a>
+                <a href="/members.html" class="nav-link">成员</a>
+            </nav>
+        </div>
+
+        <!-- 头部 -->
+        <div class="header">
+            <div class="header-top">
+                <h1 class="header-title">💎 晶体库</h1>
+                <a href="/crystal-create.html" class="btn-create">+ 发布晶体</a>
+            </div>
+
+            <!-- 过滤器 -->
+            <div class="filters">
+                <div class="filter-group">
+                    <span class="filter-label">排序：</span>
+                    <select id="sortBy" class="filter-select">
+                        <option value="createdAt">最新发布</option>
+                        <option value="avgRating">最高评分</option>
+                        <option value="viewCount">最多浏览</option>
+                        <option value="referenceCount">最多引用</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">搜索：</span>
+                    <input type="text" id="searchInput" class="filter-input" placeholder="搜索标题或内容...">
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="main-content">
+            <div id="solutionsList" class="solutions-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>正在加载晶体...</div>
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            <div id="pagination" class="pagination" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentPage = 1;
+        let currentSort = 'createdAt';
+        let currentSearch = '';
+
+        // 检查登录
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSolutions();
+
+            // 排序变更
+            document.getElementById('sortBy').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                currentPage = 1;
+                loadSolutions();
+            });
+
+            // 搜索（防抖）
+            let searchTimer;
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    currentSearch = e.target.value;
+                    currentPage = 1;
+                    loadSolutions();
+                }, 500);
+            });
+        });
+
+        // 加载晶体列表
+        async function loadSolutions() {
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 12,
+                    sortBy: currentSort,
+                    order: 'desc',
+                    status: 'published'
+                });
+
+                if (currentSearch) {
+                    params.append('search', currentSearch);
+                }
+
+                const response = await authFetch(`/api/solutions?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderSolutions(data.solutions);
+                    renderPagination(data.pagination);
+                } else {
+                    showError('加载失败：' + data.message);
+                }
+            } catch (error) {
+                console.error('加载晶体失败:', error);
+                showError('加载晶体失败，请重试');
+            }
+        }
+
+        // 渲染晶体列表
+        function renderSolutions(solutions) {
+            const container = document.getElementById('solutionsList');
+
+            if (!solutions || solutions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">暂无晶体</div>
+                        <div class="empty-hint">成为第一个分享晶体的人吧！</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = solutions.map(solution => `
+                <a class="solution-card" href="/crystal-detail.html?id=${solution.id}">
+                    <div class="solution-header">
+                        <div class="solution-title">${escapeHtml(solution.title)}</div>
+                        ${solution.avgRating > 0 ? `
+                            <div class="solution-rating">⭐ ${parseFloat(solution.avgRating).toFixed(1)}</div>
+                        ` : ''}
+                    </div>
+
+                    <div class="solution-description">
+                        ${escapeHtml(solution.problemDefinition)}
+                    </div>
+
+                    <div class="solution-meta">
+                        <span class="solution-meta-item">
+                            👁️ ${solution.viewCount || 0} 浏览
+                        </span>
+                        <span class="solution-meta-item">
+                            🔗 ${solution.referenceCount || 0} 引用
+                        </span>
+                        <span class="solution-meta-item">
+                            📊 ${solution._count?.ratings || 0} 评分
+                        </span>
+                    </div>
+
+                    ${solution.manualTags && solution.manualTags.length > 0 ? `
+                        <div class="solution-tags">
+                            ${solution.manualTags.slice(0, 3).map(tag => `
+                                <span class="tag">${escapeHtml(tag)}</span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <div class="solution-footer">
+                        <div class="solution-author">
+                            <div class="author-avatar">
+                                ${solution.author.username.charAt(0).toUpperCase()}
+                            </div>
+                            <span class="author-name">${escapeHtml(solution.author.username)}</span>
+                        </div>
+                        <span style="font-size: 12px; color: #999;">
+                            ${formatDate(solution.createdAt)}
+                        </span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // 渲染分页
+        function renderPagination(pagination) {
+            const container = document.getElementById('pagination');
+
+            if (pagination.totalPages <= 1) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'flex';
+
+            const pages = [];
+            for (let i = 1; i <= pagination.totalPages; i++) {
+                if (
+                    i === 1 ||
+                    i === pagination.totalPages ||
+                    (i >= pagination.page - 1 && i <= pagination.page + 1)
+                ) {
+                    pages.push(i);
+                } else if (pages[pages.length - 1] !== '...') {
+                    pages.push('...');
+                }
+            }
+
+            container.innerHTML = `
+                <button class="page-btn" onclick="changePage(${pagination.page - 1})" ${pagination.page === 1 ? 'disabled' : ''}>
+                    上一页
+                </button>
+                ${pages.map(p => {
+                    if (p === '...') {
+                        return '<span style="padding: 8px;">...</span>';
+                    }
+                    return `
+                        <button class="page-btn ${p === pagination.page ? 'active' : ''}" onclick="changePage(${p})">
+                            ${p}
+                        </button>
+                    `;
+                }).join('')}
+                <button class="page-btn" onclick="changePage(${pagination.page + 1})" ${pagination.page === pagination.totalPages ? 'disabled' : ''}>
+                    下一页
+                </button>
+            `;
+        }
+
+        // 切换页码
+        function changePage(page) {
+            currentPage = page;
+            loadSolutions();
+            window.scrollTo(0, 0);
+        }
+
+        // 显示错误
+        function showError(message) {
+            document.getElementById('solutionsList').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">❌</div>
+                    <div class="empty-text">${message}</div>
+                </div>
+            `;
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 7) return `${days}天前`;
+            return date.toLocaleDateString('zh-CN');
+        }
+    </script>
+</body>
+</html>

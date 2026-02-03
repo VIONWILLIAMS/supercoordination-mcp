@@ -1,0 +1,235 @@
+/**
+ * 超协体设计令牌 (Design Tokens)
+ * 统一管理颜色、间距、字体等视觉元素
+ * 支持未来的主题切换和深色模式
+ */
+
+:root {
+    /* ========== 颜色系统 ========== */
+
+    /* 主色调 - 渐变紫蓝 */
+    --color-primary: #667eea;
+    --color-primary-dark: #764ba2;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    /* 语义色彩 */
+    --color-success: #10b981;
+    --color-success-dark: #059669;
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+
+    --color-error: #ef4444;
+    --color-error-dark: #dc2626;
+    --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+
+    --color-warning: #f59e0b;
+    --color-warning-dark: #d97706;
+    --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+
+    --color-info: #3b82f6;
+    --color-info-dark: #2563eb;
+    --gradient-info: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+
+    /* 五行色彩 - 超协体特色 */
+    --color-wuxing-fire: #ef4444;     /* 火 - 红 */
+    --color-wuxing-gold: #f59e0b;     /* 金 - 金 */
+    --color-wuxing-wood: #10b981;     /* 木 - 绿 */
+    --color-wuxing-water: #3b82f6;    /* 水 - 蓝 */
+    --color-wuxing-earth: #a855f7;    /* 土 - 紫 */
+
+    /* 中性色 - 文字与背景 */
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+
+    /* 文字颜色 */
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #4b5563;
+    --color-text-tertiary: #6b7280;
+    --color-text-disabled: #9ca3af;
+
+    /* 背景色 */
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f9fafb;
+    --color-bg-tertiary: #f3f4f6;
+    --color-bg-overlay: rgba(0, 0, 0, 0.5);
+
+    /* 边框色 */
+    --color-border-light: #f3f4f6;
+    --color-border-default: #e5e7eb;
+    --color-border-dark: #d1d5db;
+
+
+    /* ========== 间距系统 ========== */
+    /* 基于 4px 基准单位 */
+    --space-0: 0;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+
+
+    /* ========== 圆角系统 ========== */
+    --radius-none: 0;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 9999px;
+
+
+    /* ========== 阴影系统 ========== */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.15);
+    --shadow-2xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+    /* 悬浮阴影 */
+    --shadow-hover: 0 10px 20px rgba(102, 126, 234, 0.2);
+    --shadow-active: 0 4px 8px rgba(102, 126, 234, 0.15);
+
+
+    /* ========== 字体系统 ========== */
+    /* 字体族 */
+    --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+                        'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue',
+                        Helvetica, Arial, sans-serif;
+    --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono',
+                        Consolas, 'Courier New', monospace;
+
+    /* 字号体系 */
+    --font-xs: 12px;
+    --font-sm: 13px;
+    --font-base: 14px;
+    --font-md: 15px;
+    --font-lg: 16px;
+    --font-xl: 18px;
+    --font-2xl: 20px;
+    --font-3xl: 24px;
+    --font-4xl: 32px;
+    --font-5xl: 40px;
+
+    /* 行高 */
+    --line-height-tight: 1.25;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+    --line-height-loose: 2;
+
+    /* 字重 */
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+
+    /* ========== 过渡动画 ========== */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+
+    /* ========== Z-index层级 ========== */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 9999;
+
+
+    /* ========== 断点（供JS使用） ========== */
+    --breakpoint-xs: 375px;
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+    --breakpoint-2xl: 1536px;
+
+
+    /* ========== 布局约束 ========== */
+    --container-max-width: 1280px;
+    --content-max-width: 800px;
+    --sidebar-width: 280px;
+
+
+    /* ========== 组件特定变量 ========== */
+    /* 按钮 */
+    --btn-padding-x: 24px;
+    --btn-padding-y: 12px;
+    --btn-border-radius: var(--radius-lg);
+
+    /* 输入框 */
+    --input-padding-x: 16px;
+    --input-padding-y: 12px;
+    --input-border-width: 2px;
+    --input-border-radius: var(--radius-lg);
+
+    /* 卡片 */
+    --card-padding: var(--space-6);
+    --card-border-radius: var(--radius-xl);
+    --card-shadow: var(--shadow-md);
+
+    /* 导航栏 */
+    --navbar-height: 64px;
+    --navbar-padding-x: var(--space-6);
+}
+
+
+/* ========== 深色模式支持（预留） ========== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* 深色模式变量将在这里定义 */
+        /* 例如：
+        --color-bg-primary: #1f2937;
+        --color-text-primary: #f9fafb;
+        等等...
+        */
+    }
+}
+
+
+/* ========== 工具类 ========== */
+/* 使用CSS变量的示例类 */
+.gradient-primary {
+    background: var(--gradient-primary);
+}
+
+.text-primary {
+    color: var(--color-text-primary);
+}
+
+.text-secondary {
+    color: var(--color-text-secondary);
+}
+
+.shadow-card {
+    box-shadow: var(--shadow-md);
+}
+
+.rounded-card {
+    border-radius: var(--card-border-radius);
+}

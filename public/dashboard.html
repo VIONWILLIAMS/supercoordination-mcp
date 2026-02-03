@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的工作台 - 超协体</title>
     <script src="/js/auth.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/js/websocket-client.js"></script>
     <style>
         * {
             margin: 0;
@@ -105,6 +112,38 @@
             color: #333;
         }
 
+        /* 导航菜单 */
+        .navbar-nav {
+            display: flex;
+            gap: 8px;
+            margin-left: 24px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            .navbar-nav {
+                display: none;
+            }
+        }
+
         /* 网格布局 */
         .grid {
             display: grid;
@@ -173,7 +212,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            text-decoration: none;
+            text-align: center;
         }
 
         .action-btn:hover {
@@ -239,6 +281,11 @@
             100% { transform: rotate(360deg); }
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         /* 任务列表 */
         .task-list {
             display: flex;
@@ -251,6 +298,15 @@
             background: #f8f9fa;
             border-radius: 10px;
             border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .task-item:hover {
+            background: #f0f4ff;
+            transform: translateX(4px);
         }
 
         .task-title {
@@ -372,6 +428,112 @@
         .btn-reject:hover {
             opacity: 0.9;
         }
+
+        /* 推荐任务样式 */
+        .recommended-tasks-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .recommended-tasks-card .card-title {
+            color: white;
+        }
+
+        .recommendation-badge {
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-left: auto;
+            font-weight: normal;
+        }
+
+        .recommended-tasks-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .recommended-task-card {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .recommended-task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .rec-task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .rec-task-title {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            margin-right: 10px;
+            line-height: 1.3;
+        }
+
+        .match-score {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .growth-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .rec-task-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .rec-task-meta span {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .rec-empty-state {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .recommended-tasks-card .loading {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .recommended-tasks-card .spinner {
+            border-color: rgba(255,255,255,0.3);
+            border-top-color: white;
+        }
     </style>
 </head>
 <body>
@@ -380,17 +542,29 @@
         <div class="topbar">
             <div class="topbar-left">
                 <div class="logo">超协体</div>
-                <div class="user-info">
-                    <div class="avatar" id="userAvatar">U</div>
-                    <div class="user-details">
-                        <div class="username" id="username">加载中...</div>
-                        <div class="points" style="cursor: pointer;" onclick="viewPointsHistory()" title="点击查看积分历史">
-                            积分：<span class="points-value" id="pointsBalance">--</span>
-                        </div>
-                    </div>
+                <nav class="navbar-nav">
+                    <a href="/dashboard.html" class="nav-link active">工作台</a>
+                    <a href="/task-create.html" class="nav-link">创建任务</a>
+                    <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                    <a href="/crystal-library.html" class="nav-link">晶体库</a>
+                    <a href="/members.html" class="nav-link">成员</a>
+                    <a href="/profile.html" class="nav-link">画像</a>
+                </nav>
+                <div style="display: flex; align-items: center; gap: 6px; margin-left: 16px; padding: 6px 12px; background: #f0f4ff; border-radius: 8px;">
+                    <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></span>
+                    <span style="font-size: 13px; color: #666;"><span class="online-count">0</span> 人在线</span>
                 </div>
             </div>
-            <button class="btn-logout" onclick="logout()">登出</button>
+            <div class="user-info">
+                <div class="avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="username" id="username">加载中...</div>
+                    <div class="points" style="cursor: pointer;" onclick="window.location.href='/member-detail.html?id=' + getUser()?.id + '&type=community'" title="点击查看个人详情">
+                        积分：<span class="points-value" id="pointsBalance">--</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">登出</button>
+            </div>
         </div>
 
         <!-- 快速操作区 -->
@@ -401,30 +575,38 @@
                     快速操作
                 </div>
                 <div class="quick-actions">
-                    <button class="action-btn" onclick="createTaskDialog()">
+                    <a class="action-btn" href="/task-create.html">
                         <span class="action-icon">📝</span>
                         <span>创建任务</span>
-                    </button>
-                    <button class="action-btn" onclick="registerMemberDialog()">
-                        <span class="action-icon">👥</span>
-                        <span>注册成员</span>
-                    </button>
+                    </a>
+                    <a class="action-btn" href="/my-tasks.html">
+                        <span class="action-icon">📋</span>
+                        <span>我的任务</span>
+                    </a>
                     <button class="action-btn" onclick="issueTicketDialog()">
                         <span class="action-icon">🎫</span>
                         <span>发门票</span>
                     </button>
-                    <button class="action-btn" onclick="viewTeamDashboard()">
-                        <span class="action-icon">📊</span>
-                        <span>团队看板</span>
-                    </button>
+                    <a class="action-btn" href="/members.html">
+                        <span class="action-icon">👥</span>
+                        <span>查看成员</span>
+                    </a>
                     <button class="action-btn" onclick="checkWuxingBalance()">
                         <span class="action-icon">☯️</span>
                         <span>五行平衡</span>
                     </button>
-                    <button class="action-btn" onclick="window.location.href='/profile.html'">
+                    <a class="action-btn" href="/crystal-library.html">
+                        <span class="action-icon">💡</span>
+                        <span>浏览晶体</span>
+                    </a>
+                    <a class="action-btn" href="/profile.html">
                         <span class="action-icon">🎨</span>
                         <span>填写画像</span>
-                    </button>
+                    </a>
+                    <a class="action-btn admin-only" href="/admin.html" id="adminPanelBtn" style="display: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <span class="action-icon">&#9881;</span>
+                        <span>管理后台</span>
+                    </a>
                 </div>
             </div>
 
@@ -446,11 +628,29 @@
                 <div class="stat-value" id="memberCount">--</div>
                 <div class="stat-label">已注册成员</div>
             </div>
+
+            <div class="card stat-card" onclick="window.location.href='/crystal-library.html'" style="cursor: pointer;">
+                <div class="card-title">
+                    <span class="card-icon">💎</span>
+                    我的晶体
+                </div>
+                <div class="stat-value" id="myCrystalCount">--</div>
+                <div class="stat-label">已凝结晶体</div>
+            </div>
+
+            <div class="card stat-card" onclick="window.location.href='/projects.html'" style="cursor: pointer;">
+                <div class="card-title">
+                    <span class="card-icon">🚀</span>
+                    我的项目
+                </div>
+                <div class="stat-value" id="myProjectCount">--</div>
+                <div class="stat-label">参与的项目</div>
+            </div>
         </div>
 
         <!-- 管理员专用：候选者管理 -->
         <div class="grid" id="adminPanel" style="display: none;">
-            <div class="card" style="grid-column: span 3;">
+            <div class="card" style="grid-column: span 2;">
                 <div class="card-title">
                     <span class="card-icon">🛡️</span>
                     候选者管理（管理员）
@@ -459,6 +659,59 @@
                     <div class="loading">
                         <div class="spinner"></div>
                         正在加载候选者...
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI成员管理 -->
+            <div class="card" id="aiMembersCard">
+                <div class="card-title">
+                    <span class="card-icon">🤖</span>
+                    AI成员管理
+                </div>
+                <div class="ai-create-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                    <button onclick="createAIMember('code_master')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">💻</div>
+                        <div style="font-weight: 600;">CodeMaster</div>
+                        <div style="font-size: 11px; opacity: 0.8;">代码开发</div>
+                    </button>
+                    <button onclick="createAIMember('doc_writer')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">📝</div>
+                        <div style="font-weight: 600;">DocWriter</div>
+                        <div style="font-size: 11px; opacity: 0.8;">文档撰写</div>
+                    </button>
+                    <button onclick="createAIMember('analyst')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">📊</div>
+                        <div style="font-weight: 600;">Analyst</div>
+                        <div style="font-size: 11px; opacity: 0.8;">数据分析</div>
+                    </button>
+                    <button onclick="createAIMember('coordinator')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">🎯</div>
+                        <div style="font-weight: 600;">Coordinator</div>
+                        <div style="font-size: 11px; opacity: 0.8;">项目协调</div>
+                    </button>
+                </div>
+                <div id="aiMembersList" style="max-height: 200px; overflow-y: auto;">
+                    <div class="loading" style="padding: 20px;">
+                        <div class="spinner"></div>
+                        加载AI成员...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 为你推荐任务 -->
+        <div class="grid" id="recommendedTasksSection" style="display: none;">
+            <div class="card recommended-tasks-card" style="grid-column: span 3;">
+                <div class="card-title">
+                    <span class="card-icon">🎯</span>
+                    为你推荐
+                    <span class="recommendation-badge">AI智能匹配</span>
+                </div>
+                <div id="recommendedTasksList" class="recommended-tasks-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        正在分析匹配度...
                     </div>
                 </div>
             </div>
@@ -554,9 +807,15 @@
             await checkUserStatus();
             await loadDashboardData();
 
-            // 如果是管理员，加载候选者列表
+            // 如果是正式成员，加载推荐任务
+            if (userStatus === 'member') {
+                await loadRecommendedTasks();
+            }
+
+            // 如果是管理员，显示管理后台入口和加载候选者列表
             if (userRole === 'admin') {
                 document.getElementById('adminPanel').style.display = 'grid';
+                document.getElementById('adminPanelBtn').style.display = 'flex';
                 await loadCandidates();
             }
         });
@@ -699,10 +958,17 @@
                 // 更新五行能量
                 updateWuxingEnergy(tasks, members);
 
+                // 加载我的方案数量
+                loadMyCrystalsCount();
+
+                // 加载我的项目数量
+                loadMyProjectsCount();
+
             } catch (error) {
                 console.error('加载数据失败:', error);
                 document.getElementById('myTaskCount').textContent = '0';
                 document.getElementById('memberCount').textContent = '0';
+                document.getElementById('mySolutionCount').textContent = '0';
                 document.getElementById('taskList').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📭</div>
@@ -724,17 +990,111 @@
                     <div style="font-size: 13px; margin-top: 8px; color: #888;">
                         完善你的五行画像，等待AI评估后可解锁全部功能
                     </div>
+                    <a href="/profile.html" style="display: inline-block; margin-top: 16px; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                        填写五行画像
+                    </a>
                 </div>
             `;
 
-            // 禁用快速操作按钮
+            // 禁用需要成员权限的快速操作按钮
             document.querySelectorAll('.action-btn').forEach(btn => {
+                const href = btn.getAttribute('href');
+                // 画像页面保持可用
+                if (href === '/profile.html') return;
+
                 btn.style.opacity = '0.5';
                 btn.style.cursor = 'not-allowed';
-                const originalOnclick = btn.getAttribute('onclick');
-                btn.setAttribute('data-original-onclick', originalOnclick);
-                btn.setAttribute('onclick', 'alert("此功能仅对正式成员开放\\n\\n提示：完善五行画像可提高AI评估分数")');
+
+                if (btn.tagName === 'A') {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        alert('此功能仅对正式成员开放\n\n提示：完善五行画像可提高AI评估分数');
+                    });
+                } else {
+                    const originalOnclick = btn.getAttribute('onclick');
+                    btn.setAttribute('data-original-onclick', originalOnclick);
+                    btn.setAttribute('onclick', 'alert("此功能仅对正式成员开放\\n\\n提示：完善五行画像可提高AI评估分数")');
+                }
             });
+        }
+
+        // ========================================
+        // 智能推荐任务
+        // ========================================
+
+        // 加载推荐任务
+        async function loadRecommendedTasks() {
+            try {
+                const response = await authFetch('/api/tasks/recommended');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('recommendedTasksSection').style.display = 'grid';
+                    renderRecommendedTasks(data.recommendations);
+                } else {
+                    console.error('获取推荐任务失败:', data.message);
+                }
+            } catch (error) {
+                console.error('Failed to load recommended tasks:', error);
+            }
+        }
+
+        // 渲染推荐任务
+        function renderRecommendedTasks(recommendations) {
+            const container = document.getElementById('recommendedTasksList');
+
+            if (!recommendations || recommendations.length === 0) {
+                container.innerHTML = `
+                    <div class="rec-empty-state">
+                        <div style="font-size: 36px; margin-bottom: 12px;">📭</div>
+                        <div>暂无待分配任务</div>
+                        <div style="font-size: 13px; margin-top: 8px; opacity: 0.7;">
+                            所有任务都已分配，或者还没有创建任务
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recommendations.map(rec => {
+                const { task, score, reasons } = rec;
+
+                // 成长任务标识（成长价值 > 50）
+                let growthBadge = '';
+                if (reasons.growthValue > 50) {
+                    growthBadge = '<span class="growth-badge">成长任务</span>';
+                }
+
+                // 五行图标映射
+                const wuxingIcons = { '火': '🔥', '金': '⚙️', '木': '🌳', '水': '💧', '土': '🏔️' };
+                const wuxingIcon = task.wuxing ? wuxingIcons[task.wuxing] || '☯️' : '';
+
+                return `
+                    <a class="recommended-task-card" href="/task-detail.html?id=${task.id}">
+                        <div class="rec-task-header">
+                            <div class="rec-task-title">
+                                ${escapeHtml(task.title)}
+                                ${growthBadge}
+                            </div>
+                            <span class="match-score">${score}%</span>
+                        </div>
+                        <div class="rec-task-meta">
+                            <span>五行匹配 ${reasons.wuxingMatch}%</span>
+                            <span>技能匹配 ${reasons.skillMatch}%</span>
+                            ${task.wuxing ? `<span>${wuxingIcon} ${task.wuxing}</span>` : ''}
+                            <span>🎁 ${task.reward_points || 20}积分</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // 渲染任务列表
@@ -761,16 +1121,26 @@
             taskListEl.innerHTML = tasks.map(task => {
                 const status = statusMap[task.status] || statusMap['pending'];
                 return `
-                    <div class="task-item">
-                        <div class="task-title">${task.title}</div>
+                    <a class="task-item" href="/task-detail.html?id=${task.id}">
+                        <div class="task-title">${escapeHtml(task.title)}</div>
                         <div class="task-meta">
                             <span class="task-status ${status.class}">${status.label}</span>
-                            <span>需求: ${task.requiredWuxing}</span>
-                            ${task.assignedTo ? `<span>👤 ${task.assignedTo}</span>` : ''}
+                            ${task.wuxing ? `<span>☯️ ${task.wuxing}</span>` : ''}
+                            ${task.assigned_to_name ? `<span>👤 ${escapeHtml(task.assigned_to_name)}</span>` : '<span style="color:#f57c00">未分配</span>'}
+                            <span>🎁 ${task.reward_points || 20}积分</span>
                         </div>
-                    </div>
+                    </a>
                 `;
             }).join('');
+
+            // 添加查看更多链接
+            if (tasks.length >= 5) {
+                taskListEl.innerHTML += `
+                    <a href="/my-tasks.html" style="text-align: center; padding: 12px; color: #667eea; font-size: 14px;">
+                        查看全部任务 →
+                    </a>
+                `;
+            }
         }
 
         // 更新五行能量分布
@@ -799,105 +1169,6 @@
         }
 
         // 快速操作函数
-        async function createTaskDialog() {
-            const title = prompt('请输入任务标题：');
-            if (!title) return;
-
-            const description = prompt('请输入任务描述：');
-            if (!description) return;
-
-            const requiredWuxing = prompt('请输入需要的五行属性（火/金/木/水/土）：');
-            if (!requiredWuxing || !['火', '金', '木', '水', '土'].includes(requiredWuxing)) {
-                alert('无效的五行属性');
-                return;
-            }
-
-            try {
-                const response = await authFetch('/mcp/tools/call', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        name: 'create_task',
-                        arguments: { title, description, requiredWuxing }
-                    })
-                });
-
-                const data = await response.json();
-                if (data.content?.[0]?.text) {
-                    const result = JSON.parse(data.content[0].text);
-                    alert(`✅ 任务创建成功！\n\n任务ID: ${result.task.id}`);
-                    await loadDashboardData(); // 刷新数据
-                }
-            } catch (error) {
-                console.error('创建任务失败:', error);
-                alert('创建任务失败，请重试');
-            }
-        }
-
-        async function registerMemberDialog() {
-            const name = prompt('请输入成员姓名：');
-            if (!name) return;
-
-            const mainWuxing = prompt('请输入主五行属性（火/金/木/水/土）：');
-            if (!mainWuxing || !['火', '金', '木', '水', '土'].includes(mainWuxing)) {
-                alert('无效的五行属性');
-                return;
-            }
-
-            const skills = prompt('请输入技能（用逗号分隔）：');
-            const skillList = skills ? skills.split(',').map(s => s.trim()) : [];
-
-            try {
-                const response = await authFetch('/mcp/tools/call', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        name: 'register_member',
-                        arguments: { name, mainWuxing, skills: skillList }
-                    })
-                });
-
-                const data = await response.json();
-                if (data.content?.[0]?.text) {
-                    const result = JSON.parse(data.content[0].text);
-                    alert(`✅ 成员注册成功！\n\n成员ID: ${result.member.id}\n姓名: ${result.member.name}\n五行: ${result.member.mainWuxing}`);
-                    await loadDashboardData(); // 刷新数据
-                }
-            } catch (error) {
-                console.error('注册成员失败:', error);
-                alert('注册成员失败，请重试');
-            }
-        }
-
-        async function viewTeamDashboard() {
-            try {
-                const response = await authFetch('/mcp/tools/call', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        name: 'get_team_dashboard',
-                        arguments: {}
-                    })
-                });
-
-                const data = await response.json();
-                if (data.content?.[0]?.text) {
-                    const dashboard = JSON.parse(data.content[0].text);
-
-                    let message = '📊 团队协作看板\n\n';
-                    message += `总任务数: ${dashboard.totalTasks}\n`;
-                    message += `已完成: ${dashboard.completedTasks}\n`;
-                    message += `进行中: ${dashboard.inProgressTasks}\n`;
-                    message += `待分配: ${dashboard.pendingTasks}\n`;
-                    message += `\n总成员数: ${dashboard.totalMembers}\n`;
-                    message += `活跃成员: ${dashboard.activeMembers}\n`;
-                    message += `平均任务完成率: ${dashboard.completionRate}%`;
-
-                    alert(message);
-                }
-            } catch (error) {
-                console.error('获取团队看板失败:', error);
-                alert('获取团队看板失败，请重试');
-            }
-        }
-
         async function checkWuxingBalance() {
             try {
                 const response = await authFetch('/mcp/tools/call', {
@@ -1114,7 +1385,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(`❌ 已拒绝 ${candidateName}`);
+                    alert(`已拒绝 ${candidateName}`);
                     await loadCandidates(); // 刷新列表
                 } else {
                     alert('拒绝失败：' + data.message);
@@ -1124,6 +1395,195 @@
                 alert('拒绝失败，请重试');
             }
         }
+
+        // ========================================
+        // AI成员管理
+        // ========================================
+
+        // 创建AI成员
+        async function createAIMember(aiType) {
+            const typeNames = {
+                'code_master': 'CodeMaster AI',
+                'doc_writer': 'DocWriter AI',
+                'analyst': 'Analyst AI',
+                'coordinator': 'Coordinator AI'
+            };
+
+            if (!confirm(`确认创建 ${typeNames[aiType]} 吗？`)) return;
+
+            try {
+                const response = await authFetch('/api/ai-members/create', {
+                    method: 'POST',
+                    body: JSON.stringify({ aiType })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`${data.aiMember.username} 创建成功！序号：#${String(data.aiMember.serialNumber).padStart(3, '0')}`);
+                    loadAIMembers();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Failed to create AI member:', error);
+                alert('创建失败，请重试');
+            }
+        }
+
+        // 加载AI成员列表
+        async function loadAIMembers() {
+            try {
+                const response = await authFetch('/api/ai-members');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderAIMembers(data.aiMembers);
+                }
+            } catch (error) {
+                console.error('Failed to load AI members:', error);
+                document.getElementById('aiMembersList').innerHTML = `
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        加载失败
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染AI成员列表
+        function renderAIMembers(aiMembers) {
+            const container = document.getElementById('aiMembersList');
+
+            if (!aiMembers || aiMembers.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        暂无AI成员，点击上方按钮创建
+                    </div>
+                `;
+                return;
+            }
+
+            const typeIcons = {
+                'code_master': '💻',
+                'doc_writer': '📝',
+                'analyst': '📊',
+                'coordinator': '🎯'
+            };
+
+            container.innerHTML = aiMembers.map(ai => `
+                <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 10px; margin-bottom: 8px;">
+                    <div style="font-size: 24px; margin-right: 12px;">${typeIcons[ai.aiType] || '🤖'}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 14px;">#${String(ai.serialNumber).padStart(3, '0')} ${escapeHtml(ai.username)}</div>
+                        <div style="font-size: 12px; color: #666;">${ai.pwpProfile?.skills?.slice(0, 2).join(', ') || ''}</div>
+                    </div>
+                    <a href="/member-detail.html?id=${ai.id}&type=community" style="padding: 6px 12px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; font-size: 12px;">
+                        详情
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // 加载我的方案数量
+        async function loadMyCrystalsCount() {
+            try {
+                const user = getUser();
+                const response = await authFetch(`/api/solutions?authorId=${user.id}&status=published`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('mySolutionCount').textContent = data.pagination.total;
+                } else {
+                    document.getElementById('mySolutionCount').textContent = '0';
+                }
+            } catch (error) {
+                console.error('加载方案数量失败:', error);
+                document.getElementById('mySolutionCount').textContent = '0';
+            }
+        }
+
+        // 加载我的项目数量
+        async function loadMyProjectsCount() {
+            try {
+                const response = await authFetch('/api/projects?myProjects=true');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('myProjectCount').textContent = data.pagination.total;
+                } else {
+                    document.getElementById('myProjectCount').textContent = '0';
+                }
+            } catch (error) {
+                console.error('加载项目数量失败:', error);
+                document.getElementById('myProjectCount').textContent = '0';
+            }
+        }
+
+        // 页面加载时，如果是管理员则加载AI成员
+        document.addEventListener('DOMContentLoaded', () => {
+            // 延迟加载AI成员（等待用户角色确认）
+            setTimeout(() => {
+                if (userRole === 'admin') {
+                    loadAIMembers();
+                }
+            }, 500);
+
+            // WebSocket实时更新集成
+            setupWebSocketListeners();
+        });
+
+        // ========================================
+        // WebSocket实时协作
+        // ========================================
+
+        function setupWebSocketListeners() {
+            if (!window.wsClient) {
+                console.warn('[Dashboard] WebSocket客户端未就绪');
+                return;
+            }
+
+            // 监听任务状态变更
+            wsClient.on('task-status-changed', (data) => {
+                console.log('[Dashboard] 任务状态更新', data);
+                // 刷新任务列表
+                loadDashboardData();
+            });
+
+            // 监听任务分配变更
+            wsClient.on('task-assignment-changed', (data) => {
+                console.log('[Dashboard] 任务分配更新', data);
+                // 刷新任务列表和推荐任务
+                loadDashboardData();
+                if (userStatus === 'member') {
+                    loadRecommendedTasks();
+                }
+            });
+
+            // 监听新任务创建
+            wsClient.on('task-created', (data) => {
+                console.log('[Dashboard] 新任务创建', data);
+                // 刷新任务列表
+                loadDashboardData();
+                if (userStatus === 'member') {
+                    loadRecommendedTasks();
+                }
+            });
+
+            // 监听在线用户变化
+            wsClient.on('user-online', (data) => {
+                console.log(`[Dashboard] 用户上线: ${data.username}`);
+            });
+
+            wsClient.on('user-offline', (data) => {
+                console.log(`[Dashboard] 用户下线: ${data.username}`);
+            });
+
+            wsClient.on('online-users-updated', (users) => {
+                console.log('[Dashboard] 在线用户列表更新', users);
+            });
+        }
     </script>
+
+    <script src="/js/pwa.js" defer></script>
 </body>
 </html>

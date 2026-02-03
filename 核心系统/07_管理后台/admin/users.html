@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 超协体管理后台</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+        }
+
+        .admin-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .admin-logo {
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-nav-link:hover,
+        .admin-nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-nav-link.back {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        /* 筛选区域 */
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* 表格 */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-table th {
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .user-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .user-avatar.ai {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-member {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .badge-candidate {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-disabled {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .badge-ai {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .points-value {
+            font-weight: 600;
+            color: #f59e0b;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .action-btn.primary {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .action-btn.success {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .action-btn.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .action-btn.danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 加载和空状态 */
+        .loading, .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-section-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: #667eea;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .user-table {
+                font-size: 13px;
+            }
+
+            .user-table th:nth-child(4),
+            .user-table td:nth-child(4),
+            .user-table th:nth-child(6),
+            .user-table td:nth-child(6) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .admin-nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="admin-nav">
+        <div class="admin-logo">
+            <span>&#9881;</span>
+            <span>超协体管理后台</span>
+        </div>
+        <div class="admin-nav-links">
+            <a href="/admin.html" class="admin-nav-link">
+                <span>&#128200;</span> 概览
+            </a>
+            <a href="/admin/users.html" class="admin-nav-link active">
+                <span>&#128101;</span> 用户
+            </a>
+            <a href="/admin/tasks.html" class="admin-nav-link">
+                <span>&#128203;</span> 任务
+            </a>
+            <a href="/admin/analytics.html" class="admin-nav-link">
+                <span>&#128202;</span> 分析
+            </a>
+            <a href="/admin/settings.html" class="admin-nav-link">
+                <span>&#9881;</span> 配置
+            </a>
+            <a href="/dashboard.html" class="admin-nav-link back">
+                <span>&#8592;</span> 返回工作台
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="admin-container">
+        <div class="page-header">
+            <h1 class="page-title">用户管理</h1>
+        </div>
+
+        <div class="admin-card">
+            <!-- 筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">全部</button>
+                    <button class="filter-btn" data-filter="admin" onclick="setFilter('admin')">管理员</button>
+                    <button class="filter-btn" data-filter="member" onclick="setFilter('member')">正式成员</button>
+                    <button class="filter-btn" data-filter="candidate" onclick="setFilter('candidate')">候选者</button>
+                    <button class="filter-btn" data-filter="ai" onclick="setFilter('ai')">AI成员</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="搜索用户名或邮箱..." onkeypress="if(event.key === 'Enter') search()">
+                    <button class="search-btn" onclick="search()">搜索</button>
+                </div>
+            </div>
+
+            <!-- 用户表格 -->
+            <div id="userTableContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    正在加载用户列表...
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <button class="pagination-btn" id="prevBtn" onclick="prevPage()">上一页</button>
+                <span class="pagination-info" id="pageInfo">第 1 页，共 1 页</span>
+                <button class="pagination-btn" id="nextBtn" onclick="nextPage()">下一页</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <h3 class="modal-title">
+                <span>&#128100;</span> 用户详情
+                <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
+            </h3>
+            <div id="userDetailContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改角色弹窗 -->
+    <div class="modal-overlay" id="roleModal">
+        <div class="modal">
+            <h3 class="modal-title">
+                <span>&#128274;</span> 修改用户角色
+                <button class="modal-close" onclick="closeModal('roleModal')">&times;</button>
+            </h3>
+            <div class="form-group">
+                <label class="form-label">当前用户</label>
+                <p id="roleModalUsername" style="color: #333; font-weight: 600;"></p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">选择角色</label>
+                <select class="form-select" id="newRole">
+                    <option value="member">普通成员</option>
+                    <option value="admin">管理员</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('roleModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveRole()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 调整积分弹窗 -->
+    <div class="modal-overlay" id="pointsModal">
+        <div class="modal">
+            <h3 class="modal-title">
+                <span>&#128176;</span> 调整积分
+                <button class="modal-close" onclick="closeModal('pointsModal')">&times;</button>
+            </h3>
+            <div class="form-group">
+                <label class="form-label">用户</label>
+                <p id="pointsModalUsername" style="color: #333; font-weight: 600;"></p>
+                <p style="font-size: 13px; color: #888;">当前余额：<span id="currentPoints">0</span> 积分</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">调整数量（正数增加，负数减少）</label>
+                <input type="number" class="form-input" id="pointsAmount" placeholder="例如：50 或 -20">
+            </div>
+            <div class="form-group">
+                <label class="form-label">调整原因</label>
+                <input type="text" class="form-input" id="pointsReason" placeholder="请填写调整原因">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('pointsModal')">取消</button>
+                <button class="btn btn-primary" onclick="savePoints()">确认调整</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let selectedUserId = null;
+
+        // 检查管理员权限
+        async function checkAdminAccess() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return false;
+            }
+
+            try {
+                const response = await authFetch('/api/auth/me');
+                const data = await response.json();
+                if (!data.success || data.user.role !== 'admin') {
+                    alert('您没有管理员权限');
+                    window.location.href = '/dashboard.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                window.location.href = '/login.html';
+                return false;
+            }
+        }
+
+        // 加载用户列表
+        async function loadUsers() {
+            const container = document.getElementById('userTableContainer');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>正在加载用户列表...</div>';
+
+            try {
+                let url = `/api/admin/users?page=${currentPage}&limit=20`;
+
+                if (currentFilter === 'admin') {
+                    url += '&role=admin';
+                } else if (currentFilter === 'member') {
+                    url += '&status=member';
+                } else if (currentFilter === 'candidate') {
+                    url += '&status=candidate';
+                } else if (currentFilter === 'ai') {
+                    url += '&isAI=true';
+                }
+
+                if (currentSearch) {
+                    url += `&search=${encodeURIComponent(currentSearch)}`;
+                }
+
+                const response = await authFetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderUserTable(data.data.users);
+                    totalPages = data.data.pagination.totalPages;
+                    updatePagination(data.data.pagination);
+                }
+            } catch (error) {
+                console.error('加载用户失败:', error);
+                container.innerHTML = '<div class="empty-state">加载失败，请刷新重试</div>';
+            }
+        }
+
+        // 渲染用户表格
+        function renderUserTable(users) {
+            const container = document.getElementById('userTableContainer');
+
+            if (!users || users.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无用户数据</div>';
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            let html = `
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>用户信息</th>
+                            <th>角色</th>
+                            <th>状态</th>
+                            <th>积分</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach(user => {
+                const isAI = user.isAI || user.email.endsWith('@ai.supercoord.local');
+                const avatarClass = isAI ? 'user-avatar ai' : 'user-avatar';
+                const avatarText = isAI ? 'AI' : user.username.charAt(0).toUpperCase();
+
+                let roleBadge = '';
+                if (user.role === 'admin') {
+                    roleBadge = '<span class="badge badge-admin">管理员</span>';
+                } else {
+                    roleBadge = '<span class="badge badge-member">成员</span>';
+                }
+
+                let statusBadge = '';
+                if (isAI) {
+                    statusBadge = '<span class="badge badge-ai">AI成员</span>';
+                } else if (user.status === 'member') {
+                    statusBadge = '<span class="badge badge-member">正式成员</span>';
+                } else if (user.status === 'candidate') {
+                    statusBadge = '<span class="badge badge-candidate">候选者</span>';
+                } else if (user.status === 'disabled') {
+                    statusBadge = '<span class="badge badge-disabled">已禁用</span>';
+                }
+
+                const serialNumber = user.serialNumber ? `#${String(user.serialNumber).padStart(3, '0')}` : '--';
+                const createdAt = new Date(user.createdAt).toLocaleDateString('zh-CN');
+
+                html += `
+                    <tr>
+                        <td>${serialNumber}</td>
+                        <td>
+                            <div class="user-info">
+                                <div class="${avatarClass}">${avatarText}</div>
+                                <div>
+                                    <div class="user-name">${user.username}</div>
+                                    <div class="user-email">${user.email}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${roleBadge}</td>
+                        <td>${statusBadge}</td>
+                        <td><span class="points-value">${user.pointsBalance}</span></td>
+                        <td>${createdAt}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn primary" onclick="viewUserDetail('${user.id}')">详情</button>
+                                ${!isAI ? `<button class="action-btn warning" onclick="openRoleModal('${user.id}', '${user.username}', '${user.role}')">权限</button>` : ''}
+                                <button class="action-btn success" onclick="openPointsModal('${user.id}', '${user.username}', ${user.pointsBalance})">积分</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+            document.getElementById('pagination').style.display = 'flex';
+        }
+
+        // 更新分页
+        function updatePagination(pagination) {
+            document.getElementById('pageInfo').textContent = `第 ${pagination.page} 页，共 ${pagination.totalPages} 页（${pagination.total} 条）`;
+            document.getElementById('prevBtn').disabled = pagination.page <= 1;
+            document.getElementById('nextBtn').disabled = pagination.page >= pagination.totalPages;
+        }
+
+        // 设置筛选
+        function setFilter(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+
+            loadUsers();
+        }
+
+        // 搜索
+        function search() {
+            currentSearch = document.getElementById('searchInput').value.trim();
+            currentPage = 1;
+            loadUsers();
+        }
+
+        // 分页
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadUsers();
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadUsers();
+            }
+        }
+
+        // 查看用户详情
+        async function viewUserDetail(userId) {
+            document.getElementById('detailModal').classList.add('active');
+            document.getElementById('userDetailContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            try {
+                const response = await authFetch(`/api/admin/users/${userId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderUserDetail(data.user);
+                }
+            } catch (error) {
+                console.error('获取用户详情失败:', error);
+                document.getElementById('userDetailContent').innerHTML = '<p style="color: #ef4444;">加载失败</p>';
+            }
+        }
+
+        // 渲染用户详情
+        function renderUserDetail(user) {
+            const isAI = user.email.endsWith('@ai.supercoord.local');
+            const wuxing = user.pwpProfile?.wuxing || {};
+            const skills = user.pwpProfile?.skills || [];
+
+            let html = `
+                <div class="detail-section">
+                    <div class="detail-section-title">基本信息</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">用户名</span>
+                            <span class="detail-value">${user.username}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">邮箱</span>
+                            <span class="detail-value">${user.email}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">序号</span>
+                            <span class="detail-value">${user.serialNumber ? '#' + String(user.serialNumber).padStart(3, '0') : '未分配'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">角色</span>
+                            <span class="detail-value">${user.role === 'admin' ? '管理员' : '普通成员'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">状态</span>
+                            <span class="detail-value">${user.status}${isAI ? ' (AI成员)' : ''}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">积分余额</span>
+                            <span class="detail-value" style="color: #f59e0b; font-weight: bold;">${user.pointsBalance}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">注册时间</span>
+                            <span class="detail-value">${new Date(user.createdAt).toLocaleString('zh-CN')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">画像完成</span>
+                            <span class="detail-value">${user.pwpCompleted ? '是' : '否'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">五行画像</div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div style="text-align: center; padding: 10px 15px; background: #fee2e2; border-radius: 8px;">
+                            <div style="font-size: 20px;">&#128293;</div>
+                            <div style="font-size: 12px; color: #666;">火</div>
+                            <div style="font-weight: bold; color: #dc2626;">${wuxing.fire || 0}</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px 15px; background: #fef3c7; border-radius: 8px;">
+                            <div style="font-size: 20px;">&#9881;</div>
+                            <div style="font-size: 12px; color: #666;">金</div>
+                            <div style="font-weight: bold; color: #d97706;">${wuxing.metal || 0}</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px 15px; background: #d1fae5; border-radius: 8px;">
+                            <div style="font-size: 20px;">&#127795;</div>
+                            <div style="font-size: 12px; color: #666;">木</div>
+                            <div style="font-weight: bold; color: #059669;">${wuxing.wood || 0}</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px 15px; background: #dbeafe; border-radius: 8px;">
+                            <div style="font-size: 20px;">&#128167;</div>
+                            <div style="font-size: 12px; color: #666;">水</div>
+                            <div style="font-weight: bold; color: #2563eb;">${wuxing.water || 0}</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px 15px; background: #f3e8ff; border-radius: 8px;">
+                            <div style="font-size: 20px;">&#127956;</div>
+                            <div style="font-size: 12px; color: #666;">土</div>
+                            <div style="font-weight: bold; color: #7c3aed;">${wuxing.earth || 0}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">技能标签</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        ${skills.length > 0 ? skills.map(s => `<span style="padding: 4px 12px; background: #e0e7ff; color: #4f46e5; border-radius: 12px; font-size: 13px;">${s}</span>`).join('') : '<span style="color: #999;">暂无技能</span>'}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">任务统计</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">总任务数</span>
+                            <span class="detail-value">${user.taskStats?.total || 0}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">已完成</span>
+                            <span class="detail-value">${user.taskStats?.completed || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 最近积分交易
+            if (user.pointsTransactions && user.pointsTransactions.length > 0) {
+                html += `
+                    <div class="detail-section">
+                        <div class="detail-section-title">最近积分记录</div>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            ${user.pointsTransactions.slice(0, 5).map(t => `
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                                    <span style="font-size: 13px; color: #666;">${t.description || t.transactionType}</span>
+                                    <span style="font-weight: bold; color: ${t.amount > 0 ? '#10b981' : '#ef4444'};">${t.amount > 0 ? '+' : ''}${t.amount}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('userDetailContent').innerHTML = html;
+        }
+
+        // 打开角色修改弹窗
+        function openRoleModal(userId, username, currentRole) {
+            selectedUserId = userId;
+            document.getElementById('roleModalUsername').textContent = username;
+            document.getElementById('newRole').value = currentRole;
+            document.getElementById('roleModal').classList.add('active');
+        }
+
+        // 保存角色
+        async function saveRole() {
+            const newRole = document.getElementById('newRole').value;
+
+            try {
+                const response = await authFetch(`/api/admin/users/${selectedUserId}/role`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ role: newRole })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    closeModal('roleModal');
+                    loadUsers();
+                } else {
+                    alert('操作失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('修改角色失败:', error);
+                alert('操作失败，请重试');
+            }
+        }
+
+        // 打开积分调整弹窗
+        function openPointsModal(userId, username, currentPoints) {
+            selectedUserId = userId;
+            document.getElementById('pointsModalUsername').textContent = username;
+            document.getElementById('currentPoints').textContent = currentPoints;
+            document.getElementById('pointsAmount').value = '';
+            document.getElementById('pointsReason').value = '';
+            document.getElementById('pointsModal').classList.add('active');
+        }
+
+        // 保存积分调整
+        async function savePoints() {
+            const amount = parseInt(document.getElementById('pointsAmount').value);
+            const reason = document.getElementById('pointsReason').value.trim();
+
+            if (isNaN(amount) || amount === 0) {
+                alert('请输入有效的积分数量');
+                return;
+            }
+
+            if (!reason) {
+                alert('请填写调整原因');
+                return;
+            }
+
+            try {
+                const response = await authFetch(`/api/admin/users/${selectedUserId}/adjust-points`, {
+                    method: 'POST',
+                    body: JSON.stringify({ amount, reason })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    closeModal('pointsModal');
+                    loadUsers();
+                } else {
+                    alert('操作失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('调整积分失败:', error);
+                alert('操作失败，请重试');
+            }
+        }
+
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            selectedUserId = null;
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (await checkAdminAccess()) {
+                // 检查URL参数
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('isAI') === 'true') {
+                    setFilter('ai');
+                } else {
+                    loadUsers();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

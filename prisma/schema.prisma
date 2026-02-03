@@ -41,38 +41,64 @@ model User {
   pointsTransactions   PointsTransaction[]
   solutionRatings      SolutionRating[]
   assignedTasks        Task[]
+  createdTasks         Task[]             @relation("TaskCreator")
   issuedTickets        Ticket[]           @relation("TicketIssuer")
   aiEvaluations        AIEvaluation[]
   invitedBy            User?              @relation("Inviter", fields: [invitedById], references: [id])
   invitedUsers         User[]             @relation("Inviter")
+  ownedProjects        Project[]          @relation("ProjectOwner")
+  projectMemberships   ProjectMember[]
+  pwpRecords           PWPRecord[]
+  workspaceMembers     WorkspaceMember[]
+  workspaceTasks       WorkspaceTask[]
 
   @@index([pwpCompleted])
   @@index([status])
   @@map("users")
 }
 
-// 解决方案表（新增）
+// 解决方案表（增强版）
 model Solution {
   id                 String   @id @default(uuid())
   authorId           String   @map("author_id")
+  taskId             String?  @map("task_id") // 关联的任务（可选）
   title              String
   problemDefinition  String   @map("problem_definition") @db.Text
   solutionContent    String   @map("solution_content") @db.Text
+  codeSnippet        String?  @map("code_snippet") @db.Text // 代码片段
+  attachments        Json     @default("[]") // 附件URL列表
   autoTags           Json     @default("[]") @map("auto_tags")
   manualTags         Json     @default("[]") @map("manual_tags")
   difficultyLevel    Int?     @map("difficulty_level")
+
+  // 多维度评分
   avgRating          Decimal? @default(0) @map("avg_rating") @db.Decimal(3, 2)
+  qualityScore       Decimal? @default(0) @map("quality_score") @db.Decimal(3, 2)
+  reusabilityScore   Decimal? @default(0) @map("reusability_score") @db.Decimal(3, 2)
+  innovationScore    Decimal? @default(0) @map("innovation_score") @db.Decimal(3, 2)
+  ratingCount        Int      @default(0) @map("rating_count")
+
+  // 统计数据
   referenceCount     Int      @default(0) @map("reference_count")
+  viewCount          Int      @default(0) @map("view_count")
+
+  // 状态
+  status             String   @default("draft") // draft | published | archived
+
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 
   // 关联
   author             User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  task               Task?              @relation(fields: [taskId], references: [id], onDelete: SetNull)
   ratings            SolutionRating[]
   referencedBy       SolutionReference[] @relation("ReferencedSolution")
   references         SolutionReference[] @relation("ReferencingSolution")
 
   @@index([authorId])
+  @@index([taskId])
+  @@index([status])
+  @@index([avgRating(sort: Desc)])
   @@index([createdAt(sort: Desc)])
   @@map("solutions")
 }
@@ -96,11 +122,16 @@ model PointsTransaction {
   @@map("points_transactions")
 }
 
-// 方案引用表（新增，多对多）
+// 方案引用表（增强版 - 支持引用类型和说明）
 model SolutionReference {
   id                      String   @id @default(uuid())
   referencingSolutionId   String   @map("referencing_solution_id")
   referencedSolutionId    String   @map("referenced_solution_id")
+
+  // 引用类型
+  citationType            String   @default("inspired") @map("citation_type") // full | partial | inspired
+  description             String?  @db.Text // 引用说明
+
   createdAt               DateTime @default(now()) @map("created_at")
 
   // 关联
@@ -108,26 +139,39 @@ model SolutionReference {
   referencedSolution      Solution @relation("ReferencedSolution", fields: [referencedSolutionId], references: [id], onDelete: Cascade)
 
   @@unique([referencingSolutionId, referencedSolutionId])
+  @@index([referencedSolutionId])
   @@map("solution_references")
 }
 
-// 方案评分表（新增）
+// 方案评分表（增强版 - 多维度评分）
 model SolutionRating {
-  id         String   @id @default(uuid())
-  solutionId String   @map("solution_id")
-  userId     String   @map("user_id")
-  rating     Int
-  createdAt  DateTime @default(now()) @map("created_at")
+  id              String   @id @default(uuid())
+  solutionId      String   @map("solution_id")
+  userId          String   @map("user_id")
+
+  // 多维度评分（1-10分）
+  qualityRating      Int   @map("quality_rating") // 代码质量
+  reusabilityRating  Int   @map("reusability_rating") // 可复用性
+  innovationRating   Int   @map("innovation_rating") // 创新性
+
+  // 综合评分（自动计算平均值）
+  overallRating   Decimal  @map("overall_rating") @db.Decimal(3, 2)
+
+  comment         String?  @db.Text // 评价文字
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   // 关联
   solution   Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([solutionId, userId])
+  @@index([solutionId])
+  @@index([userId])
   @@map("solution_ratings")
 }
 
-// 任务表（保留并扩展）
+// 任务表（扩展支持项目制）
 model Task {
   id              String   @id @default(uuid())
   title           String
@@ -135,13 +179,28 @@ model Task {
   requiredSkills  Json     @default("[]") @map("required_skills")
   requiredWuxing  Json     @default("{}") @map("required_wuxing")
   assignedTo      String?  @map("assigned_to")
+  createdBy       String   @map("created_by")
   status          String   @default("pending")
+  priority        String   @default("medium") // low | medium | high
+  progress        Int      @default(0)
+  rewardPoints    Int      @default(20) @map("reward_points")
+  estimatedHours  Int?     @map("estimated_hours")
+
+  // 项目制扩展
+  projectId       String?  @map("project_id") // 归属项目（null表示独立任务）
+  taskType        String   @default("standalone") @map("task_type") // standalone | project_task
+
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   // 关联
-  assignedUser    User?    @relation(fields: [assignedTo], references: [id])
+  assignedUser    User?      @relation(fields: [assignedTo], references: [id])
+  creator         User       @relation("TaskCreator", fields: [createdBy], references: [id])
+  project         Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  solutions       Solution[] // 任务的解决方案
 
+  @@index([projectId])
+  @@index([taskType])
   @@map("tasks")
 }
 
@@ -178,4 +237,161 @@ model AIEvaluation {
   @@index([candidateId])
   @@index([evaluatedAt(sort: Desc)])
   @@map("ai_evaluations")
+}
+
+// 项目表（项目制团队管理）
+model Project {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?  @db.Text
+
+  // 战略对齐
+  strategicGoal   String?  @map("strategic_goal") // 1-超协体/2-AIGC/3-Auto-Business
+  wuxingType      String?  @map("wuxing_type") // wood/fire/earth/metal/water
+
+  // 项目周期
+  startDate       DateTime @default(now()) @map("start_date")
+  expectedEndDate DateTime? @map("expected_end_date")
+  actualEndDate   DateTime? @map("actual_end_date")
+
+  // 项目状态
+  status          String   @default("planning") // planning/active/paused/completed/archived
+  progress        Int      @default(0) // 0-100
+
+  // 项目负责人
+  ownerId         String   @map("owner_id")
+
+  // 积分预算
+  pointsBudget    Int      @default(0) @map("points_budget") // 项目总积分预算
+  pointsUsed      Int      @default(0) @map("points_used")   // 已使用积分
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // 关联
+  owner           User             @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members         ProjectMember[]  // 项目团队成员
+  tasks           Task[]           // 项目任务
+  pwpRecords      PWPRecord[]      // PWP记录
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("projects")
+}
+
+// 项目成员关系表
+model ProjectMember {
+  id              String   @id @default(uuid())
+
+  projectId       String   @map("project_id")
+  userId          String   @map("user_id")
+
+  // 项目内角色
+  role            String   @default("member") // owner/admin/core_member/collaborator/observer
+
+  // 权限（JSON格式，支持细粒度控制）
+  permissions     Json     @default("{}") // 例如：{"canCreateTask": true, "canInviteMember": false}
+
+  // 成员状态
+  status          String   @default("active") // active/paused/left
+  joinedAt        DateTime @default(now()) @map("joined_at")
+  leftAt          DateTime? @map("left_at")
+
+  // 贡献度追踪
+  tasksCompleted  Int      @default(0) @map("tasks_completed")
+  pointsEarned    Int      @default(0) @map("points_earned")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // 关联
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+  @@index([role])
+  @@map("project_members")
+}
+
+// PWP记录表（Personal Workspace Protocol - 个人工作空间协议）
+// 用于不可篡改地记录所有工作过程和贡献
+model PWPRecord {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  projectId         String?  @map("project_id")
+
+  eventType         String   @map("event_type")
+  eventData         Json     @map("event_data")
+
+  relatedEntityType String?  @map("related_entity_type")
+  relatedEntityId   String?  @map("related_entity_id")
+
+  // 状态字段（用于决策交流功能）
+  status            String?  @default("active") @map("status")
+  // active | responded | archived
+
+  occurredAt        DateTime @default(now()) @map("occurred_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project           Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([eventType])
+  @@index([status])
+  @@index([occurredAt(sort: Desc)])
+  @@map("pwp_records")
+}
+
+// 工作区成员（用于任务匹配/协作）
+model WorkspaceMember {
+  id            String   @id @default(uuid())
+  ownerId       String   @map("owner_id")
+  name          String
+  skills        Json     @default("[]")
+  wuxingProfile Json     @default("{\"火\":20,\"金\":20,\"木\":20,\"水\":20,\"土\":20}") @map("wuxing_profile")
+  status        String   @default("active")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  assignedTasks WorkspaceTask[] @relation("WorkspaceTaskAssignee")
+
+  @@index([ownerId])
+  @@map("workspace_members")
+}
+
+// 工作区任务（用于轻量级任务与MCP工具）
+model WorkspaceTask {
+  id               String   @id @default(uuid())
+  ownerId          String   @map("owner_id")
+  title            String
+  description      String?  @db.Text
+  wuxing           String?
+  priority         String   @default("B")
+  skillsRequired   Json     @default("[]") @map("skills_required")
+  status           String   @default("pending")
+  progress         Int      @default(0)
+  assignedMemberId String?  @map("assigned_member_id")
+  createdByUserId  String   @map("created_by_user_id")
+  rewardPoints     Int      @default(20) @map("reward_points")
+  notes            String?  @db.Text
+  aiExecutionResult String? @db.Text @map("ai_execution_result")
+  multiAI          Json?    @map("multi_ai")
+
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  owner            User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  assignee         WorkspaceMember? @relation("WorkspaceTaskAssignee", fields: [assignedMemberId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId])
+  @@index([assignedMemberId])
+  @@index([status])
+  @@map("workspace_tasks")
 }

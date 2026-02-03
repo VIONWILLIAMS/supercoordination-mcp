@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晶体排行榜 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        /* 标签页 */
+        .tabs {
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* 时间范围过滤 */
+        .filters {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 主卡片 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        /* 排行榜列表 */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .ranking-item:hover {
+            background: #f0f4ff;
+            transform: translateX(4px);
+        }
+
+        /* 排名徽章 */
+        .rank-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .rank-badge.gold {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+        }
+
+        .rank-badge.silver {
+            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+            color: white;
+        }
+
+        .rank-badge.bronze {
+            background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+            color: white;
+        }
+
+        .rank-badge.normal {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        /* 内容区 */
+        .ranking-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ranking-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ranking-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .ranking-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 分数 */
+        .ranking-score {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 贡献者排行 */
+        .contributor-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .contributor-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .contributor-stat {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .contributor-stat-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .contributor-stat-label {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .contributor-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .ranking-meta {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <a href="/crystal-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回晶体库</a>
+        </div>
+
+        <!-- 标签页 -->
+        <div class="tabs">
+            <button class="tab active" data-tab="solutions" onclick="switchTab('solutions')">
+                🏆 高品质晶体榜
+            </button>
+            <button class="tab" data-tab="contributors" onclick="switchTab('contributors')">
+                👑 贡献者榜
+            </button>
+        </div>
+
+        <!-- 时间范围过滤 -->
+        <div class="filters">
+            <span class="filter-label">时间范围：</span>
+            <div class="filter-buttons">
+                <button class="filter-btn" data-range="week" onclick="setTimeRange('week')">本周</button>
+                <button class="filter-btn active" data-range="month" onclick="setTimeRange('month')">本月</button>
+                <button class="filter-btn" data-range="year" onclick="setTimeRange('year')">今年</button>
+                <button class="filter-btn" data-range="all" onclick="setTimeRange('all')">全部</button>
+            </div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="card">
+            <div id="rankingContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>加载排行榜...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentTab = 'solutions';
+        let currentTimeRange = 'month';
+
+        // 检查登录
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRankings();
+        });
+
+        // 切换标签页
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+            loadRankings();
+        }
+
+        // 设置时间范围
+        function setTimeRange(range) {
+            currentTimeRange = range;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.range === range);
+            });
+            loadRankings();
+        }
+
+        // 加载排行榜
+        async function loadRankings() {
+            const container = document.getElementById('rankingContent');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>加载排行榜...</div>
+                </div>
+            `;
+
+            try {
+                if (currentTab === 'solutions') {
+                    await loadTopRatedSolutions();
+                } else {
+                    await loadTopContributors();
+                }
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div>加载失败，请重试</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 加载高品质晶体榜
+        async function loadTopRatedSolutions() {
+            const response = await authFetch(`/api/solutions/rankings/top-rated?limit=20&timeRange=${currentTimeRange}`);
+            const data = await response.json();
+
+            if (data.success) {
+                renderSolutionsRanking(data.solutions);
+            }
+        }
+
+        // 加载贡献者榜
+        async function loadTopContributors() {
+            const response = await authFetch(`/api/solutions/rankings/contributors?limit=20&timeRange=${currentTimeRange}`);
+            const data = await response.json();
+
+            if (data.success) {
+                renderContributorsRanking(data.contributors);
+            }
+        }
+
+        // 渲染晶体排行榜
+        function renderSolutionsRanking(solutions) {
+            const container = document.getElementById('rankingContent');
+
+            if (!solutions || solutions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div>暂无排行数据</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="ranking-list">
+                    ${solutions.map((solution, index) => {
+                        const rank = index + 1;
+                        let badgeClass = 'normal';
+                        if (rank === 1) badgeClass = 'gold';
+                        else if (rank === 2) badgeClass = 'silver';
+                        else if (rank === 3) badgeClass = 'bronze';
+
+                        return `
+                            <a class="ranking-item" href="/crystal-detail.html?id=${solution.id}">
+                                <div class="rank-badge ${badgeClass}">
+                                    ${rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : rank}
+                                </div>
+
+                                <div class="ranking-content">
+                                    <div class="ranking-title">${escapeHtml(solution.title)}</div>
+                                    <div class="ranking-meta">
+                                        <span>👤 ${escapeHtml(solution.author.username)}</span>
+                                        <span>👁️ ${solution.viewCount || 0} 浏览</span>
+                                        <span>🔗 ${solution.referenceCount || 0} 引用</span>
+                                        <span>📊 ${solution._count?.ratings || 0} 评分</span>
+                                    </div>
+                                </div>
+
+                                <div class="ranking-score">
+                                    <div class="score-value">⭐${parseFloat(solution.avgRating).toFixed(1)}</div>
+                                    <div class="score-label">综合评分</div>
+                                </div>
+                            </a>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // 渲染贡献者排行榜
+        function renderContributorsRanking(contributors) {
+            const container = document.getElementById('rankingContent');
+
+            if (!contributors || contributors.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div>暂无贡献数据</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="ranking-list">
+                    ${contributors.map((contributor, index) => {
+                        const rank = index + 1;
+                        let badgeClass = 'normal';
+                        if (rank === 1) badgeClass = 'gold';
+                        else if (rank === 2) badgeClass = 'silver';
+                        else if (rank === 3) badgeClass = 'bronze';
+
+                        return `
+                            <div class="ranking-item">
+                                <div class="rank-badge ${badgeClass}">
+                                    ${rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : rank}
+                                </div>
+
+                                <div class="contributor-avatar">
+                                    ${contributor.user.username.charAt(0).toUpperCase()}
+                                </div>
+
+                                <div class="ranking-content">
+                                    <div class="ranking-title">
+                                        ${escapeHtml(contributor.user.username)}
+                                        ${contributor.user.serialNumber ? '#' + String(contributor.user.serialNumber).padStart(3, '0') : ''}
+                                    </div>
+                                    <div class="contributor-stats">
+                                        <div class="contributor-stat">
+                                            <div class="contributor-stat-value">${contributor.solutionCount}</div>
+                                            <div class="contributor-stat-label">晶体</div>
+                                        </div>
+                                        <div class="contributor-stat">
+                                            <div class="contributor-stat-value">${contributor.totalReferences}</div>
+                                            <div class="contributor-stat-label">引用</div>
+                                        </div>
+                                        <div class="contributor-stat">
+                                            <div class="contributor-stat-value">${contributor.totalViews}</div>
+                                            <div class="contributor-stat-label">浏览</div>
+                                        </div>
+                                        <div class="contributor-stat">
+                                            <div class="contributor-stat-value">⭐${contributor.avgRating}</div>
+                                            <div class="contributor-stat-label">平均分</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

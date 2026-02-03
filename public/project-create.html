@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建项目 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        /* 主卡片 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 24px;
+        }
+
+        /* 提示框 */
+        .tips-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tips-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .tips-list {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+            margin-left: 16px;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        /* 五行选择器 */
+        .wuxing-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .wuxing-option {
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .wuxing-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .wuxing-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .wuxing-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .wuxing-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 积分提示 */
+        .points-notice {
+            background: #fff4e6;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #d97706;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .wuxing-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .btn-group {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <a href="/projects.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回项目列表</a>
+        </div>
+
+        <!-- 主卡片 -->
+        <div class="card">
+            <h1 class="card-title">🚀 创建新项目</h1>
+            <p class="card-subtitle">无项目不团队，开启协作新篇章</p>
+
+            <div class="points-notice">
+                <span>💰</span>
+                <span>创建项目需要消耗 <strong>50积分</strong>，当前积分余额: <strong id="pointsBalance">--</strong></span>
+            </div>
+
+            <div class="tips-box">
+                <div class="tips-title">✨ 项目创建提示</div>
+                <ul class="tips-list">
+                    <li>项目名称要简洁明了，突出核心目标</li>
+                    <li>选择与战略目标对齐的五行属性</li>
+                    <li>设置合理的积分预算，激励团队成员</li>
+                    <li>项目创建后即可邀请成员和创建任务</li>
+                </ul>
+            </div>
+
+            <form id="projectForm">
+                <!-- 项目名称 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        项目名称 <span class="required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="name"
+                        class="form-input"
+                        placeholder="例如：超协体社区运营"
+                        required
+                    >
+                </div>
+
+                <!-- 项目描述 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        项目描述 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <textarea
+                        id="description"
+                        class="form-textarea"
+                        placeholder="描述项目目标、交付物和价值..."
+                    ></textarea>
+                    <div class="form-hint">清晰的描述能帮助团队成员快速理解项目</div>
+                </div>
+
+                <!-- 战略目标 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        战略目标对齐 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <select id="strategicGoal" class="form-select">
+                        <option value="">请选择</option>
+                        <option value="1">战略目标一：超协体（生态根基）</option>
+                        <option value="2">战略目标二：AIGC Studio（传播引擎）</option>
+                        <option value="3">战略目标三：Auto-Business Club（商业核心）</option>
+                    </select>
+                    <div class="form-hint">选择项目对齐的战略目标</div>
+                </div>
+
+                <!-- 五行属性 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        五行主属性 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <div class="wuxing-selector">
+                        <div class="wuxing-option" data-wuxing="wood" onclick="selectWuxing('wood')">
+                            <div class="wuxing-icon">🌳</div>
+                            <div class="wuxing-label">木</div>
+                        </div>
+                        <div class="wuxing-option" data-wuxing="fire" onclick="selectWuxing('fire')">
+                            <div class="wuxing-icon">🔥</div>
+                            <div class="wuxing-label">火</div>
+                        </div>
+                        <div class="wuxing-option" data-wuxing="earth" onclick="selectWuxing('earth')">
+                            <div class="wuxing-icon">🏔️</div>
+                            <div class="wuxing-label">土</div>
+                        </div>
+                        <div class="wuxing-option" data-wuxing="metal" onclick="selectWuxing('metal')">
+                            <div class="wuxing-icon">⚙️</div>
+                            <div class="wuxing-label">金</div>
+                        </div>
+                        <div class="wuxing-option" data-wuxing="water" onclick="selectWuxing('water')">
+                            <div class="wuxing-icon">🌊</div>
+                            <div class="wuxing-label">水</div>
+                        </div>
+                    </div>
+                    <div class="form-hint">选择项目的五行主属性，用于智能推荐成员</div>
+                </div>
+
+                <!-- 预计结束日期 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        预计结束日期 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <input
+                        type="date"
+                        id="expectedEndDate"
+                        class="form-input"
+                    >
+                </div>
+
+                <!-- 积分预算 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        项目积分预算 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <input
+                        type="number"
+                        id="pointsBudget"
+                        class="form-input"
+                        placeholder="0"
+                        min="0"
+                    >
+                    <div class="form-hint">为项目分配积分预算，用于奖励完成任务的成员</div>
+                </div>
+
+                <!-- 按钮组 -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">
+                        取消
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        🚀 创建项目 (-50积分)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let selectedWuxing = null;
+
+        // 检查登录
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserPoints();
+        });
+
+        // 加载用户积分
+        async function loadUserPoints() {
+            try {
+                const response = await authFetch('/api/auth/me');
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('pointsBalance').textContent = data.user.pointsBalance;
+
+                    // 检查积分是否足够
+                    if (data.user.pointsBalance < 50) {
+                        document.getElementById('submitBtn').disabled = true;
+                        document.querySelector('.points-notice').innerHTML = `
+                            <span>⚠️</span>
+                            <span>积分不足！创建项目需要 <strong>50积分</strong>，当前余额: <strong>${data.user.pointsBalance}</strong></span>
+                        `;
+                        document.querySelector('.points-notice').style.background = '#fee2e2';
+                        document.querySelector('.points-notice').style.borderColor = '#dc2626';
+                        document.querySelector('.points-notice').style.color = '#dc2626';
+                    }
+                }
+            } catch (error) {
+                console.error('加载用户信息失败:', error);
+            }
+        }
+
+        // 选择五行
+        function selectWuxing(wuxing) {
+            selectedWuxing = wuxing;
+            document.querySelectorAll('.wuxing-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.wuxing === wuxing);
+            });
+        }
+
+        // 表单提交
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.textContent;
+
+            try {
+                btn.disabled = true;
+                btn.textContent = '创建中...';
+
+                const data = {
+                    name: document.getElementById('name').value.trim(),
+                    description: document.getElementById('description').value.trim() || null,
+                    strategicGoal: document.getElementById('strategicGoal').value || null,
+                    wuxingType: selectedWuxing,
+                    expectedEndDate: document.getElementById('expectedEndDate').value || null,
+                    pointsBudget: parseInt(document.getElementById('pointsBudget').value) || 0
+                };
+
+                const response = await authFetch('/api/projects', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('项目创建成功！');
+                    window.location.href = `/project-detail.html?id=${result.project.id}`;
+                } else {
+                    alert('创建失败：' + result.message);
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('创建项目失败:', error);
+                alert('创建失败，请重试');
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
+    </script>
+
+    <script src="/js/pwa.js" defer></script>
+</body>
+</html>
