@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目列表 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* 筛选栏 */
+        .filters {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 项目网格 */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .project-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .project-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-planning {
+            background: #fff4e6;
+            color: #d97706;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-paused {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-completed {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .project-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .project-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+        }
+
+        .project-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .project-owner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .owner-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .wuxing-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .wuxing-wood { background: #dcfce7; color: #16a34a; }
+        .wuxing-fire { background: #fee2e2; color: #dc2626; }
+        .wuxing-earth { background: #fef3c7; color: #ca8a04; }
+        .wuxing-metal { background: #f3f4f6; color: #6b7280; }
+        .wuxing-water { background: #dbeafe; color: #2563eb; }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-description {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .filter-group {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <div class="navbar-actions">
+                <button class="btn-primary" onclick="window.location.href='/project-create.html'">
+                    ➕ 创建项目
+                </button>
+            </div>
+        </div>
+
+        <!-- 筛选栏 -->
+        <div class="filters">
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="my" onclick="setFilter('my')">我的项目</button>
+                <button class="filter-btn" data-filter="all" onclick="setFilter('all')">全部项目</button>
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-status="all" onclick="setStatus('all')">全部</button>
+                <button class="filter-btn" data-status="planning" onclick="setStatus('planning')">规划中</button>
+                <button class="filter-btn" data-status="active" onclick="setStatus('active')">进行中</button>
+                <button class="filter-btn" data-status="completed" onclick="setStatus('completed')">已完成</button>
+            </div>
+        </div>
+
+        <!-- 项目列表 -->
+        <div id="projectsContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div>加载项目...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentFilter = 'my';
+        let currentStatus = 'all';
+
+        // 检查登录
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+        });
+
+        // 设置筛选
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            loadProjects();
+        }
+
+        // 设置状态
+        function setStatus(status) {
+            currentStatus = status;
+            document.querySelectorAll('[data-status]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === status);
+            });
+            loadProjects();
+        }
+
+        // 加载项目
+        async function loadProjects() {
+            const container = document.getElementById('projectsContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>加载项目...</div>
+                </div>
+            `;
+
+            try {
+                let url = `/api/projects?`;
+                if (currentFilter === 'my') {
+                    url += 'myProjects=true&';
+                }
+                if (currentStatus !== 'all') {
+                    url += `status=${currentStatus}&`;
+                }
+
+                const response = await authFetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderProjects(data.projects);
+                }
+            } catch (error) {
+                console.error('加载项目失败:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">加载失败</div>
+                        <div class="empty-description">请重试</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染项目列表
+        function renderProjects(projects) {
+            const container = document.getElementById('projectsContainer');
+
+            if (!projects || projects.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📁</div>
+                        <div class="empty-title">暂无项目</div>
+                        <div class="empty-description">创建你的第一个项目，开启协作之旅</div>
+                        <button class="btn-primary" onclick="window.location.href='/project-create.html'">
+                            ➕ 创建项目
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="projects-grid">
+                    ${projects.map(project => renderProjectCard(project)).join('')}
+                </div>
+            `;
+        }
+
+        // 渲染项目卡片
+        function renderProjectCard(project) {
+            const statusMap = {
+                planning: { label: '规划中', class: 'status-planning' },
+                active: { label: '进行中', class: 'status-active' },
+                paused: { label: '已暂停', class: 'status-paused' },
+                completed: { label: '已完成', class: 'status-completed' }
+            };
+
+            const wuxingMap = {
+                wood: { label: '🌳 木', class: 'wuxing-wood' },
+                fire: { label: '🔥 火', class: 'wuxing-fire' },
+                earth: { label: '🏔️ 土', class: 'wuxing-earth' },
+                metal: { label: '⚙️ 金', class: 'wuxing-metal' },
+                water: { label: '🌊 水', class: 'wuxing-water' }
+            };
+
+            const status = statusMap[project.status] || statusMap.planning;
+            const wuxing = project.wuxingType ? wuxingMap[project.wuxingType] : null;
+            const myRole = project.members && project.members.length > 0 ? project.members[0].role : null;
+
+            return `
+                <a class="project-card" href="/project-detail.html?id=${project.id}">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-title">${escapeHtml(project.name)}</div>
+                            ${myRole ? `<span style="font-size: 12px; color: #999;">我的角色: ${getRoleLabel(myRole)}</span>` : ''}
+                        </div>
+                        <span class="project-status ${status.class}">${status.label}</span>
+                    </div>
+
+                    ${project.description ? `
+                        <div class="project-description">${escapeHtml(project.description)}</div>
+                    ` : ''}
+
+                    <div class="project-meta">
+                        <span>👥 ${project._count.members || 0} 成员</span>
+                        <span>📋 ${project._count.tasks || 0} 任务</span>
+                        ${wuxing ? `<span class="wuxing-badge ${wuxing.class}">${wuxing.label}</span>` : ''}
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                    </div>
+                    <div class="progress-text">${project.progress || 0}% 完成</div>
+
+                    <div class="project-footer">
+                        <div class="project-owner">
+                            <div class="owner-avatar">${project.owner.username.charAt(0).toUpperCase()}</div>
+                            <span>${escapeHtml(project.owner.username)}</span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        // 角色标签
+        function getRoleLabel(role) {
+            const labels = {
+                owner: '所有者',
+                admin: '管理员',
+                core_member: '核心成员',
+                collaborator: '协作者',
+                observer: '观察者'
+            };
+            return labels[role] || role;
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+
+    <script src="/js/pwa.js" defer></script>
+</body>
+</html>
