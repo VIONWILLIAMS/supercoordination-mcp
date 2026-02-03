@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务详情 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 24px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #111827;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 24px 0 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .result-msg {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .result-success { color: #16a34a; }
+        .result-error { color: #dc2626; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体 · 任务详情</a>
+            <div class="navbar-nav">
+                <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                <a href="/dashboard.html" class="nav-link">工作台</a>
+            </div>
+        </div>
+
+        <div class="card" id="detailCard">
+            <div class="card-title" id="taskTitle">任务详情</div>
+            <div class="card-subtitle" id="taskSubtitle">正在加载任务信息...</div>
+
+            <div id="detailContent" style="display:none;">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">状态</div>
+                        <div class="info-value" id="infoStatus">--</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">优先级</div>
+                        <div class="info-value" id="infoPriority">--</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">五行</div>
+                        <div class="info-value" id="infoWuxing">--</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">进度</div>
+                        <div class="info-value" id="infoProgress">--</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">奖励积分</div>
+                        <div class="info-value" id="infoReward">--</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">指派成员</div>
+                        <div class="info-value" id="infoAssignee">--</div>
+                    </div>
+                </div>
+
+                <div class="section-title">任务描述</div>
+                <p id="infoDescription" style="line-height:1.8;color:#374151;"></p>
+
+                <div class="section-title">更新任务状态</div>
+                <form id="updateForm">
+                    <div class="form-group">
+                        <label class="form-label">状态</label>
+                        <select class="form-select" id="status">
+                            <option value="pending">待处理</option>
+                            <option value="in_progress">进行中</option>
+                            <option value="completed">已完成</option>
+                            <option value="blocked">阻塞</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">进度（0-100）</label>
+                        <input class="form-input" type="number" id="progress" min="0" max="100" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-textarea" id="notes" placeholder="记录任务进展或备注"></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">保存更新</button>
+                        <button type="button" class="btn btn-secondary" onclick="goBack()">返回</button>
+                    </div>
+                    <div class="result-msg" id="resultMsg"></div>
+                </form>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display:none;">
+                未找到任务信息或无权限访问
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const taskId = params.get('id');
+
+        const detailContent = document.getElementById('detailContent');
+        const emptyState = document.getElementById('emptyState');
+        const taskTitle = document.getElementById('taskTitle');
+        const taskSubtitle = document.getElementById('taskSubtitle');
+
+        function goBack() {
+            window.location.href = '/my-tasks.html';
+        }
+
+        function setResult(text, type) {
+            const msg = document.getElementById('resultMsg');
+            msg.textContent = text;
+            msg.className = `result-msg ${type === 'success' ? 'result-success' : 'result-error'}`;
+        }
+
+        function formatDate(value) {
+            if (!value) return '--';
+            const date = new Date(value);
+            return date.toLocaleString('zh-CN');
+        }
+
+        async function loadTask() {
+            if (!taskId) {
+                taskSubtitle.textContent = '任务ID缺失';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await authFetch(`/api/tasks/${taskId}`);
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    taskSubtitle.textContent = '无法加载任务详情';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                const task = data.task;
+                taskTitle.textContent = task.title || '任务详情';
+                taskSubtitle.textContent = `创建时间：${formatDate(task.created_at)}`;
+
+                document.getElementById('infoStatus').textContent = task.status || '--';
+                document.getElementById('infoPriority').textContent = task.priority || '--';
+                document.getElementById('infoWuxing').textContent = task.wuxing || '--';
+                document.getElementById('infoProgress').textContent = `${task.progress || 0}%`;
+                document.getElementById('infoReward').textContent = task.reward_points || 0;
+                document.getElementById('infoAssignee').textContent = task.assigned_to_name || '未指派';
+                document.getElementById('infoDescription').textContent = task.description || '';
+
+                document.getElementById('status').value = task.status || 'pending';
+                document.getElementById('progress').value = task.progress || 0;
+                document.getElementById('notes').value = task.notes || '';
+
+                detailContent.style.display = 'block';
+            } catch (error) {
+                console.error('加载任务失败:', error);
+                taskSubtitle.textContent = '无法加载任务详情';
+                emptyState.style.display = 'block';
+            }
+        }
+
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const status = document.getElementById('status').value;
+            const progress = parseInt(document.getElementById('progress').value || '0', 10);
+            const notes = document.getElementById('notes').value.trim();
+
+            try {
+                const response = await authFetch(`/api/tasks/${taskId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status, progress, notes })
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    setResult(data.message || '更新失败', 'error');
+                    return;
+                }
+
+                setResult('更新成功', 'success');
+                await loadTask();
+            } catch (error) {
+                console.error('更新任务失败:', error);
+                setResult('更新失败，请稍后重试', 'error');
+            }
+        });
+
+        loadTask();
+    </script>
+    <script src="/js/pwa.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建任务 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 24px;
+        }
+
+        .tips-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tips-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .tips-list {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+            margin-left: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 140px;
+            line-height: 1.6;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .result-msg {
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .result-success { color: #16a34a; }
+        .result-error { color: #dc2626; }
+
+        .project-only { display: none; }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体 · 任务中心</a>
+            <div class="navbar-nav">
+                <a href="/dashboard.html" class="nav-link">工作台</a>
+                <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                <a href="/projects.html" class="nav-link">项目</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" id="pageTitle">创建任务</div>
+            <div class="card-subtitle" id="pageSubtitle">填写任务信息，创建后可在任务列表中管理</div>
+
+            <div class="tips-box" id="projectTips" style="display:none;">
+                <div class="tips-title">项目任务提示</div>
+                <ul class="tips-list">
+                    <li>该任务将归属到当前项目</li>
+                    <li>可以选择指派给项目成员</li>
+                    <li>任务优先级使用：低/中/高</li>
+                </ul>
+            </div>
+
+            <form id="taskForm">
+                <div class="form-group">
+                    <label class="form-label">任务标题 <span class="required">*</span></label>
+                    <input class="form-input" id="title" required placeholder="例如：整理客户调研报告" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">任务描述 <span class="required">*</span></label>
+                    <textarea class="form-textarea" id="description" required placeholder="请描述任务目标、边界和期望产出"></textarea>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">优先级</label>
+                        <select class="form-select" id="priorityWorkspace">
+                            <option value="S">S（最高）</option>
+                            <option value="A">A</option>
+                            <option value="B" selected>B（默认）</option>
+                            <option value="C">C</option>
+                        </select>
+                        <select class="form-select project-only" id="priorityProject">
+                            <option value="low">低</option>
+                            <option value="medium" selected>中（默认）</option>
+                            <option value="high">高</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">五行倾向</label>
+                        <select class="form-select" id="wuxing">
+                            <option value="">不限制</option>
+                            <option value="火">火</option>
+                            <option value="金">金</option>
+                            <option value="木">木</option>
+                            <option value="水">水</option>
+                            <option value="土">土</option>
+                        </select>
+                        <div class="form-hint">用于任务推荐匹配</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">所需技能</label>
+                    <input class="form-input" id="skillsInput" placeholder="用逗号分隔，例如：产品、调研、运营" />
+                    <div class="form-hint">支持英文逗号或中文逗号</div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">奖励积分</label>
+                        <input class="form-input" type="number" id="rewardPoints" min="0" value="20" />
+                        <div class="form-hint">默认 20 分，可按需调整</div>
+                    </div>
+
+                    <div class="form-group project-only" id="estimatedGroup">
+                        <label class="form-label">预计工时（小时）</label>
+                        <input class="form-input" type="number" id="estimatedHours" min="1" placeholder="例如 8" />
+                    </div>
+                </div>
+
+                <div class="form-group project-only" id="assignedGroup">
+                    <label class="form-label">指派给成员（可选）</label>
+                    <select class="form-select" id="assignedTo">
+                        <option value="">暂不指派</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">创建任务</button>
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">取消</button>
+                </div>
+
+                <div class="result-msg" id="resultMsg"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const projectId = params.get('projectId');
+        const isProjectTask = !!projectId;
+
+        const projectTips = document.getElementById('projectTips');
+        const projectOnlyEls = document.querySelectorAll('.project-only');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+        const priorityWorkspace = document.getElementById('priorityWorkspace');
+        const priorityProject = document.getElementById('priorityProject');
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('resultMsg');
+            msg.textContent = text;
+            msg.className = `result-msg ${type === 'success' ? 'result-success' : 'result-error'}`;
+        }
+
+        function parseSkills(raw) {
+            if (!raw) return [];
+            return raw
+                .split(/[,，\s]+/)
+                .map(item => item.trim())
+                .filter(Boolean);
+        }
+
+        function goBack() {
+            if (isProjectTask) {
+                window.location.href = `/project-detail.html?id=${projectId}`;
+            } else {
+                window.location.href = '/my-tasks.html';
+            }
+        }
+
+        async function loadProjectMembers() {
+            try {
+                const response = await authFetch(`/api/projects/${projectId}/members`);
+                const data = await response.json();
+                if (!data.success) return;
+
+                const select = document.getElementById('assignedTo');
+                data.members.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.user.id;
+                    const serial = member.user.serialNumber ? `#${member.user.serialNumber} ` : '';
+                    option.textContent = `${serial}${member.user.username}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('加载项目成员失败:', error);
+            }
+        }
+
+        if (isProjectTask) {
+            projectTips.style.display = 'block';
+            projectOnlyEls.forEach(el => { el.style.display = 'block'; });
+            pageTitle.textContent = '创建项目任务';
+            pageSubtitle.textContent = '该任务将归属于当前项目';
+            priorityWorkspace.style.display = 'none';
+            priorityProject.style.display = 'block';
+            loadProjectMembers();
+        } else {
+            priorityProject.style.display = 'none';
+            priorityWorkspace.style.display = 'block';
+        }
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const skills = parseSkills(document.getElementById('skillsInput').value);
+            const wuxing = document.getElementById('wuxing').value;
+            const rewardPoints = parseInt(document.getElementById('rewardPoints').value || '20', 10);
+
+            if (!title || !description) {
+                showMessage('标题和描述不能为空', 'error');
+                return;
+            }
+
+            let endpoint = '/api/tasks';
+            let payload = {
+                title,
+                description,
+                wuxing: wuxing || null,
+                priority: priorityWorkspace.value,
+                skills_required: skills,
+                reward_points: rewardPoints
+            };
+
+            if (isProjectTask) {
+                endpoint = `/api/projects/${projectId}/tasks`;
+                const assignedTo = document.getElementById('assignedTo').value || null;
+                const estimatedHoursRaw = document.getElementById('estimatedHours').value;
+                const estimatedHours = estimatedHoursRaw ? parseInt(estimatedHoursRaw, 10) : null;
+                payload = {
+                    title,
+                    description,
+                    requiredSkills: skills,
+                    requiredWuxing: wuxing ? { [wuxing]: 60 } : {},
+                    assignedTo,
+                    priority: priorityProject.value,
+                    rewardPoints: rewardPoints,
+                    estimatedHours
+                };
+            }
+
+            try {
+                const response = await authFetch(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    showMessage(data.message || '创建失败，请重试', 'error');
+                    return;
+                }
+
+                showMessage('创建成功，正在跳转...', 'success');
+                setTimeout(() => {
+                    if (isProjectTask) {
+                        window.location.href = `/project-detail.html?id=${projectId}`;
+                    } else {
+                        window.location.href = '/my-tasks.html';
+                    }
+                }, 800);
+            } catch (error) {
+                console.error('创建任务失败:', error);
+                showMessage('创建失败，请稍后重试', 'error');
+            }
+        });
+    </script>
+    <script src="/js/pwa.js" defer></script>
+</body>
+</html>
