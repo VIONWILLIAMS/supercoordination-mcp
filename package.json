@@ -12,7 +12,7 @@
     "prisma:push": "prisma db push",
     "migrate:store": "node scripts/migrate-store-to-db.js",
     "setup:local": "bash scripts/setup-local.sh",
-    "start:railway": "npx prisma generate --schema=prisma/schema.prisma && npx prisma db push && node src/server.js",
+    "start:railway": "node src/server.js",
     "check:env": "bash scripts/check-env.sh",
     "check:deploy": "bash scripts/check-deploy.sh"
   },

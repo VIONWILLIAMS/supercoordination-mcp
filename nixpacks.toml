@@ -1,4 +1,4 @@
 [phases.setup]
 # Ensure Prisma can find libssl (required by schema/query engine)
 # Railway uses Nixpacks; install OpenSSL 1.1 to match Prisma default.
-nixPkgs = ["openssl_1_1"]
+nixPkgs = ["openssl_1_1", "openssl_3"]
