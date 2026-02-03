@@ -59,6 +59,10 @@ PostgreSQL会自动创建，大约需要30秒。
 - `ANTHROPIC_API_KEY`
 - `CORS_ORIGINS`
 
+### 步骤8：如果出现 Prisma/OpenSSL 报错
+项目已提供 `nixpacks.toml`，会自动安装 `openssl_1_1`。  
+如仍失败，请在 Railway 重新部署一次。
+
 ---
 
 ## ✅ 完成后通知
