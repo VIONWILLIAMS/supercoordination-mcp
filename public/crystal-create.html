@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>凝结晶体 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        /* 主卡片 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 24px;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .form-textarea.large {
+            min-height: 300px;
+        }
+
+        /* 标签输入 */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            min-height: 44px;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f0f4ff;
+            color: #667eea;
+            border-radius: 16px;
+            font-size: 13px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.7;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        .tag-input {
+            flex: 1;
+            min-width: 150px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #f0f4ff;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 提示框 */
+        .tips-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tips-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .tips-list {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+            margin-left: 16px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <a href="/crystal-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回晶体库</a>
+        </div>
+
+        <!-- 主卡片 -->
+        <div class="card">
+            <h1 class="card-title">💎 发布知识晶体</h1>
+
+            <div class="tips-box">
+                <div class="tips-title">✨ 发布提示</div>
+                <ul class="tips-list">
+                    <li>清晰描述问题和知识晶体，帮助他人快速理解</li>
+                    <li>提供代码片段或实现细节，增加可复用性</li>
+                    <li>添加相关标签，方便其他成员搜索和引用</li>
+                    <li>发布后获得<strong>50积分</strong>，被引用还有额外奖励</li>
+                </ul>
+            </div>
+
+            <form id="solutionForm">
+                <!-- 标题 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        晶体标题 <span class="required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="title"
+                        class="form-input"
+                        placeholder="例如：使用Redis实现分布式锁的最佳实践"
+                        required
+                    >
+                </div>
+
+                <!-- 问题定义 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        问题描述 <span class="required">*</span>
+                    </label>
+                    <textarea
+                        id="problemDefinition"
+                        class="form-textarea"
+                        placeholder="描述你遇到的问题或需求场景..."
+                        required
+                    ></textarea>
+                    <div class="form-hint">清晰描述问题背景，帮助他人判断适用性</div>
+                </div>
+
+                <!-- 知识晶体 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        知识晶体 <span class="required">*</span>
+                    </label>
+                    <textarea
+                        id="solutionContent"
+                        class="form-textarea large"
+                        placeholder="详细描述你的解决思路和实现步骤...&#10;&#10;支持Markdown格式：&#10;- 使用 **粗体** 强调重点&#10;- 使用 `代码` 标记代码&#10;- 使用列表组织步骤"
+                        required
+                    ></textarea>
+                    <div class="form-hint">详细说明实现步骤和关键要点（支持Markdown）</div>
+                </div>
+
+                <!-- 代码片段 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        代码片段 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <textarea
+                        id="codeSnippet"
+                        class="form-textarea large"
+                        placeholder="贴上关键代码片段，帮助他人理解实现...&#10;&#10;例如：&#10;const redis = require('redis');&#10;const client = redis.createClient();&#10;&#10;async function acquireLock(key, timeout) {&#10;  // 实现代码...&#10;}"
+                        style="font-family: 'Monaco', 'Menlo', monospace; font-size: 13px;"
+                    ></textarea>
+                </div>
+
+                <!-- 标签 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        标签 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <div class="tags-container" id="tagsContainer">
+                        <input
+                            type="text"
+                            id="tagInput"
+                            class="tag-input"
+                            placeholder="输入标签后按回车添加，例如：Redis、分布式、后端"
+                        >
+                    </div>
+                    <div class="form-hint">添加标签方便搜索和分类（最多5个）</div>
+                </div>
+
+                <!-- 难度级别 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        难度级别 <span style="color: #999;">(可选)</span>
+                    </label>
+                    <select id="difficultyLevel" class="form-input">
+                        <option value="">请选择</option>
+                        <option value="1">⭐ 入门级</option>
+                        <option value="2">⭐⭐ 初级</option>
+                        <option value="3">⭐⭐⭐ 中级</option>
+                        <option value="4">⭐⭐⭐⭐ 高级</option>
+                        <option value="5">⭐⭐⭐⭐⭐ 专家级</option>
+                    </select>
+                </div>
+
+                <!-- 按钮组 -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                        💾 保存草稿
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="publishBtn">
+                        🚀 凝结晶体 (+50积分)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let tags = [];
+
+        // 检查登录
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        // 标签输入处理
+        document.getElementById('tagInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = e.target;
+                const tag = input.value.trim();
+
+                if (tag && tags.length < 5 && !tags.includes(tag)) {
+                    tags.push(tag);
+                    renderTags();
+                    input.value = '';
+                } else if (tags.length >= 5) {
+                    alert('最多只能添加5个标签');
+                }
+            }
+        });
+
+        // 渲染标签
+        function renderTags() {
+            const container = document.getElementById('tagsContainer');
+            const tagInput = document.getElementById('tagInput');
+
+            const tagsHTML = tags.map((tag, index) => `
+                <div class="tag-item">
+                    <span>${tag}</span>
+                    <span class="tag-remove" onclick="removeTag(${index})">×</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = tagsHTML;
+            container.appendChild(tagInput);
+        }
+
+        // 删除标签
+        function removeTag(index) {
+            tags.splice(index, 1);
+            renderTags();
+        }
+
+        // 保存草稿
+        async function saveDraft() {
+            const data = collectFormData('draft');
+
+            if (!data.title || !data.problemDefinition || !data.solutionContent) {
+                alert('请至少填写标题、问题描述和知识晶体');
+                return;
+            }
+
+            await submitSolution(data, '草稿保存成功');
+        }
+
+        // 表单提交
+        document.getElementById('solutionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = collectFormData('published');
+            await submitSolution(data, '晶体发布成功！获得50积分');
+        });
+
+        // 收集表单数据
+        function collectFormData(status) {
+            return {
+                title: document.getElementById('title').value.trim(),
+                problemDefinition: document.getElementById('problemDefinition').value.trim(),
+                solutionContent: document.getElementById('solutionContent').value.trim(),
+                codeSnippet: document.getElementById('codeSnippet').value.trim() || null,
+                manualTags: tags,
+                difficultyLevel: parseInt(document.getElementById('difficultyLevel').value) || null,
+                status: status
+            };
+        }
+
+        // 提交晶体
+        async function submitSolution(data, successMessage) {
+            const btn = document.getElementById('publishBtn');
+            const originalText = btn.textContent;
+
+            try {
+                btn.disabled = true;
+                btn.textContent = '提交中...';
+
+                const response = await authFetch('/api/solutions', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(successMessage);
+                    window.location.href = `/crystal-detail.html?id=${result.solution.id}`;
+                } else {
+                    alert('提交失败：' + result.message);
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('提交晶体失败:', error);
+                alert('提交失败，请重试');
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+    </script>
+</body>
+</html>

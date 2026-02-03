@@ -1,0 +1,5 @@
+# 快速启动
+npm install
+npx prisma generate
+npx prisma db push
+npm start

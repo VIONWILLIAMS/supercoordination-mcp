@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成员列表 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/js/websocket-client.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* 标签页 */
+        .tabs-container {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .tab.active {
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .tab-count {
+            background: rgba(255,255,255,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        /* 成员网格 */
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .member-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .member-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .member-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .member-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .member-info p {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .member-serial {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        /* 五行雷达图 */
+        .wuxing-radar {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            margin-bottom: 16px;
+        }
+
+        .wuxing-bars {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            height: 100px;
+            align-items: flex-end;
+        }
+
+        .wuxing-bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wuxing-bar {
+            width: 100%;
+            max-width: 40px;
+            background: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .wuxing-bar-fill {
+            width: 100%;
+            border-radius: 20px;
+            transition: height 0.5s;
+        }
+
+        .wuxing-fire .wuxing-bar-fill { background: linear-gradient(0deg, #ff6b6b, #ff2e63); }
+        .wuxing-metal .wuxing-bar-fill { background: linear-gradient(0deg, #ffd93d, #f9ca24); }
+        .wuxing-wood .wuxing-bar-fill { background: linear-gradient(0deg, #6bff92, #06d6a0); }
+        .wuxing-water .wuxing-bar-fill { background: linear-gradient(0deg, #00d9ff, #4facfe); }
+        .wuxing-earth .wuxing-bar-fill { background: linear-gradient(0deg, #c77dff, #9d4edd); }
+
+        .wuxing-label {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+        }
+
+        .wuxing-icon {
+            font-size: 16px;
+        }
+
+        /* 技能标签 */
+        .member-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .skill-tag {
+            padding: 4px 10px;
+            background: #f0f0f0;
+            color: #555;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .skill-more {
+            color: #888;
+            font-size: 12px;
+        }
+
+        /* 成员统计 */
+        .member-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-hint {
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            background: white;
+            border-radius: 16px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .navbar-nav {
+                display: none;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <div class="navbar-nav">
+                <a href="/dashboard.html" class="nav-link">工作台</a>
+                <a href="/task-create.html" class="nav-link">创建任务</a>
+                <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                <a href="/members.html" class="nav-link active">成员</a>
+                <a href="/profile.html" class="nav-link">画像</a>
+            </div>
+        </nav>
+
+        <!-- 标签页 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" data-tab="community" onclick="switchTab('community')">
+                    社区成员
+                    <span class="tab-count" id="communityCount">0</span>
+                </button>
+                <button class="tab" data-tab="team" onclick="switchTab('team')">
+                    团队成员
+                    <span class="tab-count" id="teamCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 成员列表 -->
+        <div id="membersList">
+            <div class="loading">
+                <div class="spinner"></div>
+                加载成员中...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        let communityMembers = [];
+        let teamMembers = [];
+        let currentTab = 'community';
+
+        // 切换标签
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // 更新标签样式
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+
+            renderMembers();
+        }
+
+        // 加载社区成员（数据库中的正式成员）
+        async function loadCommunityMembers() {
+            try {
+                const response = await authFetch('/api/community/members');
+                const data = await response.json();
+
+                if (data.success) {
+                    communityMembers = data.members;
+                    document.getElementById('communityCount').textContent = communityMembers.length;
+                }
+            } catch (error) {
+                console.error('加载社区成员失败:', error);
+            }
+        }
+
+        // 加载团队成员（JSON存储的成员）
+        async function loadTeamMembers() {
+            try {
+                const response = await authFetch('/api/members');
+                const data = await response.json();
+
+                if (data.success) {
+                    teamMembers = data.members;
+                    document.getElementById('teamCount').textContent = teamMembers.length;
+                }
+            } catch (error) {
+                console.error('加载团队成员失败:', error);
+            }
+        }
+
+        // 渲染成员
+        function renderMembers() {
+            const listEl = document.getElementById('membersList');
+            const members = currentTab === 'community' ? communityMembers : teamMembers;
+
+            if (members.length === 0) {
+                const emptyMessages = {
+                    community: { icon: '👥', text: '暂无社区成员', hint: '邀请更多人加入超协体' },
+                    team: { icon: '🤝', text: '暂无团队成员', hint: '通过工作台注册成员' }
+                };
+                const msg = emptyMessages[currentTab];
+
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">${msg.icon}</div>
+                        <div class="empty-text">${msg.text}</div>
+                        <div class="empty-hint">${msg.hint}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            if (currentTab === 'community') {
+                renderCommunityMembers(members);
+            } else {
+                renderTeamMembers(members);
+            }
+        }
+
+        // 渲染社区成员
+        function renderCommunityMembers(members) {
+            const listEl = document.getElementById('membersList');
+
+            listEl.innerHTML = `
+                <div class="members-grid">
+                    ${members.map(member => {
+                        const profile = member.pwpProfile || {};
+                        const wuxing = profile.wuxing || { fire: 20, metal: 20, wood: 20, water: 20, earth: 20 };
+                        const skills = profile.skills || [];
+
+                        return `
+                            <div class="member-card" onclick="window.location.href='/member-detail.html?id=${member.id}&type=community'">
+                                <div class="member-header">
+                                    <div class="member-avatar">${(member.username || '?').charAt(0).toUpperCase()}</div>
+                                    <div class="member-info">
+                                        <h3>${escapeHtml(member.username)}${member.pwpProfile?.isAI ? '<span class="ai-badge">AI</span>' : ''}</h3>
+                                        <p>加入于 ${formatDate(member.approvedAt || member.createdAt)}</p>
+                                    </div>
+                                    ${member.serialNumber ? `<span class="member-serial">#${member.serialNumber}</span>` : ''}
+                                </div>
+
+                                <div class="wuxing-bars">
+                                    <div class="wuxing-bar-item wuxing-fire">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing.fire || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">🔥</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-metal">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing.metal || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">⚙️</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-wood">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing.wood || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">🌳</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-water">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing.water || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">💧</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-earth">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing.earth || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">🏔️</span></span>
+                                    </div>
+                                </div>
+
+                                ${skills.length > 0 ? `
+                                    <div class="member-skills">
+                                        ${skills.slice(0, 3).map(skill => `<span class="skill-tag">${escapeHtml(skill)}</span>`).join('')}
+                                        ${skills.length > 3 ? `<span class="skill-more">+${skills.length - 3}</span>` : ''}
+                                    </div>
+                                ` : '<div class="member-skills"><span class="skill-more">暂无技能标签</span></div>'}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // 渲染团队成员
+        function renderTeamMembers(members) {
+            const listEl = document.getElementById('membersList');
+
+            listEl.innerHTML = `
+                <div class="members-grid">
+                    ${members.map(member => {
+                        const wuxing = member.wuxing_profile || { '火': 20, '金': 20, '木': 20, '水': 20, '土': 20 };
+
+                        return `
+                            <div class="member-card" onclick="window.location.href='/member-detail.html?id=${member.id}&type=team'">
+                                <div class="member-header">
+                                    <div class="member-avatar">${(member.name || '?').charAt(0).toUpperCase()}</div>
+                                    <div class="member-info">
+                                        <h3>${escapeHtml(member.name)}</h3>
+                                        <p>注册于 ${formatDate(member.created_at)}</p>
+                                    </div>
+                                </div>
+
+                                <div class="wuxing-bars">
+                                    <div class="wuxing-bar-item wuxing-fire">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing['火'] || wuxing.fire || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">🔥</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-metal">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing['金'] || wuxing.metal || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">⚙️</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-wood">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing['木'] || wuxing.wood || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">🌳</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-water">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing['水'] || wuxing.water || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">💧</span></span>
+                                    </div>
+                                    <div class="wuxing-bar-item wuxing-earth">
+                                        <div class="wuxing-bar">
+                                            <div class="wuxing-bar-fill" style="height: ${wuxing['土'] || wuxing.earth || 0}%"></div>
+                                        </div>
+                                        <span class="wuxing-label"><span class="wuxing-icon">🏔️</span></span>
+                                    </div>
+                                </div>
+
+                                ${member.skills && member.skills.length > 0 ? `
+                                    <div class="member-skills">
+                                        ${member.skills.slice(0, 3).map(skill => `<span class="skill-tag">${escapeHtml(skill)}</span>`).join('')}
+                                        ${member.skills.length > 3 ? `<span class="skill-more">+${member.skills.length - 3}</span>` : ''}
+                                    </div>
+                                ` : '<div class="member-skills"><span class="skill-more">暂无技能标签</span></div>'}
+
+                                <div class="member-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value">${member.task_count || 0}</div>
+                                        <div class="stat-label">进行中</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">${member.completed_count || 0}</div>
+                                        <div class="stat-label">已完成</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // 格式化日期
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 页面加载
+        Promise.all([loadCommunityMembers(), loadTeamMembers()]).then(() => {
+            renderMembers();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成员详情 - 超协体</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* 主内容 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-full {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .card-full {
+                grid-column: span 1;
+            }
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 成员头部 */
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .member-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .member-info h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .member-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .member-serial {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .member-points {
+            color: #ffa726;
+            font-weight: 600;
+        }
+
+        /* 五行雷达图 - CSS实现 */
+        .wuxing-radar-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .wuxing-pentagon {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+        }
+
+        .wuxing-bars-vertical {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 200px;
+            padding: 20px 0;
+        }
+
+        .wuxing-bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .wuxing-bar {
+            width: 100%;
+            max-width: 50px;
+            height: 150px;
+            background: #f0f0f0;
+            border-radius: 25px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .wuxing-bar-fill {
+            width: 100%;
+            border-radius: 25px;
+            transition: height 0.8s ease-out;
+        }
+
+        .wuxing-fire .wuxing-bar-fill { background: linear-gradient(0deg, #ff6b6b, #ff2e63); }
+        .wuxing-metal .wuxing-bar-fill { background: linear-gradient(0deg, #ffd93d, #f9ca24); }
+        .wuxing-wood .wuxing-bar-fill { background: linear-gradient(0deg, #6bff92, #06d6a0); }
+        .wuxing-water .wuxing-bar-fill { background: linear-gradient(0deg, #00d9ff, #4facfe); }
+        .wuxing-earth .wuxing-bar-fill { background: linear-gradient(0deg, #c77dff, #9d4edd); }
+
+        .wuxing-label {
+            text-align: center;
+        }
+
+        .wuxing-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .wuxing-name {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .wuxing-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 技能标签 */
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill-tag {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .empty-skills {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        /* 信息列表 */
+        .info-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 任务历史 */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .task-item:hover {
+            background: #f0f4ff;
+        }
+
+        .task-item.completed { border-left-color: #388e3c; }
+        .task-item.in_progress { border-left-color: #1976d2; }
+        .task-item.pending { border-left-color: #f57c00; }
+
+        .task-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .task-status {
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .task-status.completed { background: #e8f5e9; color: #388e3c; }
+        .task-status.in_progress { background: #e3f2fd; color: #1976d2; }
+        .task-status.pending { background: #fff3e0; color: #f57c00; }
+
+        /* 积分历史 */
+        .points-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .points-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .points-info {
+            flex: 1;
+        }
+
+        .points-desc {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .points-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .points-amount {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .points-amount.positive { color: #388e3c; }
+        .points-amount.negative { color: #c62828; }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 返回按钮 */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: white;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* 推荐搭档样式 */
+        .recommended-partners-section {
+            margin-top: 20px;
+            padding: 24px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+            border-radius: 16px;
+            border: 2px solid #e0e7ff;
+        }
+
+        .partners-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .partners-badge {
+            font-size: 11px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: normal;
+        }
+
+        .partner-card {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .partner-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2);
+        }
+
+        .partner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .partner-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .partner-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .partner-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .partner-serial {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .complement-score {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .partner-scores {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .partner-reasons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .reason-tag {
+            display: inline-block;
+            background: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .medal-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .partners-empty {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .navbar-nav {
+                display: none;
+            }
+
+            .member-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .member-info h1 {
+                font-size: 22px;
+            }
+
+            .partner-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <div class="navbar-nav">
+                <a href="/dashboard.html" class="nav-link">工作台</a>
+                <a href="/task-create.html" class="nav-link">创建任务</a>
+                <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                <a href="/members.html" class="nav-link">成员</a>
+                <a href="/profile.html" class="nav-link">画像</a>
+            </div>
+        </nav>
+
+        <!-- 返回按钮 -->
+        <a href="/members.html" class="btn-back">
+            <span>←</span>
+            <span>返回成员列表</span>
+        </a>
+
+        <!-- 主内容 -->
+        <div id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                加载成员详情...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
+        }
+
+        // 获取参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const memberId = urlParams.get('id');
+        const memberType = urlParams.get('type') || 'community';
+
+        if (!memberId) {
+            document.getElementById('content').innerHTML = `
+                <div class="card">
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
+                        <div>未找到成员</div>
+                        <a href="/members.html" class="btn-back" style="display: inline-block; margin-top: 20px;">返回成员列表</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        let currentMember = null;
+
+        // 状态映射
+        const statusMap = {
+            'pending': '待分配',
+            'in_progress': '进行中',
+            'completed': '已完成',
+            'blocked': '已阻塞'
+        };
+
+        // 加载成员详情
+        async function loadMember() {
+            try {
+                let url = memberType === 'community'
+                    ? `/api/community/members/${memberId}`
+                    : `/api/members/${memberId}`;
+
+                const response = await authFetch(url);
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.message);
+                }
+
+                currentMember = data.member;
+                renderMember();
+            } catch (error) {
+                console.error('加载成员失败:', error);
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div style="text-align: center; padding: 40px; color: #c62828;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">❌</div>
+                            <div>加载失败：${error.message}</div>
+                            <a href="/members.html" class="btn-back" style="display: inline-block; margin-top: 20px;">返回成员列表</a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染成员详情
+        function renderMember() {
+            const member = currentMember;
+
+            if (memberType === 'community') {
+                renderCommunityMember(member);
+            } else {
+                renderTeamMember(member);
+            }
+        }
+
+        // 渲染社区成员
+        function renderCommunityMember(member) {
+            const profile = member.pwpProfile || {};
+            const wuxing = profile.wuxing || { fire: 20, metal: 20, wood: 20, water: 20, earth: 20 };
+            const skills = profile.skills || [];
+            const pointsHistory = member.pointsHistory || [];
+
+            document.getElementById('content').innerHTML = `
+                <div class="main-content">
+                    <!-- 成员头部 -->
+                    <div class="card card-full">
+                        <div class="member-header">
+                            <div class="member-avatar">${(member.username || '?').charAt(0).toUpperCase()}</div>
+                            <div class="member-info">
+                                <h1>${escapeHtml(member.username)}</h1>
+                                <div class="member-meta">
+                                    ${member.serialNumber ? `<span class="member-serial">#${member.serialNumber}</span>` : ''}
+                                    <span class="member-points">💰 ${member.pointsBalance || 0} 积分</span>
+                                    <span>📅 加入于 ${formatDate(member.approvedAt || member.createdAt)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 五行画像 -->
+                    <div class="card">
+                        <div class="card-title">☯️ 五行画像</div>
+                        <div class="wuxing-bars-vertical">
+                            <div class="wuxing-bar-item wuxing-fire">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing.fire || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">🔥</span>
+                                    <span class="wuxing-name">火</span>
+                                    <span class="wuxing-value">${wuxing.fire || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-metal">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing.metal || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">⚙️</span>
+                                    <span class="wuxing-name">金</span>
+                                    <span class="wuxing-value">${wuxing.metal || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-wood">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing.wood || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">🌳</span>
+                                    <span class="wuxing-name">木</span>
+                                    <span class="wuxing-value">${wuxing.wood || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-water">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing.water || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">💧</span>
+                                    <span class="wuxing-name">水</span>
+                                    <span class="wuxing-value">${wuxing.water || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-earth">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing.earth || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">🏔️</span>
+                                    <span class="wuxing-name">土</span>
+                                    <span class="wuxing-value">${wuxing.earth || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 技能标签 -->
+                    <div class="card">
+                        <div class="card-title">🛠️ 技能标签</div>
+                        ${skills.length > 0 ? `
+                            <div class="skills-list">
+                                ${skills.map(skill => `<span class="skill-tag">${escapeHtml(skill)}</span>`).join('')}
+                            </div>
+                        ` : `
+                            <div class="empty-skills">暂未设置技能标签</div>
+                        `}
+                    </div>
+
+                    <!-- 积分历史 -->
+                    <div class="card card-full">
+                        <div class="card-title">💰 积分历史</div>
+                        ${pointsHistory.length > 0 ? `
+                            <div class="points-list">
+                                ${pointsHistory.map(tx => `
+                                    <div class="points-item">
+                                        <div class="points-info">
+                                            <div class="points-desc">${escapeHtml(tx.description || tx.transactionType)}</div>
+                                            <div class="points-date">${formatDate(tx.createdAt)}</div>
+                                        </div>
+                                        <div class="points-amount ${tx.amount > 0 ? 'positive' : 'negative'}">
+                                            ${tx.amount > 0 ? '+' : ''}${tx.amount}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="empty-state">
+                                <div class="empty-icon">💰</div>
+                                <div>暂无积分记录</div>
+                            </div>
+                        `}
+                    </div>
+
+                    <!-- 推荐协作搭档 -->
+                    <div class="card card-full recommended-partners-section">
+                        <div class="partners-title">
+                            <span>🤝 推荐协作搭档</span>
+                            <span class="partners-badge">五行互补</span>
+                        </div>
+                        <div id="recommendedPartnersList">
+                            <div class="loading" style="padding: 30px;">
+                                <div class="spinner"></div>
+                                正在分析五行互补度...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 加载推荐搭档
+            loadRecommendedPartners(member.id);
+        }
+
+        // 渲染团队成员
+        function renderTeamMember(member) {
+            const wuxing = member.wuxing_profile || { '火': 20, '金': 20, '木': 20, '水': 20, '土': 20 };
+            const skills = member.skills || [];
+            const tasks = member.tasks || [];
+            const stats = member.stats || {};
+
+            document.getElementById('content').innerHTML = `
+                <div class="main-content">
+                    <!-- 成员头部 -->
+                    <div class="card card-full">
+                        <div class="member-header">
+                            <div class="member-avatar">${(member.name || '?').charAt(0).toUpperCase()}</div>
+                            <div class="member-info">
+                                <h1>${escapeHtml(member.name)}</h1>
+                                <div class="member-meta">
+                                    <span>📅 注册于 ${formatDate(member.created_at)}</span>
+                                    <span>📋 ${stats.total_tasks || 0} 个任务</span>
+                                    <span style="color: #388e3c;">✅ ${stats.completed || 0} 已完成</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 五行画像 -->
+                    <div class="card">
+                        <div class="card-title">☯️ 五行画像</div>
+                        <div class="wuxing-bars-vertical">
+                            <div class="wuxing-bar-item wuxing-fire">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing['火'] || wuxing.fire || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">🔥</span>
+                                    <span class="wuxing-name">火</span>
+                                    <span class="wuxing-value">${wuxing['火'] || wuxing.fire || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-metal">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing['金'] || wuxing.metal || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">⚙️</span>
+                                    <span class="wuxing-name">金</span>
+                                    <span class="wuxing-value">${wuxing['金'] || wuxing.metal || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-wood">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing['木'] || wuxing.wood || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">🌳</span>
+                                    <span class="wuxing-name">木</span>
+                                    <span class="wuxing-value">${wuxing['木'] || wuxing.wood || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-water">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing['水'] || wuxing.water || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">💧</span>
+                                    <span class="wuxing-name">水</span>
+                                    <span class="wuxing-value">${wuxing['水'] || wuxing.water || 0}</span>
+                                </div>
+                            </div>
+                            <div class="wuxing-bar-item wuxing-earth">
+                                <div class="wuxing-bar">
+                                    <div class="wuxing-bar-fill" style="height: ${wuxing['土'] || wuxing.earth || 0}%"></div>
+                                </div>
+                                <div class="wuxing-label">
+                                    <span class="wuxing-icon">🏔️</span>
+                                    <span class="wuxing-name">土</span>
+                                    <span class="wuxing-value">${wuxing['土'] || wuxing.earth || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 技能标签 -->
+                    <div class="card">
+                        <div class="card-title">🛠️ 技能标签</div>
+                        ${skills.length > 0 ? `
+                            <div class="skills-list">
+                                ${skills.map(skill => `<span class="skill-tag">${escapeHtml(skill)}</span>`).join('')}
+                            </div>
+                        ` : `
+                            <div class="empty-skills">暂未设置技能标签</div>
+                        `}
+                    </div>
+
+                    <!-- 任务历史 -->
+                    <div class="card card-full">
+                        <div class="card-title">📋 任务历史</div>
+                        ${tasks.length > 0 ? `
+                            <div class="task-list">
+                                ${tasks.map(task => `
+                                    <div class="task-item ${task.status}" onclick="window.location.href='/task-detail.html?id=${task.id}'">
+                                        <div class="task-title">${escapeHtml(task.title)}</div>
+                                        <div class="task-meta">
+                                            <span class="task-status ${task.status}">${statusMap[task.status] || task.status}</span>
+                                            ${task.wuxing ? `<span>☯️ ${task.wuxing}</span>` : ''}
+                                            <span>📊 ${task.progress || 0}%</span>
+                                            <span>${formatDate(task.updated_at)}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="empty-state">
+                                <div class="empty-icon">📋</div>
+                                <div>暂无任务记录</div>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 格式化日期
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========================================
+        // 推荐协作搭档
+        // ========================================
+
+        // 加载推荐搭档
+        async function loadRecommendedPartners(targetMemberId) {
+            try {
+                const response = await authFetch(`/api/members/${targetMemberId}/recommended-partners`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderRecommendedPartners(data.recommendations);
+                } else {
+                    console.error('获取推荐搭档失败:', data.message);
+                    document.getElementById('recommendedPartnersList').innerHTML = `
+                        <div class="partners-empty">
+                            <div style="font-size: 36px; margin-bottom: 12px;">⚠️</div>
+                            <div>加载推荐搭档失败</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to load recommended partners:', error);
+                document.getElementById('recommendedPartnersList').innerHTML = `
+                    <div class="partners-empty">
+                        <div style="font-size: 36px; margin-bottom: 12px;">⚠️</div>
+                        <div>加载推荐搭档失败</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染推荐搭档
+        function renderRecommendedPartners(recommendations) {
+            const container = document.getElementById('recommendedPartnersList');
+
+            if (!recommendations || recommendations.length === 0) {
+                container.innerHTML = `
+                    <div class="partners-empty">
+                        <div style="font-size: 36px; margin-bottom: 12px;">👥</div>
+                        <div>暂无推荐搭档</div>
+                        <div style="font-size: 13px; margin-top: 8px; color: #888;">
+                            需要更多成员加入才能进行五行互补分析
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const medals = ['🥇', '🥈', '🥉'];
+
+            container.innerHTML = recommendations.map((rec, index) => {
+                const { member, score, wuxingScore, skillScore, reasons } = rec;
+                const medal = medals[index] || '';
+
+                return `
+                    <div class="partner-card" onclick="window.location.href='/member-detail.html?id=${member.id}&type=community'">
+                        <div class="partner-header">
+                            <div class="partner-info">
+                                <div class="partner-avatar">${(member.username || '?').charAt(0).toUpperCase()}</div>
+                                <div>
+                                    <div class="partner-name">
+                                        <span class="medal-icon">${medal}</span>
+                                        ${escapeHtml(member.username)}
+                                    </div>
+                                    <div class="partner-serial">
+                                        超协体 #${String(member.serialNumber || 0).padStart(3, '0')}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="complement-score">互补度 ${score}%</span>
+                        </div>
+
+                        <div class="partner-scores">
+                            <span>五行互补: ${wuxingScore}%</span>
+                            <span>技能互补: ${skillScore}%</span>
+                        </div>
+
+                        ${reasons && reasons.length > 0 ? `
+                            <div class="partner-reasons">
+                                ${reasons.map(r => `<span class="reason-tag">💡 ${r}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 页面加载
+        if (memberId) {
+            loadMember();
+        }
+    </script>
+</body>
+</html>

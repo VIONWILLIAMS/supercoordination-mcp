@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统配置 - 超协体管理后台</title>
+    <script src="/js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+        }
+
+        .admin-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .admin-logo {
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-nav-link:hover,
+        .admin-nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-nav-link.back {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* 配置卡片 */
+        .settings-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+        }
+
+        .settings-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .input-with-suffix {
+            position: relative;
+        }
+
+        .input-with-suffix .form-input {
+            padding-right: 60px;
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 13px;
+        }
+
+        /* 开关按钮 */
+        .switch-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .switch-group:last-child {
+            border-bottom: none;
+        }
+
+        .switch-label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .switch-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .switch-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* 保存按钮 */
+        .save-btn-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* 状态指示 */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-indicator.success {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-indicator.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-indicator.error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-indicator.success .status-dot { background: #059669; }
+        .status-indicator.warning .status-dot { background: #d97706; }
+        .status-indicator.error .status-dot { background: #dc2626; }
+
+        /* 提示框 */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-info {
+            background: #e0e7ff;
+            color: #4f46e5;
+            border: 1px solid #c7d2fe;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .admin-nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .settings-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="admin-nav">
+        <div class="admin-logo">
+            <span>&#9881;</span>
+            <span>超协体管理后台</span>
+        </div>
+        <div class="admin-nav-links">
+            <a href="/admin.html" class="admin-nav-link">
+                <span>&#128200;</span> 概览
+            </a>
+            <a href="/admin/users.html" class="admin-nav-link">
+                <span>&#128101;</span> 用户
+            </a>
+            <a href="/admin/tasks.html" class="admin-nav-link">
+                <span>&#128203;</span> 任务
+            </a>
+            <a href="/admin/analytics.html" class="admin-nav-link">
+                <span>&#128202;</span> 分析
+            </a>
+            <a href="/admin/settings.html" class="admin-nav-link active">
+                <span>&#9881;</span> 配置
+            </a>
+            <a href="/dashboard.html" class="admin-nav-link back">
+                <span>&#8592;</span> 返回工作台
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="admin-container">
+        <div class="page-header">
+            <h1 class="page-title">系统配置</h1>
+            <p class="page-subtitle">管理超协体系统的核心参数配置</p>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>提示：</strong>部分配置更改需要重启服务器才能生效。建议在低峰期进行配置调整。
+        </div>
+
+        <!-- 积分规则配置 -->
+        <div class="settings-card">
+            <div class="settings-card-title">
+                <span>&#128176;</span> 积分规则配置
+            </div>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label class="form-label">新人礼包</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="welcomeBonus" min="0">
+                        <span class="input-suffix">积分</span>
+                    </div>
+                    <p class="form-hint">新用户注册时获得的初始积分</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">创建任务扣除</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="createTaskCost" min="0">
+                        <span class="input-suffix">积分</span>
+                    </div>
+                    <p class="form-hint">创建一个任务需要消耗的积分</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">完成任务奖励</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="completeTaskReward" min="0">
+                        <span class="input-suffix">积分</span>
+                    </div>
+                    <p class="form-hint">完成一个任务获得的积分奖励</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">发放门票扣除</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="issueTicketCost" min="0">
+                        <span class="input-suffix">积分</span>
+                    </div>
+                    <p class="form-hint">发放一张邀请门票需要消耗的积分</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">邀请成功奖励</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="inviteBonus" min="0">
+                        <span class="input-suffix">积分</span>
+                    </div>
+                    <p class="form-hint">邀请的用户成功成为正式成员后的奖励</p>
+                </div>
+            </div>
+            <div class="save-btn-container">
+                <button class="btn btn-primary" onclick="savePointsSettings()">保存积分配置</button>
+            </div>
+        </div>
+
+        <!-- 门票配置 -->
+        <div class="settings-card">
+            <div class="settings-card-title">
+                <span>&#127915;</span> 门票配置
+            </div>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label class="form-label">门票有效期</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="ticketValidityDays" min="1" max="365">
+                        <span class="input-suffix">天</span>
+                    </div>
+                    <p class="form-hint">门票从发放到过期的天数</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">单用户最多发放</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="maxTicketsPerUser" min="1" max="100">
+                        <span class="input-suffix">张</span>
+                    </div>
+                    <p class="form-hint">单个用户最多可以发放的门票数量</p>
+                </div>
+            </div>
+            <div class="save-btn-container">
+                <button class="btn btn-primary" onclick="saveTicketSettings()">保存门票配置</button>
+            </div>
+        </div>
+
+        <!-- AI配置 -->
+        <div class="settings-card">
+            <div class="settings-card-title">
+                <span>&#129302;</span> AI配置
+                <span id="aiStatusBadge" class="status-indicator warning">
+                    <span class="status-dot"></span>
+                    <span>检测中...</span>
+                </span>
+            </div>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label class="form-label">API Key状态</label>
+                    <input type="text" class="form-input" id="apiKeyStatus" disabled>
+                    <p class="form-hint">API Key通过环境变量配置，此处不可修改</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">默认模型</label>
+                    <select class="form-select" id="defaultModel">
+                        <option value="claude-sonnet-4-5-20250514">Claude Sonnet 4.5</option>
+                        <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                        <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+                    </select>
+                    <p class="form-hint">AI助手默认使用的模型</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">最大Tokens</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="maxTokens" min="256" max="4096">
+                        <span class="input-suffix">tokens</span>
+                    </div>
+                    <p class="form-hint">单次AI对话的最大token数量</p>
+                </div>
+            </div>
+            <div class="save-btn-container">
+                <button class="btn btn-primary" onclick="saveAISettings()">保存AI配置</button>
+            </div>
+        </div>
+
+        <!-- 系统参数 -->
+        <div class="settings-card">
+            <div class="settings-card-title">
+                <span>&#9881;</span> 系统参数
+            </div>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label class="form-label">每页显示数量</label>
+                    <select class="form-select" id="pageSize">
+                        <option value="10">10条</option>
+                        <option value="20">20条</option>
+                        <option value="50">50条</option>
+                    </select>
+                    <p class="form-hint">列表页面默认每页显示的条目数</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">会话超时时间</label>
+                    <div class="input-with-suffix">
+                        <input type="number" class="form-input" id="sessionTimeout" min="1" max="30">
+                        <span class="input-suffix">天</span>
+                    </div>
+                    <p class="form-hint">用户登录后的会话有效期</p>
+                </div>
+            </div>
+            <div class="save-btn-container">
+                <button class="btn btn-primary" onclick="saveSystemSettings()">保存系统配置</button>
+            </div>
+        </div>
+
+        <!-- 危险操作区域 -->
+        <div class="settings-card" style="border: 2px solid #fee2e2;">
+            <div class="settings-card-title" style="color: #dc2626;">
+                <span>&#9888;</span> 危险操作
+            </div>
+            <div class="alert alert-warning" style="margin-bottom: 20px;">
+                以下操作可能会影响系统正常运行，请谨慎操作。
+            </div>
+            <div class="switch-group">
+                <div class="switch-label">
+                    <span class="switch-title">清除所有任务缓存</span>
+                    <span class="switch-desc">清除内存中的任务数据缓存，重新从数据库加载</span>
+                </div>
+                <button class="btn btn-secondary" onclick="clearTaskCache()">清除缓存</button>
+            </div>
+            <div class="switch-group">
+                <div class="switch-label">
+                    <span class="switch-title">重新评估所有候选者</span>
+                    <span class="switch-desc">触发AI重新评估所有待审核的候选者</span>
+                </div>
+                <button class="btn btn-secondary" onclick="reEvaluateCandidates()">开始评估</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // 检查管理员权限
+        async function checkAdminAccess() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return false;
+            }
+
+            try {
+                const response = await authFetch('/api/auth/me');
+                const data = await response.json();
+                if (!data.success || data.user.role !== 'admin') {
+                    alert('您没有管理员权限');
+                    window.location.href = '/dashboard.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                window.location.href = '/login.html';
+                return false;
+            }
+        }
+
+        // 加载配置
+        async function loadSettings() {
+            try {
+                const response = await authFetch('/api/admin/settings');
+                const data = await response.json();
+
+                if (data.success) {
+                    const s = data.settings;
+
+                    // 积分配置
+                    document.getElementById('welcomeBonus').value = s.points.welcomeBonus;
+                    document.getElementById('createTaskCost').value = s.points.createTaskCost;
+                    document.getElementById('completeTaskReward').value = s.points.completeTaskReward;
+                    document.getElementById('issueTicketCost').value = s.points.issueTicketCost;
+                    document.getElementById('inviteBonus').value = s.points.inviteBonus;
+
+                    // 门票配置
+                    document.getElementById('ticketValidityDays').value = s.tickets.validityDays;
+                    document.getElementById('maxTicketsPerUser').value = s.tickets.maxPerUser;
+
+                    // AI配置
+                    const apiKeyStatus = s.ai.apiKeyConfigured ? '已配置' : '未配置';
+                    document.getElementById('apiKeyStatus').value = apiKeyStatus;
+                    document.getElementById('defaultModel').value = s.ai.defaultModel;
+                    document.getElementById('maxTokens').value = s.ai.maxTokens;
+
+                    // 更新AI状态徽章
+                    const badge = document.getElementById('aiStatusBadge');
+                    if (s.ai.apiKeyConfigured) {
+                        badge.className = 'status-indicator success';
+                        badge.innerHTML = '<span class="status-dot"></span><span>已连接</span>';
+                    } else {
+                        badge.className = 'status-indicator error';
+                        badge.innerHTML = '<span class="status-dot"></span><span>未配置</span>';
+                    }
+
+                    // 系统配置
+                    document.getElementById('pageSize').value = s.system.pageSize;
+                    document.getElementById('sessionTimeout').value = s.system.sessionTimeout;
+                }
+            } catch (error) {
+                console.error('加载配置失败:', error);
+                alert('加载配置失败，请刷新重试');
+            }
+        }
+
+        // 保存积分配置
+        async function savePointsSettings() {
+            const settings = {
+                welcomeBonus: parseInt(document.getElementById('welcomeBonus').value),
+                createTaskCost: parseInt(document.getElementById('createTaskCost').value),
+                completeTaskReward: parseInt(document.getElementById('completeTaskReward').value),
+                issueTicketCost: parseInt(document.getElementById('issueTicketCost').value),
+                inviteBonus: parseInt(document.getElementById('inviteBonus').value)
+            };
+
+            // 验证
+            for (const [key, value] of Object.entries(settings)) {
+                if (isNaN(value) || value < 0) {
+                    alert('请填写有效的积分数值（不能为负数）');
+                    return;
+                }
+            }
+
+            try {
+                const response = await authFetch('/api/admin/settings/points', {
+                    method: 'PUT',
+                    body: JSON.stringify(settings)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert('保存失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('保存积分配置失败:', error);
+                alert('保存失败，请重试');
+            }
+        }
+
+        // 保存门票配置
+        async function saveTicketSettings() {
+            const validityDays = parseInt(document.getElementById('ticketValidityDays').value);
+            const maxPerUser = parseInt(document.getElementById('maxTicketsPerUser').value);
+
+            if (isNaN(validityDays) || validityDays < 1 || validityDays > 365) {
+                alert('门票有效期必须在1-365天之间');
+                return;
+            }
+
+            if (isNaN(maxPerUser) || maxPerUser < 1 || maxPerUser > 100) {
+                alert('单用户发放限制必须在1-100张之间');
+                return;
+            }
+
+            alert('门票配置已更新（需重启服务器生效）');
+        }
+
+        // 保存AI配置
+        async function saveAISettings() {
+            const defaultModel = document.getElementById('defaultModel').value;
+            const maxTokens = parseInt(document.getElementById('maxTokens').value);
+
+            if (isNaN(maxTokens) || maxTokens < 256 || maxTokens > 4096) {
+                alert('最大Tokens必须在256-4096之间');
+                return;
+            }
+
+            alert('AI配置已更新（需重启服务器生效）');
+        }
+
+        // 保存系统配置
+        async function saveSystemSettings() {
+            const pageSize = parseInt(document.getElementById('pageSize').value);
+            const sessionTimeout = parseInt(document.getElementById('sessionTimeout').value);
+
+            if (isNaN(sessionTimeout) || sessionTimeout < 1 || sessionTimeout > 30) {
+                alert('会话超时时间必须在1-30天之间');
+                return;
+            }
+
+            alert('系统配置已更新（需重启服务器生效）');
+        }
+
+        // 清除任务缓存
+        async function clearTaskCache() {
+            if (!confirm('确定要清除任务缓存吗？这将重新加载所有任务数据。')) {
+                return;
+            }
+            alert('任务缓存已清除（功能待实现）');
+        }
+
+        // 重新评估候选者
+        async function reEvaluateCandidates() {
+            if (!confirm('确定要重新评估所有候选者吗？这可能需要一些时间。')) {
+                return;
+            }
+
+            try {
+                const response = await authFetch('/api/ai/evaluate-candidates', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert('评估失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('评估候选者失败:', error);
+                alert('评估失败，请重试');
+            }
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (await checkAdminAccess()) {
+                loadSettings();
+            }
+        });
+    </script>
+</body>
+</html>

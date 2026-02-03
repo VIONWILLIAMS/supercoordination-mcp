@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>短邮系统 MVP - 简化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            padding: 8px 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 内容区域 */
+        .content-area {
+            display: none;
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        /* 短邮列表 */
+        .mail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mail-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .mail-card:active {
+            transform: scale(0.98);
+        }
+
+        .mail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .sender-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sender-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .sender-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sender-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1f2937;
+        }
+
+        .mail-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .project-tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mail-intent {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .intent-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .intent-text {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .mail-content {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .mail-attachments {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .attachment {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* AI建议（简化版） */
+        .ai-suggestion {
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .ai-suggestion-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ai-icon {
+            width: 30px;
+            height: 30px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .ai-suggestion-title {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 14px;
+        }
+
+        .ai-framework {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .framework-question {
+            font-size: 13px;
+            color: #92400e;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .framework-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .framework-option {
+            padding: 6px 12px;
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #92400e;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .framework-option:active {
+            background: #fcd34d;
+        }
+
+        /* 决策链 */
+        .decision-chain {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .chain-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .chain-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .chain-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .chain-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chain-node {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .chain-node.online {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        .chain-node.completed {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            opacity: 0.7;
+        }
+
+        .chain-node-type {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .chain-node.online .chain-node-type {
+            color: #2563eb;
+        }
+
+        .chain-node.completed .chain-node-type {
+            color: #059669;
+        }
+
+        .chain-node-content {
+            font-size: 14px;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .chain-node-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .chain-arrow {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 20px;
+            height: 15px;
+        }
+
+        /* 撰写按钮 */
+        .compose-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .compose-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .compose-btn {
+                width: 55px;
+                height: 55px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* 加载状态 */
+        .loading-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-placeholder p {
+            margin-top: 15px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 2000;
+            transition: transform 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state-text {
+            color: #6b7280;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* 创建决策请求模态框 */
+        .decision-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .create-modal {
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .create-modal .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-select,
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-select:focus,
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #4b5563;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        /* 决策链容器 */
+        #chain-container {
+            padding: 0;
+        }
+
+        .chain-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chain-item .chain-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .chain-item .chain-header h3 {
+            font-size: 16px;
+            color: #333;
+            margin: 0;
+        }
+
+        .chain-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .chain-timeline {
+            position: relative;
+        }
+
+        .timeline-node {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-node:last-child {
+            margin-bottom: 0;
+        }
+
+        .node-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .timeline-node.responded .node-icon {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .node-content {
+            flex: 1;
+        }
+
+        .node-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .node-user {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .node-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .connector {
+            position: absolute;
+            left: 17px;
+            top: 36px;
+            width: 2px;
+            height: calc(100% + 20px);
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="inbox">📬 收件箱</button>
+            <button class="nav-tab" data-tab="chain">🔗 决策链</button>
+        </div>
+        <div class="user-avatar">A</div>
+    </div>
+
+    <!-- 收件箱 -->
+    <div class="content-area active" id="inbox">
+        <div class="mail-list" id="mail-list">
+            <!-- 动态加载内容 -->
+            <div class="loading-placeholder">
+                <div class="spinner"></div>
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 决策链视图 -->
+    <div class="content-area" id="chain">
+        <div id="chain-container">
+            <div class="loading-placeholder">
+                <div class="spinner"></div>
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 撰写按钮 -->
+    <button class="compose-btn" onclick="openCompose()">✏️</button>
+
+    <!-- 决策详情模态框 -->
+    <div class="modal-overlay" id="decision-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">决策详情</div>
+                <button class="modal-close" onclick="closeDecisionModal()">×</button>
+            </div>
+            <div class="modal-body" id="modal-decision-details">
+                <!-- 动态加载内容 -->
+            </div>
+            <div class="modal-footer" id="modal-decision-footer">
+                <!-- 动态加载响应按钮 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 配置 ====================
+        const API_BASE_URL = '/api/pwp';
+
+        // ==================== 认证检查 ====================
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/shortmail-login.html';
+                return null;
+            }
+            return token;
+        }
+
+        function getCurrentUser() {
+            const userStr = localStorage.getItem('user');
+            return userStr ? JSON.parse(userStr) : null;
+        }
+
+        // ==================== 辅助函数 ====================
+        function formatTime(timestamp) {
+            const now = new Date();
+            const date = new Date(timestamp);
+            const diff = now - date;
+
+            // 少于1分钟
+            if (diff < 60000) {
+                return '刚刚';
+            }
+            // 少于1小时
+            if (diff < 3600000) {
+                return Math.floor(diff / 60000) + '分钟前';
+            }
+            // 少于24小时
+            if (diff < 86400000) {
+                return Math.floor(diff / 3600000) + '小时前';
+            }
+            // 少于7天
+            if (diff < 604800000) {
+                return Math.floor(diff / 86400000) + '天前';
+            }
+            // 显示日期
+            return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+        }
+
+        function showToast(message) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showLoading(container, message = '加载中...') {
+            container.innerHTML = `
+                <div class="loading-placeholder">
+                    <div class="spinner"></div>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showEmpty(container, message = '暂无内容') {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">${message}</div>
+                </div>
+            `;
+        }
+
+        // ==================== 决策意图图标映射 ====================
+        function getIntentIcon(intent) {
+            const iconMap = {
+                'DECISION_REQUEST': '🎯',
+                'TASK_ASSIGNMENT': '📋',
+                'INFO_SYNC': 'ℹ️',
+                'APPROVAL_REQUEST': '✅',
+                'FEEDBACK_REQUEST': '💬',
+                'QUESTION': '❓',
+                'RESOURCE_REQUEST': '📦'
+            };
+            return iconMap[intent] || '📬';
+        }
+
+        function getIntentLabel(intent) {
+            const labelMap = {
+                'DECISION_REQUEST': '决策请求',
+                'TASK_ASSIGNMENT': '任务分配',
+                'INFO_SYNC': '信息同步',
+                'APPROVAL_REQUEST': '审批请求',
+                'FEEDBACK_REQUEST': '反馈请求',
+                'QUESTION': '问题咨询',
+                'RESOURCE_REQUEST': '资源申请'
+            };
+            return labelMap[intent] || intent;
+        }
+
+        // ==================== 收件箱加载 ====================
+        async function loadInbox() {
+            const token = checkAuth();
+            if (!token) return;
+
+            const user = getCurrentUser();
+            if (!user) {
+                showToast('用户信息错误，请重新登录');
+                localStorage.clear();
+                window.location.href = '/shortmail-login.html';
+                return;
+            }
+
+            const mailList = document.getElementById('mail-list');
+            showLoading(mailList, '加载收件箱...');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/${user.id}/pending-decisions`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.status === 401) {
+                    localStorage.clear();
+                    window.location.href = '/shortmail-login.html';
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const decisions = await response.json();
+
+                if (!decisions || decisions.length === 0) {
+                    showEmpty(mailList, '收件箱为空\n太好了，没有待处理的决策！');
+                    return;
+                }
+
+                renderInbox(decisions);
+            } catch (error) {
+                console.error('加载收件箱失败:', error);
+                mailList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <div class="empty-state-text">加载失败，请稍后重试<br/>${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // ==================== 渲染收件箱 ====================
+        function renderInbox(decisions) {
+            const mailList = document.getElementById('mail-list');
+            mailList.innerHTML = '';
+
+            decisions.forEach(decision => {
+                const card = createMailCard(decision);
+                mailList.appendChild(card);
+            });
+        }
+
+        function createMailCard(decision) {
+            const card = document.createElement('div');
+            card.className = 'mail-card';
+            card.dataset.decisionId = decision.id;
+
+            const senderInitial = decision.creator?.name?.charAt(0)?.toUpperCase() || 'U';
+            const senderName = decision.creator?.name || '未知用户';
+            const projectName = decision.project?.name || '未指定项目';
+            const intentIcon = getIntentIcon(decision.intent);
+            const intentLabel = getIntentLabel(decision.intent);
+
+            // 构建AI建议部分
+            let aiSuggestionHtml = '';
+            if (decision.ai_suggestion && decision.ai_suggestion.framework) {
+                const framework = decision.ai_suggestion.framework;
+                aiSuggestionHtml = `
+                    <div class="ai-suggestion">
+                        <div class="ai-suggestion-header">
+                            <div class="ai-icon">🤖</div>
+                            <div class="ai-suggestion-title">AI决策框架</div>
+                        </div>
+                        <div class="ai-framework">
+                            <div class="framework-question">${framework.question || '建议的决策选项：'}</div>
+                            <div class="framework-options">
+                                ${framework.options.map(opt => `
+                                    <div class="framework-option" data-option="${opt}">${opt}</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ${decision.ai_suggestion.context ? `
+                            <div style="font-size: 12px; color: #78350f; margin-top: 10px;">
+                                💡 ${decision.ai_suggestion.context}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">${senderInitial}</div>
+                        <div class="sender-details">
+                            <div class="sender-name">${senderName}</div>
+                            <div class="mail-time">${formatTime(decision.created_at)}</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">${projectName}</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">${intentIcon} ${intentLabel}：${decision.summary || '无标题'}</div>
+                </div>
+
+                <div class="mail-content">
+                    ${decision.content || decision.summary || '无详细内容'}
+                </div>
+
+                ${aiSuggestionHtml}
+            `;
+
+            // 点击事件
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.framework-option')) {
+                    const option = e.target.closest('.framework-option');
+                    handleQuickResponse(decision.id, option.dataset.option);
+                    return;
+                }
+                openDecisionModal(decision);
+            });
+
+            return card;
+        }
+
+        // ==================== 决策详情模态框 ====================
+        let currentDecision = null;
+
+        function openDecisionModal(decision) {
+            currentDecision = decision;
+            const modal = document.getElementById('decision-modal');
+            const detailsContainer = document.getElementById('modal-decision-details');
+            const footerContainer = document.getElementById('modal-decision-footer');
+
+            const senderInitial = decision.creator?.name?.charAt(0)?.toUpperCase() || 'U';
+            const senderName = decision.creator?.name || '未知用户';
+            const projectName = decision.project?.name || '未指定项目';
+            const intentIcon = getIntentIcon(decision.intent);
+            const intentLabel = getIntentLabel(decision.intent);
+
+            // 渲染详情
+            detailsContainer.innerHTML = `
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">${senderInitial}</div>
+                        <div class="sender-details">
+                            <div class="sender-name">${senderName}</div>
+                            <div class="mail-time">${formatTime(decision.created_at)}</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">${projectName}</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">${intentIcon} ${intentLabel}</div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 10px; font-size: 16px;">
+                        ${decision.summary || '无标题'}
+                    </div>
+                    <div style="color: #4b5563; line-height: 1.6; font-size: 14px;">
+                        ${decision.content || decision.summary || '无详细内容'}
+                    </div>
+                </div>
+
+                ${decision.ai_suggestion && decision.ai_suggestion.reasoning ? `
+                    <div style="background: #fef3c7; border-left: 3px solid #f59e0b; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <div style="font-weight: 600; color: #92400e; margin-bottom: 8px; font-size: 13px;">
+                            🤖 AI 分析建议
+                        </div>
+                        <div style="color: #78350f; font-size: 13px; line-height: 1.5;">
+                            ${decision.ai_suggestion.reasoning}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+
+            // 渲染响应选项
+            if (decision.ai_suggestion && decision.ai_suggestion.framework) {
+                const framework = decision.ai_suggestion.framework;
+                footerContainer.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <textarea
+                            class="comment-input"
+                            id="response-comment"
+                            placeholder="添加你的评论或说明（可选）"
+                        ></textarea>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        ${framework.options.map(opt => `
+                            <button
+                                class="btn-primary"
+                                onclick="handleModalResponse('${opt}')"
+                            >
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                footerContainer.innerHTML = `
+                    <textarea
+                        class="comment-input"
+                        id="response-comment"
+                        placeholder="输入你的响应"
+                    ></textarea>
+                    <button class="btn-primary" onclick="handleModalResponse('已查看')">
+                        提交响应
+                    </button>
+                `;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeDecisionModal() {
+            const modal = document.getElementById('decision-modal');
+            modal.classList.remove('active');
+            currentDecision = null;
+        }
+
+        // ==================== 响应决策 ====================
+        async function handleQuickResponse(decisionId, selectedOption) {
+            await submitDecisionResponse(decisionId, selectedOption, null);
+        }
+
+        async function handleModalResponse(selectedOption) {
+            if (!currentDecision) return;
+
+            const comment = document.getElementById('response-comment')?.value?.trim() || null;
+            await submitDecisionResponse(currentDecision.id, selectedOption, comment);
+        }
+
+        async function submitDecisionResponse(decisionId, selectedOption, comment) {
+            const token = checkAuth();
+            if (!token) return;
+
+            const user = getCurrentUser();
+            if (!user) return;
+
+            const submitBtn = event?.target;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '提交中...';
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/decision-responses`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        decision_id: decisionId,
+                        responder_id: user.id,
+                        selected_option: selectedOption,
+                        comment: comment
+                    })
+                });
+
+                if (response.status === 401) {
+                    localStorage.clear();
+                    window.location.href = '/shortmail-login.html';
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                showToast('✓ 响应已提交');
+                closeDecisionModal();
+
+                // 刷新收件箱
+                setTimeout(() => {
+                    loadInbox();
+                }, 500);
+
+            } catch (error) {
+                console.error('提交响应失败:', error);
+                showToast('提交失败: ' + error.message);
+
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = selectedOption;
+                }
+            }
+        }
+
+        // ==================== 标签切换 ====================
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const targetTab = tab.dataset.tab;
+                document.querySelectorAll('.content-area').forEach(area => area.classList.remove('active'));
+                document.getElementById(targetTab).classList.add('active');
+
+                // 如果切换到决策链，加载数据
+                if (targetTab === 'chain') {
+                    loadDecisionChain();
+                }
+            });
+        });
+
+        // ==================== 撰写短邮 ====================
+        async function openCompose() {
+            // 加载用户的项目列表
+            const projects = await loadUserProjects();
+
+            const modal = document.createElement('div');
+            modal.className = 'decision-modal';
+            modal.innerHTML = `
+                <div class="modal-content create-modal">
+                    <div class="modal-header">
+                        <h2>📤 创建决策请求</h2>
+                        <button class="modal-close" onclick="closeComposeModal()">×</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">项目</label>
+                            <select id="compose-project" class="form-select" onchange="loadProjectMembers()">
+                                <option value="">请选择项目</option>
+                                ${projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">接收人</label>
+                            <select id="compose-receiver" class="form-select">
+                                <option value="">请先选择项目</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">决策类型</label>
+                            <select id="compose-type" class="form-select">
+                                <option value="DECISION_REQUIRED">一般决策</option>
+                                <option value="TASK_ASSIGNMENT">任务分配</option>
+                                <option value="DELIVERABLE_SUBMISSION">交付物提交</option>
+                                <option value="FEEDBACK_REQUEST">反馈请求</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">摘要 *</label>
+                            <input type="text" id="compose-summary" class="form-input"
+                                   placeholder="简短描述决策事项（必填）" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">详细内容</label>
+                            <textarea id="compose-content" class="form-textarea" rows="5"
+                                      placeholder="详细描述背景和需要决策的内容"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer" style="display: flex; gap: 10px;">
+                        <button class="btn-secondary" onclick="closeComposeModal()" style="flex: 1;">取消</button>
+                        <button class="btn-primary" onclick="submitDecisionRequest()" style="flex: 2;">发送</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        async function loadUserProjects() {
+            const token = checkAuth();
+            try {
+                const response = await fetch('/api/projects', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                return data.success ? data.projects : [];
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+                return [];
+            }
+        }
+
+        async function loadProjectMembers() {
+            const projectId = document.getElementById('compose-project').value;
+            const receiverSelect = document.getElementById('compose-receiver');
+
+            if (!projectId) {
+                receiverSelect.innerHTML = '<option value="">请先选择项目</option>';
+                return;
+            }
+
+            const token = checkAuth();
+            try {
+                const response = await fetch(`/api/projects/${projectId}/members`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const currentUser = getCurrentUser();
+                    const members = data.members.filter(m => m.userId !== currentUser.id);
+
+                    receiverSelect.innerHTML = members.map(m =>
+                        `<option value="${m.userId}">${m.user.username}</option>`
+                    ).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load members:', error);
+                receiverSelect.innerHTML = '<option value="">加载失败</option>';
+            }
+        }
+
+        async function submitDecisionRequest() {
+            const projectId = document.getElementById('compose-project').value;
+            const toUserId = document.getElementById('compose-receiver').value;
+            const protocolType = document.getElementById('compose-type').value;
+            const summary = document.getElementById('compose-summary').value;
+            const content = document.getElementById('compose-content').value;
+
+            // 验证
+            if (!projectId || !toUserId || !summary) {
+                showToast('请填写必填项');
+                return;
+            }
+
+            const token = checkAuth();
+            const submitBtn = event?.target;
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '发送中...';
+            }
+
+            try {
+                const response = await fetch('/api/pwp/decision-requests', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        toUserId,
+                        projectId,
+                        summary,
+                        content: content ? { text: content } : null,
+                        protocolType
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeComposeModal();
+                    showToast('✅ 决策请求已发送');
+                } else {
+                    showToast('发送失败: ' + data.error);
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '发送';
+                    }
+                }
+            } catch (error) {
+                console.error('Submit error:', error);
+                showToast('网络错误，请重试');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '发送';
+                }
+            }
+        }
+
+        function closeComposeModal() {
+            const modal = document.querySelector('.decision-modal');
+            if (modal) modal.remove();
+        }
+
+        // ==================== 决策链可视化 ====================
+        async function loadDecisionChain() {
+            const token = checkAuth();
+            const user = getCurrentUser();
+            const container = document.getElementById('chain-container');
+
+            try {
+                showLoading(container, '加载决策链...');
+
+                // 获取用户的项目
+                const projectsResponse = await fetch('/api/projects', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const projectsData = await projectsResponse.json();
+
+                if (!projectsData.success || projectsData.projects.length === 0) {
+                    showEmpty(container, '暂无项目决策记录');
+                    return;
+                }
+
+                // 获取所有项目的决策记录
+                let allDecisions = [];
+                for (const project of projectsData.projects) {
+                    const decisionsResponse = await fetch(
+                        `/api/pwp/project/${project.id}/decisions`,
+                        {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        }
+                    );
+                    const decisionsData = await decisionsResponse.json();
+                    if (decisionsData.success) {
+                        allDecisions = allDecisions.concat(decisionsData.records);
+                    }
+                }
+
+                if (allDecisions.length === 0) {
+                    showEmpty(container, '暂无决策记录');
+                    return;
+                }
+
+                // 按conversationId分组
+                const conversations = groupByConversation(allDecisions);
+                renderDecisionChain(conversations);
+
+            } catch (error) {
+                console.error('Failed to load decision chain:', error);
+                showEmpty(container, '加载失败，请重试');
+            }
+        }
+
+        function groupByConversation(records) {
+            const grouped = {};
+
+            records.forEach(record => {
+                const convId = record.eventData.conversationId;
+                if (convId) {
+                    if (!grouped[convId]) {
+                        grouped[convId] = [];
+                    }
+                    grouped[convId].push(record);
+                }
+            });
+
+            // 转换为数组并排序
+            return Object.keys(grouped).map(convId => ({
+                conversationId: convId,
+                records: grouped[convId].sort((a, b) =>
+                    new Date(a.occurredAt) - new Date(b.occurredAt)
+                ),
+                latestTime: grouped[convId][grouped[convId].length - 1].occurredAt
+            })).sort((a, b) => new Date(b.latestTime) - new Date(a.latestTime));
+        }
+
+        function renderDecisionChain(conversations) {
+            const container = document.getElementById('chain-container');
+
+            container.innerHTML = conversations.map(conv => {
+                const firstRecord = conv.records[0];
+                const summary = firstRecord.eventData.summary || '决策交流';
+
+                return `
+                    <div class="chain-item">
+                        <div class="chain-header">
+                            <h3>${summary}</h3>
+                            <span class="chain-time">${formatTime(conv.latestTime)}</span>
+                        </div>
+                        <div class="chain-timeline">
+                            ${conv.records.map((record, index) => `
+                                <div class="timeline-node ${record.status}">
+                                    <div class="node-icon">${getEventIcon(record.eventType)}</div>
+                                    <div class="node-content">
+                                        <div class="node-title">${getEventTitle(record.eventType)}</div>
+                                        <div class="node-user">${record.user.username}</div>
+                                        <div class="node-time">${formatTime(record.occurredAt)}</div>
+                                    </div>
+                                    ${index < conv.records.length - 1 ? '<div class="connector"></div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getEventIcon(eventType) {
+            const icons = {
+                'decision_requested': '📬',
+                'decision_made': '✅',
+                'task_assignment_requested': '📋',
+                'task_assignment_responded': '👍',
+                'deliverable_submitted': '📦',
+                'deliverable_reviewed': '✓',
+                'feedback_requested': '💬',
+                'feedback_provided': '💡'
+            };
+            return icons[eventType] || '📌';
+        }
+
+        function getEventTitle(eventType) {
+            const titles = {
+                'decision_requested': '请求决策',
+                'decision_made': '已决策',
+                'task_assignment_requested': '任务分配',
+                'task_assignment_responded': '任务响应',
+                'deliverable_submitted': '交付提交',
+                'deliverable_reviewed': '交付审核',
+                'feedback_requested': '请求反馈',
+                'feedback_provided': '反馈完成'
+            };
+            return titles[eventType] || '未知事件';
+        }
+
+        // ==================== 页面初始化 ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = checkAuth();
+            if (!token) return;
+
+            const user = getCurrentUser();
+            if (user) {
+                // 更新用户头像
+                const avatar = document.querySelector('.user-avatar');
+                if (avatar) {
+                    avatar.textContent = user.name?.charAt(0)?.toUpperCase() || 'U';
+                }
+            }
+
+            // 加载收件箱
+            loadInbox();
+        });
+
+        // 关闭模态框 - 点击遮罩层
+        document.getElementById('decision-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'decision-modal') {
+                closeDecisionModal();
+            }
+        });
+    </script>
+</body>
+</html>
