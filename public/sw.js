@@ -1,4 +1,4 @@
-const CACHE_NAME = 'supercoordination-pwa-v1';
+const CACHE_NAME = 'supercoordination-pwa-v2';
 
 const STATIC_ASSETS = [
   '/',
@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   '/shortmail-app.html',
   '/css/common.css',
   '/css/variables.css',
+  '/css/theme.css',
   '/js/auth.js',
   '/js/toast.js',
   '/js/modal.js',

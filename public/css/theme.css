@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --brand-1: #6c7bff;
+  --brand-2: #b57dff;
+  --brand-3: #7ad7ff;
+  --bg-1: #f7f8ff;
+  --bg-2: #f0f3ff;
+  --bg-3: #fff5ff;
+  --text-1: #1f1b2e;
+  --text-2: #5a5d7a;
+  --text-3: #8a8fb3;
+  --card: rgba(255, 255, 255, 0.88);
+  --card-strong: rgba(255, 255, 255, 0.96);
+  --border: rgba(108, 123, 255, 0.18);
+  --shadow-1: 0 16px 40px rgba(72, 84, 150, 0.14);
+  --shadow-2: 0 8px 24px rgba(108, 123, 255, 0.2);
+  --glow: 0 0 0 4px rgba(108, 123, 255, 0.2);
+  --radius-1: 14px;
+  --radius-2: 20px;
+  --radius-3: 28px;
+  --gradient: linear-gradient(135deg, var(--brand-1) 0%, var(--brand-2) 55%, var(--brand-3) 100%);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Noto Sans SC', 'Plus Jakarta Sans', sans-serif;
+  color: var(--text-1);
+  background: radial-gradient(900px 400px at 15% -10%, rgba(122, 215, 255, 0.5), transparent 60%),
+              radial-gradient(700px 350px at 90% 0%, rgba(181, 125, 255, 0.35), transparent 55%),
+              linear-gradient(135deg, var(--bg-1) 0%, var(--bg-3) 50%, var(--bg-2) 100%);
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(108, 123, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+}
+
+h1, h2, h3, .navbar-brand, .admin-logo, .card-title, .main-title {
+  font-family: 'Noto Serif SC', 'Noto Sans SC', serif;
+  color: var(--text-1);
+  letter-spacing: 0.3px;
+}
+
+a {
+  color: var(--brand-1);
+}
+
+a:hover {
+  color: #5669ff;
+}
+
+.navbar, .admin-nav {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(12px);
+}
+
+.navbar-brand,
+.admin-logo {
+  font-weight: 700;
+}
+
+.nav-link,
+.admin-nav-link,
+.filter-btn {
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-link.active,
+.admin-nav-link.active,
+.filter-btn.active {
+  background: var(--gradient) !important;
+  color: #fff !important;
+  box-shadow: var(--shadow-2);
+}
+
+.card,
+.main-card,
+.admin-card,
+.login-container,
+.project-card,
+.member-card,
+.task-card,
+.stat-card,
+.solution-card,
+.sidebar-card,
+.modal,
+.kanban-board {
+  background: var(--card) !important;
+  border: 1px solid rgba(108, 123, 255, 0.12);
+  box-shadow: var(--shadow-1);
+  border-radius: var(--radius-2);
+  backdrop-filter: blur(8px);
+}
+
+.card,
+.main-card,
+.admin-card,
+.login-container {
+  animation: floatIn 0.6s ease-out;
+}
+
+.form-input,
+.form-textarea,
+.form-select,
+input,
+textarea,
+select {
+  border-radius: var(--radius-1);
+  border: 1px solid rgba(108, 123, 255, 0.22);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--brand-1);
+  box-shadow: var(--glow);
+}
+
+.btn,
+.btn-primary,
+.btn-login,
+.login-btn,
+.cta-button,
+.action-btn,
+.task-action-btn.primary,
+button[type="submit"] {
+  background: var(--gradient) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: var(--shadow-2);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-secondary,
+.task-action-btn.secondary {
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: var(--text-1) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none;
+}
+
+.btn:hover,
+.btn-primary:hover,
+.btn-login:hover,
+.login-btn:hover,
+.cta-button:hover,
+.action-btn:hover,
+button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(108, 123, 255, 0.25);
+}
+
+.badge,
+.task-status,
+.task-priority,
+.stat-pill {
+  border-radius: 999px !important;
+  padding: 4px 10px;
+}
+
+.loading,
+.spinner {
+  color: var(--brand-1);
+}
+
+.admin-card-title,
+.card-title,
+.section-title {
+  color: var(--text-1);
+}
+
+.table,
+.table-container {
+  border-radius: var(--radius-2);
+  overflow: hidden;
+}
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
