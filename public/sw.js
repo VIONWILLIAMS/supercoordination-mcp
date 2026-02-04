@@ -1,4 +1,4 @@
-const CACHE_NAME = 'supercoordination-pwa-v4';
+const CACHE_NAME = 'supercoordination-pwa-v5';
 
 const STATIC_ASSETS = [
   '/',
