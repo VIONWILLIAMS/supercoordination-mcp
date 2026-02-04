@@ -116,6 +116,26 @@ a:hover { color: var(--brand-purple-dark); }
   border-radius: var(--radius-lg) !important;
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nav-back {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--text-secondary) !important;
+}
+
 .nav-link,
 .admin-nav-link,
 .filter-btn {

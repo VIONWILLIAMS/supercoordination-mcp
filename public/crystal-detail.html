@@ -464,8 +464,18 @@
     <div class="container">
         <!-- 导航栏 -->
         <div class="navbar">
-            <a href="/dashboard.html" class="navbar-brand">超协体</a>
-            <a href="/crystal-library.html" style="text-decoration: none; color: var(--text-secondary); font-size: 14px;">← 返回晶体库</a>
+            <div class="navbar-left">
+                <a href="/dashboard.html" class="navbar-brand">超协体</a>
+                <div class="navbar-nav">
+                    <a href="/dashboard.html" class="nav-link">工作台</a>
+                    <a href="/task-create.html" class="nav-link">创建任务</a>
+                    <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                    <a href="/crystal-library.html" class="nav-link active">晶体库</a>
+                    <a href="/members.html" class="nav-link">成员</a>
+                    <a href="/profile.html" class="nav-link">画像</a>
+                </div>
+            </div>
+            <a href="/crystal-library.html" class="nav-link nav-back">← 返回晶体库</a>
         </div>
 
         <!-- 加载状态 -->
