@@ -206,40 +206,30 @@
         }
 
         .quick-actions .action-btn {
-            padding: 22px 18px;
-            background: var(--brand-purple);
-            color: var(--surface-50);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 20px 18px;
+            background: var(--surface-50);
+            color: var(--text-main);
+            border: 1px solid var(--surface-200);
             border-radius: 999px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 6px;
             text-decoration: none;
             text-align: center;
-            min-height: 120px;
+            min-height: 100px;
             box-shadow: var(--shadow-hard);
         }
 
         .quick-actions .action-btn:hover {
             transform: translateY(-2px);
+            border-color: rgba(84, 91, 232, 0.35);
             box-shadow: var(--glow-purple);
-        }
-
-        .quick-actions .action-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
         }
 
         /* 统计卡片 */
@@ -594,35 +584,27 @@
                 </div>
                 <div class="quick-actions">
                     <a class="action-btn" href="/task-create.html">
-                        <span class="action-icon"><i class="ph-bold ph-note-pencil"></i></span>
                         <span>创建任务</span>
                     </a>
                     <a class="action-btn" href="/my-tasks.html">
-                        <span class="action-icon"><i class="ph-bold ph-clipboard-text"></i></span>
                         <span>我的任务</span>
                     </a>
                     <button class="action-btn" onclick="issueTicketDialog()">
-                        <span class="action-icon"><i class="ph-bold ph-ticket"></i></span>
                         <span>发门票</span>
                     </button>
                     <a class="action-btn" href="/members.html">
-                        <span class="action-icon"><i class="ph-bold ph-users"></i></span>
                         <span>查看成员</span>
                     </a>
                     <button class="action-btn" onclick="checkWuxingBalance()">
-                        <span class="action-icon"><i class="ph-bold ph-yin-yang"></i></span>
                         <span>五行平衡</span>
                     </button>
                     <a class="action-btn" href="/crystal-library.html">
-                        <span class="action-icon"><i class="ph-bold ph-lightbulb"></i></span>
                         <span>浏览晶体</span>
                     </a>
                     <a class="action-btn" href="/profile.html">
-                        <span class="action-icon"><i class="ph-bold ph-palette"></i></span>
                         <span>填写画像</span>
                     </a>
                     <a class="action-btn admin-only" href="/admin.html" id="adminPanelBtn" style="display: none;">
-                        <span class="action-icon"><i class="ph-bold ph-gear"></i></span>
                         <span>管理后台</span>
                     </a>
                 </div>
