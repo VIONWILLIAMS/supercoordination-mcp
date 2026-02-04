@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -18,7 +18,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,7 +27,7 @@
         }
 
         .register-container {
-            background: white;
+            background: var(--surface-50);
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
@@ -54,14 +54,14 @@
 
         .logo h1 {
             font-size: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
 
         .logo p {
-            color: #888;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
@@ -72,14 +72,14 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-main);
             font-weight: 500;
         }
 
         .form-group input {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--surface-200);
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s;
@@ -87,12 +87,12 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--brand-purple);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-group small {
-            color: #888;
+            color: var(--text-secondary);
             font-size: 12px;
             margin-top: 4px;
             display: block;
@@ -101,8 +101,8 @@
         .btn-register {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border: none;
             border-radius: 10px;
             font-size: 16px;
@@ -129,12 +129,12 @@
         .login-link {
             text-align: center;
             margin-top: 20px;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
         .login-link a {
-            color: #667eea;
+            color: var(--brand-purple);
             text-decoration: none;
             font-weight: 600;
         }
@@ -144,8 +144,8 @@
         }
 
         .error-message {
-            background: #fee;
-            color: #c33;
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--error);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -154,8 +154,8 @@
         }
 
         .success-message {
-            background: #efe;
-            color: #3c3;
+            background: rgba(34, 197, 94, 0.08);
+            color: var(--success);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -167,7 +167,7 @@
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 2px solid #fff;
+            border: 2px solid var(--surface-50);
             border-radius: 50%;
             border-top-color: transparent;
             animation: spin 0.8s linear infinite;
@@ -180,12 +180,12 @@
         }
 
         .welcome-gift {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(245, 158, 11, 0.18) 100%);
             padding: 12px;
             border-radius: 10px;
             text-align: center;
             margin-bottom: 20px;
-            color: #333;
+            color: var(--text-main);
             font-size: 13px;
         }
 
@@ -195,6 +195,8 @@
             margin-bottom: 4px;
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -205,7 +207,7 @@
         </div>
 
         <div class="welcome-gift">
-            <strong>🎁 新人礼包</strong>
+            <strong><i class="ph-bold ph-gift"></i> 新人礼包</strong>
             注册即送50积分
         </div>
 
@@ -320,7 +322,7 @@
                     localStorage.setItem('user', JSON.stringify(data.user));
 
                     // 显示成功消息
-                    successMessage.textContent = '🎉 注册成功！已获得50积分，正在跳转...';
+                    successMessage.textContent = '<i class="ph-bold ph-confetti"></i> 注册成功！已获得50积分，正在跳转...';
                     successMessage.style.display = 'block';
 
                     // 跳转到工作台

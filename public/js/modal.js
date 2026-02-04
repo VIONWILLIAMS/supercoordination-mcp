@@ -309,7 +309,7 @@ style.textContent = `
 .modal-title {
     font-size: 20px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-main);
 }
 
 /* Modal主体 */
@@ -320,29 +320,29 @@ style.textContent = `
 .modal-message {
     font-size: 15px;
     line-height: 1.6;
-    color: #4b5563;
+    color: var(--text-secondary);
     margin-bottom: 8px;
 }
 
 .modal-description {
     font-size: 14px;
     line-height: 1.5;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 .modal-input {
     width: 100%;
     padding: 12px 16px;
     margin-top: 16px;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
+    border: 1px solid var(--surface-200);
+    border-radius: var(--radius-sm);
     font-size: 15px;
     transition: border-color 0.2s;
     outline: none;
 }
 
 .modal-input:focus {
-    border-color: #667eea;
+    border-color: var(--brand-purple);
 }
 
 /* Modal底部 */
@@ -356,7 +356,7 @@ style.textContent = `
 .modal-btn {
     padding: 10px 24px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-pill);
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
@@ -365,27 +365,27 @@ style.textContent = `
 }
 
 .modal-cancel-btn {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: var(--surface-100);
+    color: var(--text-secondary);
 }
 
 .modal-cancel-btn:hover {
-    background: #e5e7eb;
-    color: #4b5563;
+    background: var(--surface-200);
+    color: var(--text-main);
 }
 
 .modal-confirm-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
     color: white;
 }
 
 .modal-confirm-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: var(--glow-purple);
 }
 
 .modal-confirm-btn.danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(135deg, var(--error) 0%, #EF4444 100%);
 }
 
 .modal-confirm-btn.danger:hover {

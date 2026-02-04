@@ -1,6 +1,6 @@
 {
   "version": "超协体 Beta20260204",
-  "build": "ui-theme-blue-purple",
+  "build": "design-system-v4",
   "date": "2026-02-04",
-  "note": "deploy-trigger"
+  "note": "ui-refresh-v4"
 }

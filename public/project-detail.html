@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,7 +19,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -31,7 +31,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -44,7 +44,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -52,7 +52,7 @@
 
         /* 项目头部 */
         .project-header {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 32px;
             margin-bottom: 20px;
@@ -69,7 +69,7 @@
         .project-title {
             font-size: 28px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
         }
 
         .project-actions {
@@ -88,18 +88,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         .btn-secondary {
-            background: #f5f5f5;
-            color: #666;
+            background: var(--surface-50);
+            color: var(--text-secondary);
         }
 
         .project-description {
             font-size: 15px;
-            color: #666;
+            color: var(--text-secondary);
             line-height: 1.8;
             margin-bottom: 20px;
         }
@@ -115,19 +115,19 @@
             align-items: center;
             gap: 8px;
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .progress-section {
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid var(--surface-100);
         }
 
         .progress-bar {
             width: 100%;
             height: 12px;
-            background: #f0f0f0;
+            background: var(--surface-100);
             border-radius: 6px;
             overflow: hidden;
             margin-bottom: 8px;
@@ -135,14 +135,14 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             border-radius: 6px;
             transition: width 0.3s;
         }
 
         .progress-text {
             font-size: 13px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         /* 主内容区 */
@@ -154,7 +154,7 @@
 
         /* 任务看板 */
         .kanban-board {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -170,7 +170,7 @@
         .kanban-title {
             font-size: 20px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
         }
 
         .kanban-columns {
@@ -180,7 +180,7 @@
         }
 
         .kanban-column {
-            background: #f8f9fa;
+            background: var(--surface-50);
             border-radius: 12px;
             padding: 16px;
             min-height: 400px;
@@ -196,25 +196,25 @@
         .column-title {
             font-size: 14px;
             font-weight: 600;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .column-count {
             font-size: 12px;
-            color: #999;
-            background: white;
+            color: var(--text-secondary);
+            background: var(--surface-50);
             padding: 2px 8px;
             border-radius: 10px;
         }
 
         .task-card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid var(--brand-purple);
         }
 
         .task-card:hover {
@@ -225,7 +225,7 @@
         .task-title {
             font-size: 14px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
         }
 
@@ -234,7 +234,7 @@
             justify-content: space-between;
             align-items: center;
             font-size: 12px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         /* 侧边栏 */
@@ -245,7 +245,7 @@
         }
 
         .sidebar-card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -254,7 +254,7 @@
         .sidebar-title {
             font-size: 16px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 16px;
         }
 
@@ -267,19 +267,19 @@
         .stat-item {
             text-align: center;
             padding: 12px;
-            background: #f8f9fa;
+            background: var(--surface-50);
             border-radius: 8px;
         }
 
         .stat-value {
             font-size: 24px;
             font-weight: bold;
-            color: #667eea;
+            color: var(--brand-purple);
         }
 
         .stat-label {
             font-size: 12px;
-            color: #999;
+            color: var(--text-secondary);
             margin-top: 4px;
         }
 
@@ -299,8 +299,8 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -315,26 +315,26 @@
         .member-name {
             font-size: 14px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
         }
 
         .member-role {
             font-size: 12px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         /* 加载状态 */
         .loading {
             text-align: center;
             padding: 60px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -363,7 +363,7 @@
 
         /* 标签页导航 */
         .tabs-container {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -372,8 +372,8 @@
 
         .tabs-nav {
             display: flex;
-            border-bottom: 2px solid #f0f0f0;
-            background: white;
+            border-bottom: 2px solid var(--surface-100);
+            background: var(--surface-50);
         }
 
         .tab-btn {
@@ -383,7 +383,7 @@
             border: none;
             font-size: 15px;
             font-weight: 600;
-            color: #666;
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
@@ -394,13 +394,13 @@
         }
 
         .tab-btn:hover {
-            background: #f9fafb;
-            color: #667eea;
+            background: var(--surface-50);
+            color: var(--brand-purple);
         }
 
         .tab-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            color: var(--brand-purple);
+            border-bottom-color: var(--brand-purple);
             background: linear-gradient(to bottom, rgba(102, 126, 234, 0.05), transparent);
         }
 
@@ -429,18 +429,18 @@
             align-items: flex-start;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid var(--surface-100);
         }
 
         .decisions-header h2 {
             font-size: 28px;
             font-weight: 700;
-            color: #1a1a1a;
+            color: var(--brand-navy);
             margin-bottom: 8px;
         }
 
         .decisions-header .subtitle {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
@@ -452,12 +452,12 @@
 
         .filter-btn {
             padding: 10px 20px;
-            background: white;
-            border: 2px solid #e5e7eb;
+            background: var(--surface-50);
+            border: 2px solid var(--surface-200);
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
-            color: #666;
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
@@ -466,14 +466,14 @@
         }
 
         .filter-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            border-color: var(--brand-purple);
+            color: var(--surface-50);
         }
 
         .filter-btn .count {
@@ -493,12 +493,12 @@
         }
 
         .decision-thread {
-            background: white;
+            background: var(--surface-50);
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 20px;
-            border: 1px solid #e5e7eb;
-            border-left: 4px solid #667eea;
+            border: 1px solid var(--surface-200);
+            border-left: 4px solid var(--brand-purple);
             transition: all 0.3s;
         }
 
@@ -507,7 +507,7 @@
         }
 
         .decision-thread.responded {
-            border-left-color: #10b981;
+            border-left-color: var(--brand-mint);
         }
 
         .thread-header {
@@ -520,7 +520,7 @@
         .thread-title {
             font-size: 18px;
             font-weight: 600;
-            color: #1a1a1a;
+            color: var(--brand-navy);
             margin-bottom: 8px;
         }
 
@@ -528,7 +528,7 @@
             display: flex;
             gap: 16px;
             font-size: 13px;
-            color: #6b7280;
+            color: var(--text-secondary);
             align-items: center;
         }
 
@@ -548,21 +548,21 @@
         }
 
         .thread-status.active {
-            background: #fef3c7;
-            color: #d97706;
+            background: rgba(245, 158, 11, 0.18);
+            color: var(--warning);
         }
 
         .thread-status.responded {
-            background: #d1fae5;
-            color: #059669;
+            background: rgba(34, 197, 94, 0.18);
+            color: var(--success);
         }
 
         .thread-content {
-            color: #4b5563;
+            color: var(--text-secondary);
             line-height: 1.7;
             margin-bottom: 20px;
             padding: 15px;
-            background: #f9fafb;
+            background: var(--surface-50);
             border-radius: 8px;
         }
 
@@ -571,7 +571,7 @@
             flex-direction: column;
             gap: 16px;
             padding-left: 24px;
-            border-left: 2px solid #e5e7eb;
+            border-left: 2px solid var(--surface-200);
             margin-left: 12px;
             margin-top: 16px;
         }
@@ -588,14 +588,14 @@
             top: 16px;
             width: 14px;
             height: 14px;
-            background: white;
-            border: 3px solid #667eea;
+            background: var(--surface-50);
+            border: 3px solid var(--brand-purple);
             border-radius: 50%;
         }
 
         .timeline-item.response::before {
-            border-color: #10b981;
-            background: #d1fae5;
+            border-color: var(--brand-mint);
+            background: rgba(34, 197, 94, 0.18);
         }
 
         .timeline-header {
@@ -611,36 +611,36 @@
 
         .timeline-user {
             font-weight: 600;
-            color: #1a1a1a;
+            color: var(--brand-navy);
         }
 
         .timeline-action {
-            color: #6b7280;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
         .timeline-time {
-            color: #9ca3af;
+            color: var(--text-secondary);
             font-size: 12px;
             margin-left: auto;
         }
 
         .timeline-content {
-            color: #4b5563;
+            color: var(--text-secondary);
             line-height: 1.6;
             padding-left: 28px;
         }
 
         .timeline-decision {
-            background: #f0fdf4;
-            border-left: 3px solid #10b981;
+            background: rgba(34, 197, 94, 0.12);
+            border-left: 3px solid var(--brand-mint);
             padding: 12px 16px;
             border-radius: 6px;
             margin-top: 8px;
         }
 
         .timeline-decision strong {
-            color: #059669;
+            color: var(--success);
         }
 
         /* AI建议框 */
@@ -655,7 +655,7 @@
         .ai-label {
             font-size: 13px;
             font-weight: 600;
-            color: #667eea;
+            color: var(--brand-purple);
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -663,7 +663,7 @@
         }
 
         .ai-question {
-            color: #4b5563;
+            color: var(--text-secondary);
             margin-bottom: 12px;
             font-size: 14px;
         }
@@ -676,35 +676,35 @@
 
         .ai-option-btn {
             padding: 8px 16px;
-            background: white;
-            border: 2px solid #667eea;
+            background: var(--surface-50);
+            border: 2px solid var(--brand-purple);
             border-radius: 8px;
             font-size: 13px;
-            color: #667eea;
+            color: var(--brand-purple);
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 500;
         }
 
         .ai-option-btn:hover {
-            background: #667eea;
-            color: white;
+            background: var(--brand-purple);
+            color: var(--surface-50);
             transform: translateY(-1px);
         }
 
         /* 响应表单 */
         .response-form {
-            background: #f9fafb;
+            background: var(--surface-50);
             border-radius: 10px;
             padding: 16px;
             margin-top: 16px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--surface-200);
         }
 
         .response-form textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e5e7eb;
+            border: 2px solid var(--surface-200);
             border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
@@ -715,7 +715,7 @@
 
         .response-form textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--brand-purple);
         }
 
         .response-actions {
@@ -728,7 +728,7 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #9ca3af;
+            color: var(--text-secondary);
         }
 
         .empty-state-icon {
@@ -738,7 +738,7 @@
 
         .empty-state-text {
             font-size: 16px;
-            color: #6b7280;
+            color: var(--text-secondary);
         }
 
         /* 加载状态 */
@@ -747,6 +747,8 @@
             padding: 60px 20px;
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -754,7 +756,7 @@
         <!-- 导航栏 -->
         <div class="navbar">
             <a href="/dashboard.html" class="navbar-brand">超协体</a>
-            <a href="/projects.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回项目列表</a>
+            <a href="/projects.html" style="text-decoration: none; color: var(--text-secondary); font-size: 14px;">← 返回项目列表</a>
         </div>
 
         <!-- 项目头部 -->
@@ -769,13 +771,13 @@
         <div class="tabs-container">
             <div class="tabs-nav">
                 <button class="tab-btn active" data-tab="kanban" onclick="switchTab('kanban')">
-                    <span>📋</span> 任务看板
+                    <span><i class="ph-bold ph-clipboard-text"></i></span> 任务看板
                 </button>
                 <button class="tab-btn" data-tab="decisions" onclick="switchTab('decisions')">
-                    <span>💬</span> 决策交流
+                    <span><i class="ph-bold ph-chat-text"></i></span> 决策交流
                 </button>
                 <button class="tab-btn" data-tab="team" onclick="switchTab('team')">
-                    <span>👥</span> 团队管理
+                    <span><i class="ph-bold ph-users"></i></span> 团队管理
                 </button>
             </div>
 
@@ -784,9 +786,9 @@
                 <div class="main-content">
                     <div class="kanban-board">
                         <div class="kanban-header">
-                            <h2 class="kanban-title">📋 任务看板</h2>
+                            <h2 class="kanban-title"><i class="ph-bold ph-clipboard-text"></i> 任务看板</h2>
                             <button class="btn btn-primary" onclick="createTask()">
-                                ➕ 新建任务
+                                <i class="ph-bold ph-plus"></i> 新建任务
                             </button>
                         </div>
                         <div id="kanbanBoard" class="kanban-columns">
@@ -799,7 +801,7 @@
 
                     <div class="sidebar">
                         <div class="sidebar-card">
-                            <h3 class="sidebar-title">📊 项目统计</h3>
+                            <h3 class="sidebar-title"><i class="ph-bold ph-chart-bar"></i> 项目统计</h3>
                             <div id="projectStats" class="stat-grid">
                                 <div class="loading" style="grid-column: 1 / -1;">
                                     <div>加载中...</div>
@@ -819,7 +821,7 @@
                             <p class="subtitle">基于PWP协议的不可篡改决策记录</p>
                         </div>
                         <button class="btn btn-primary" onclick="openDecisionRequestDialog()">
-                            <span>📤</span> 创建决策请求
+                            <span><i class="ph-bold ph-tray-arrow-up"></i></span> 创建决策请求
                         </button>
                     </div>
 
@@ -851,7 +853,7 @@
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
                         <div class="sidebar-card">
-                            <h3 class="sidebar-title">👥 团队成员</h3>
+                            <h3 class="sidebar-title"><i class="ph-bold ph-users"></i> 团队成员</h3>
                             <div id="projectMembers" class="member-list">
                                 <div class="loading">
                                     <div>加载中...</div>
@@ -860,7 +862,7 @@
                         </div>
 
                         <div class="sidebar-card">
-                            <h3 class="sidebar-title">🤝 推荐成员</h3>
+                            <h3 class="sidebar-title"><i class="ph-bold ph-handshake"></i> 推荐成员</h3>
                             <div id="recommendedMembers" class="member-list">
                                 <div class="loading">
                                     <div>加载中...</div>
@@ -935,24 +937,24 @@
 
                 <div class="project-meta-row">
                     <div class="meta-item">
-                        <span>📍</span>
+                        <span><i class="ph-bold ph-map-pin"></i></span>
                         <span>状态: ${statusMap[project.status]}</span>
                     </div>
                     <div class="meta-item">
-                        <span>👤</span>
+                        <span><i class="ph-bold ph-user"></i></span>
                         <span>创建者: ${escapeHtml(project.owner.username)}</span>
                     </div>
                     <div class="meta-item">
-                        <span>👥</span>
+                        <span><i class="ph-bold ph-users"></i></span>
                         <span>${project._count.members} 名成员</span>
                     </div>
                     <div class="meta-item">
-                        <span>📋</span>
+                        <span><i class="ph-bold ph-clipboard-text"></i></span>
                         <span>${project._count.tasks} 个任务</span>
                     </div>
                     ${project.pointsBudget > 0 ? `
                         <div class="meta-item">
-                            <span>💰</span>
+                            <span><i class="ph-bold ph-money"></i></span>
                             <span>预算: ${project.pointsBudget} 积分</span>
                         </div>
                     ` : ''}
@@ -1012,9 +1014,9 @@
                             <div class="task-title">${escapeHtml(task.title)}</div>
                             <div class="task-meta">
                                 ${task.assignedUser ? `
-                                    <span>👤 ${escapeHtml(task.assignedUser.username)}</span>
+                                    <span><i class="ph-bold ph-user"></i> ${escapeHtml(task.assignedUser.username)}</span>
                                 ` : '<span>未分配</span>'}
-                                ${task.rewardPoints ? `<span>💰 ${task.rewardPoints}</span>` : ''}
+                                ${task.rewardPoints ? `<span><i class="ph-bold ph-money"></i> ${task.rewardPoints}</span>` : ''}
                             </div>
                         </div>
                     `).join('')}
@@ -1107,7 +1109,7 @@
             } catch (error) {
                 console.error('加载推荐成员失败:', error);
                 document.getElementById('recommendedMembers').innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #999; font-size: 13px;">
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px;">
                         暂无推荐
                     </div>
                 `;
@@ -1118,7 +1120,7 @@
         function renderRecommendedMembers(recommendations) {
             if (!recommendations || recommendations.length === 0) {
                 document.getElementById('recommendedMembers').innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #999; font-size: 13px;">
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px;">
                         暂无推荐成员
                     </div>
                 `;
@@ -1126,27 +1128,27 @@
             }
 
             document.getElementById('recommendedMembers').innerHTML = recommendations.map(rec => `
-                <div class="member-item" style="flex-direction: column; align-items: stretch; background: #f8f9fa; border-radius: 8px; padding: 12px;">
+                <div class="member-item" style="flex-direction: column; align-items: stretch; background: var(--surface-50); border-radius: 8px; padding: 12px;">
                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
                         <div class="member-avatar">
                             ${rec.user.username.charAt(0).toUpperCase()}
                         </div>
                         <div class="member-info" style="flex: 1;">
                             <div class="member-name">${escapeHtml(rec.user.username)}</div>
-                            <div style="font-size: 12px; color: #667eea; font-weight: 600;">
+                            <div style="font-size: 12px; color: var(--brand-purple); font-weight: 600;">
                                 匹配度: ${rec.matchScore}%
                             </div>
                         </div>
                         <button
                             onclick="inviteRecommendedMember('${rec.user.id}')"
-                            style="padding: 6px 12px; background: #667eea; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;"
+                            style="padding: 6px 12px; background: var(--brand-purple); color: var(--surface-50); border: none; border-radius: 6px; font-size: 12px; cursor: pointer;"
                         >
                             邀请
                         </button>
                     </div>
                     ${rec.reasons && rec.reasons.length > 0 ? `
-                        <div style="font-size: 11px; color: #999; line-height: 1.6;">
-                            ${rec.reasons.map(r => `💡 ${r}`).join('<br>')}
+                        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+                            ${rec.reasons.map(r => `<i class="ph-bold ph-lightbulb"></i> ${r}`).join('<br>')}
                         </div>
                     ` : ''}
                 </div>
@@ -1326,10 +1328,10 @@
                         <div>
                             <div class="thread-title">${escapeHtml(conversation.summary || '决策交流')}</div>
                             <div class="thread-meta">
-                                <span>👤 ${escapeHtml(firstRecord.user.username)}</span>
-                                <span>📅 ${formatDecisionTime(firstRecord.occurredAt)}</span>
+                                <span><i class="ph-bold ph-user"></i> ${escapeHtml(firstRecord.user.username)}</span>
+                                <span><i class="ph-bold ph-calendar"></i> ${formatDecisionTime(firstRecord.occurredAt)}</span>
                                 <span class="thread-status ${conversation.status}">
-                                    ${conversation.status === 'active' ? '⏳ 待响应' : '✅ 已响应'}
+                                    ${conversation.status === 'active' ? '<i class="ph-bold ph-hourglass"></i> 待响应' : '<i class="ph-bold ph-check-circle"></i> 已响应'}
                                 </span>
                             </div>
                         </div>
@@ -1373,7 +1375,7 @@
 
                     ${isRequest && isActive && canRespond && record.eventData.aiSuggestions ? `
                         <div class="ai-suggestion-box">
-                            <div class="ai-label">🤖 AI决策建议</div>
+                            <div class="ai-label"><i class="ph-bold ph-robot"></i> AI决策建议</div>
                             <div class="ai-question">${escapeHtml(record.eventData.aiSuggestions.question)}</div>
                             <div class="ai-options">
                                 ${record.eventData.aiSuggestions.options.map(opt =>
@@ -1398,16 +1400,16 @@
 
         function getDecisionEventIcon(eventType) {
             const icons = {
-                'decision_requested': '📬',
-                'decision_made': '✅',
-                'task_assignment_requested': '📋',
-                'task_assignment_responded': '👍',
-                'deliverable_submitted': '📦',
-                'deliverable_reviewed': '✓',
-                'feedback_requested': '💬',
-                'feedback_provided': '💡'
+                'decision_requested': '<i class="ph-bold ph-mailbox"></i>',
+                'decision_made': '<i class="ph-bold ph-check-circle"></i>',
+                'task_assignment_requested': '<i class="ph-bold ph-clipboard-text"></i>',
+                'task_assignment_responded': '<i class="ph-bold ph-thumbs-up"></i>',
+                'deliverable_submitted': '<i class="ph-bold ph-package"></i>',
+                'deliverable_reviewed': '<i class="ph-bold ph-check"></i>',
+                'feedback_requested': '<i class="ph-bold ph-chat-text"></i>',
+                'feedback_provided': '<i class="ph-bold ph-lightbulb"></i>'
             };
-            return icons[eventType] || '📌';
+            return icons[eventType] || '<i class="ph-bold ph-push-pin"></i>';
         }
 
         function getDecisionEventTitle(eventType) {
@@ -1490,7 +1492,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showSuccessToast('✅ 响应已提交');
+                    showSuccessToast('<i class="ph-bold ph-check-circle"></i> 响应已提交');
                     loadProjectDecisions();
                 } else {
                     showErrorToast('提交失败: ' + data.error);
@@ -1515,7 +1517,7 @@
             const container = document.getElementById('decisions-timeline');
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-icon"><i class="ph-bold ph-mailbox"></i></div>
                     <div class="empty-state-text">${escapeHtml(message)}</div>
                 </div>
             `;
@@ -1569,7 +1571,7 @@
                 const submitData = await submitResponse.json();
 
                 if (submitData.success) {
-                    showSuccessToast('✅ 决策请求已发送');
+                    showSuccessToast('<i class="ph-bold ph-check-circle"></i> 决策请求已发送');
                     loadProjectDecisions();
                 } else {
                     showErrorToast('发送失败: ' + submitData.error);

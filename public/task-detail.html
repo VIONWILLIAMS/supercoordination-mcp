@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,7 +19,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -30,7 +30,7 @@
         }
 
         .navbar {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -43,7 +43,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -57,7 +57,7 @@
 
         .nav-link {
             padding: 8px 16px;
-            color: #666;
+            color: var(--text-secondary);
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
@@ -65,12 +65,12 @@
         }
 
         .nav-link:hover {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--surface-100);
+            color: var(--text-main);
         }
 
         .card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -79,13 +79,13 @@
         .card-title {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
         }
 
         .card-subtitle {
             font-size: 14px;
-            color: #999;
+            color: var(--text-secondary);
             margin-bottom: 24px;
         }
 
@@ -97,20 +97,20 @@
         }
 
         .info-item {
-            background: #f8fafc;
+            background: var(--surface-50);
             padding: 12px 16px;
             border-radius: 10px;
         }
 
         .info-label {
             font-size: 12px;
-            color: #666;
+            color: var(--text-secondary);
             margin-bottom: 6px;
         }
 
         .info-value {
             font-size: 14px;
-            color: #111827;
+            color: var(--text-main);
             font-weight: 600;
             word-break: break-word;
         }
@@ -118,7 +118,7 @@
         .section-title {
             font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin: 24px 0 12px;
         }
 
@@ -130,14 +130,14 @@
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
         }
 
         .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 10px;
             font-size: 15px;
             font-family: inherit;
@@ -167,13 +167,13 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #666;
+            background: var(--surface-100);
+            color: var(--text-secondary);
         }
 
         .result-msg {
@@ -181,13 +181,13 @@
             font-size: 14px;
         }
 
-        .result-success { color: #16a34a; }
-        .result-error { color: #dc2626; }
+        .result-success { color: var(--success); }
+        .result-error { color: var(--error); }
 
         .empty-state {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
@@ -198,6 +198,8 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -243,7 +245,7 @@
                 </div>
 
                 <div class="section-title">任务描述</div>
-                <p id="infoDescription" style="line-height:1.8;color:#374151;"></p>
+                <p id="infoDescription" style="line-height:1.8;color:var(--surface-800);"></p>
 
                 <div class="section-title">更新任务状态</div>
                 <form id="updateForm">

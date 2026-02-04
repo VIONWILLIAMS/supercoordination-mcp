@@ -14,17 +14,17 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy) 100%);
             min-height: 100vh;
         }
 
         .admin-nav {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
+            color: var(--surface-50);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
@@ -42,7 +42,7 @@
         }
 
         .admin-nav-link {
-            color: white;
+            color: var(--surface-50);
             text-decoration: none;
             padding: 10px 18px;
             border-radius: 8px;
@@ -74,7 +74,7 @@
         }
 
         .page-title {
-            color: white;
+            color: var(--surface-50);
             font-size: 28px;
             font-weight: bold;
         }
@@ -99,18 +99,18 @@
         .stat-item .number {
             font-size: 24px;
             font-weight: bold;
-            color: #667eea;
+            color: var(--brand-purple);
         }
 
         .stat-item .label {
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
-        .stat-item.pending .number { color: #6366f1; }
-        .stat-item.in-progress .number { color: #f59e0b; }
-        .stat-item.completed .number { color: #10b981; }
-        .stat-item.blocked .number { color: #ef4444; }
+        .stat-item.pending .number { color: var(--brand-purple); }
+        .stat-item.in-progress .number { color: var(--warning); }
+        .stat-item.completed .number { color: var(--brand-mint); }
+        .stat-item.blocked .number { color: var(--error); }
 
         .admin-card {
             background: rgba(255, 255, 255, 0.95);
@@ -136,8 +136,8 @@
 
         .filter-btn {
             padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--surface-200);
+            background: var(--surface-50);
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
@@ -145,13 +145,13 @@
         }
 
         .filter-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border-color: transparent;
         }
 
@@ -165,20 +165,20 @@
         .search-input {
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 8px;
             font-size: 14px;
             outline: none;
         }
 
         .search-input:focus {
-            border-color: #667eea;
+            border-color: var(--brand-purple);
         }
 
         .search-btn {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -193,10 +193,10 @@
         }
 
         .task-card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid #eee;
+            border: 1px solid var(--surface-200);
             transition: all 0.3s;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
@@ -216,7 +216,7 @@
         .task-title {
             font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             flex: 1;
             margin-right: 10px;
         }
@@ -228,10 +228,10 @@
             font-weight: 600;
         }
 
-        .task-priority.S { background: #fee2e2; color: #dc2626; }
-        .task-priority.A { background: #fef3c7; color: #d97706; }
-        .task-priority.B { background: #dbeafe; color: #2563eb; }
-        .task-priority.C { background: #e5e7eb; color: #6b7280; }
+        .task-priority.S { background: rgba(239, 68, 68, 0.12); color: var(--error); }
+        .task-priority.A { background: rgba(245, 158, 11, 0.18); color: var(--warning); }
+        .task-priority.B { background: rgba(59, 130, 246, 0.18); color: var(--info); }
+        .task-priority.C { background: var(--surface-200); color: var(--text-secondary); }
 
         .task-meta {
             display: flex;
@@ -239,7 +239,7 @@
             gap: 10px;
             margin-bottom: 12px;
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .task-meta span {
@@ -255,10 +255,10 @@
             font-weight: 600;
         }
 
-        .task-status.pending { background: #e0e7ff; color: #4f46e5; }
-        .task-status.in_progress { background: #fef3c7; color: #d97706; }
-        .task-status.completed { background: #d1fae5; color: #059669; }
-        .task-status.blocked { background: #fee2e2; color: #dc2626; }
+        .task-status.pending { background: var(--surface-100); color: var(--brand-purple-dark); }
+        .task-status.in_progress { background: rgba(245, 158, 11, 0.18); color: var(--warning); }
+        .task-status.completed { background: rgba(34, 197, 94, 0.18); color: var(--success); }
+        .task-status.blocked { background: rgba(239, 68, 68, 0.12); color: var(--error); }
 
         .task-progress {
             margin-bottom: 15px;
@@ -266,18 +266,18 @@
 
         .progress-bar {
             height: 6px;
-            background: #e5e7eb;
+            background: var(--surface-200);
             border-radius: 3px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, var(--brand-purple), var(--brand-purple-dark));
             transition: width 0.3s;
         }
 
-        .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
+        .progress-fill.completed { background: linear-gradient(90deg, var(--brand-mint), var(--success)); }
 
         .task-actions {
             display: flex;
@@ -296,18 +296,18 @@
         }
 
         .task-action-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         .task-action-btn.secondary {
-            background: #f3f4f6;
-            color: #374151;
+            background: var(--surface-100);
+            color: var(--surface-800);
         }
 
         .task-action-btn.danger {
-            background: #fee2e2;
-            color: #dc2626;
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--error);
         }
 
         .task-action-btn:hover {
@@ -325,16 +325,16 @@
 
         .pagination-btn {
             padding: 10px 20px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--surface-200);
+            background: var(--surface-50);
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
         }
 
         .pagination-btn:hover:not(:disabled) {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .pagination-btn:disabled {
@@ -351,14 +351,14 @@
         .loading, .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -388,7 +388,7 @@
         }
 
         .modal {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 30px;
             max-width: 500px;
@@ -410,7 +410,7 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .form-group {
@@ -422,20 +422,20 @@
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-main);
         }
 
         .form-select {
             width: 100%;
             padding: 10px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 8px;
             font-size: 14px;
             outline: none;
         }
 
         .form-select:focus {
-            border-color: #667eea;
+            border-color: var(--brand-purple);
         }
 
         .modal-actions {
@@ -455,18 +455,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--surface-100);
+            color: var(--text-main);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
+            color: var(--surface-50);
         }
 
         /* 响应式 */
@@ -499,33 +499,35 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <!-- 导航栏 -->
     <nav class="admin-nav">
         <div class="admin-logo">
-            <span>&#9881;</span>
+            <span><i class="ph-bold ph-gear"></i></span>
             <span>超协体管理后台</span>
         </div>
         <div class="admin-nav-links">
             <a href="/admin.html" class="admin-nav-link">
-                <span>&#128200;</span> 概览
+                <span><i class="ph-bold ph-chart-line"></i></span> 概览
             </a>
             <a href="/admin/users.html" class="admin-nav-link">
-                <span>&#128101;</span> 用户
+                <span><i class="ph-bold ph-users"></i></span> 用户
             </a>
             <a href="/admin/tasks.html" class="admin-nav-link active">
-                <span>&#128203;</span> 任务
+                <span><i class="ph-bold ph-clipboard-text"></i></span> 任务
             </a>
             <a href="/admin/analytics.html" class="admin-nav-link">
-                <span>&#128202;</span> 分析
+                <span><i class="ph-bold ph-chart-bar"></i></span> 分析
             </a>
             <a href="/admin/settings.html" class="admin-nav-link">
-                <span>&#9881;</span> 配置
+                <span><i class="ph-bold ph-gear"></i></span> 配置
             </a>
             <a href="/dashboard.html" class="admin-nav-link back">
-                <span>&#8592;</span> 返回工作台
+                <span><i class="ph-bold ph-arrow-left"></i></span> 返回工作台
             </a>
         </div>
     </nav>
@@ -597,12 +599,12 @@
     <div class="modal-overlay" id="statusModal">
         <div class="modal">
             <h3 class="modal-title">
-                <span>&#128203;</span> 修改任务状态
+                <span><i class="ph-bold ph-clipboard-text"></i></span> 修改任务状态
                 <button class="modal-close" onclick="closeModal('statusModal')">&times;</button>
             </h3>
             <div class="form-group">
                 <label class="form-label">任务标题</label>
-                <p id="statusModalTitle" style="color: #333; font-weight: 600;"></p>
+                <p id="statusModalTitle" style="color: var(--text-main); font-weight: 600;"></p>
             </div>
             <div class="form-group">
                 <label class="form-label">选择新状态</label>
@@ -624,12 +626,12 @@
     <div class="modal-overlay" id="deleteModal">
         <div class="modal">
             <h3 class="modal-title">
-                <span style="color: #ef4444;">&#9888;</span> 确认删除
+                <span style="color: var(--error);"><i class="ph-bold ph-warning"></i></span> 确认删除
                 <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
             </h3>
-            <p style="color: #666; margin-bottom: 10px;">确定要删除以下任务吗？</p>
-            <p id="deleteModalTitle" style="color: #333; font-weight: 600; margin-bottom: 20px;"></p>
-            <p style="color: #ef4444; font-size: 13px;">此操作无法撤销。</p>
+            <p style="color: var(--text-secondary); margin-bottom: 10px;">确定要删除以下任务吗？</p>
+            <p id="deleteModalTitle" style="color: var(--text-main); font-weight: 600; margin-bottom: 20px;"></p>
+            <p style="color: var(--error); font-size: 13px;">此操作无法撤销。</p>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeModal('deleteModal')">取消</button>
                 <button class="btn btn-danger" onclick="confirmDelete()">确认删除</button>
@@ -735,11 +737,11 @@
             };
 
             const wuxingEmoji = {
-                '火': '&#128293;',
-                '金': '&#9881;',
-                '木': '&#127795;',
-                '水': '&#128167;',
-                '土': '&#127956;'
+                '火': '<i class="ph-bold ph-fire"></i>',
+                '金': '<i class="ph-bold ph-gear"></i>',
+                '木': '<i class="ph-bold ph-tree"></i>',
+                '水': '<i class="ph-bold ph-drop"></i>',
+                '土': '<i class="ph-bold ph-mountains"></i>'
             };
 
             let html = '';
@@ -759,10 +761,10 @@
                         <div class="task-meta">
                             <span class="task-status ${status}">${statusText[status] || status}</span>
                             ${wuxing ? `<span>${wuxing} ${task.wuxing}</span>` : ''}
-                            <span>&#128197; ${createdAt}</span>
+                            <span><i class="ph-bold ph-calendar"></i> ${createdAt}</span>
                         </div>
                         <div class="task-progress">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; color: #666;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; color: var(--text-secondary);">
                                 <span>进度</span>
                                 <span>${progress}%</span>
                             </div>

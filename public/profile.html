@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,7 +19,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -27,7 +27,7 @@
         .profile-container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: var(--surface-50);
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -40,19 +40,19 @@
 
         .header h1 {
             font-size: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
 
         .header p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
         .progress-bar {
-            background: #e0e0e0;
+            background: var(--surface-200);
             height: 8px;
             border-radius: 4px;
             margin-bottom: 30px;
@@ -61,7 +61,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             transition: width 0.3s;
         }
 
@@ -72,7 +72,7 @@
         .section-title {
             font-size: 20px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -82,7 +82,7 @@
         .wuxing-item {
             margin-bottom: 30px;
             padding: 20px;
-            background: #f8f9fa;
+            background: var(--surface-50);
             border-radius: 12px;
         }
 
@@ -96,18 +96,18 @@
         .wuxing-name {
             font-size: 18px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
         }
 
         .wuxing-score {
             font-size: 24px;
             font-weight: bold;
-            color: #667eea;
+            color: var(--brand-purple);
         }
 
         .wuxing-description {
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
             margin-bottom: 15px;
             line-height: 1.6;
         }
@@ -125,7 +125,7 @@
         }
 
         .slider::-webkit-slider-track {
-            background: #e0e0e0;
+            background: var(--surface-200);
             border-radius: 4px;
         }
 
@@ -134,12 +134,12 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--brand-purple);
             cursor: pointer;
         }
 
         .slider::-moz-range-track {
-            background: #e0e0e0;
+            background: var(--surface-200);
             border-radius: 4px;
         }
 
@@ -147,7 +147,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--brand-purple);
             cursor: pointer;
             border: none;
         }
@@ -159,14 +159,14 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-main);
             font-weight: 500;
         }
 
         .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--surface-200);
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s;
@@ -174,7 +174,7 @@
 
         .form-group input:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--brand-purple);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
@@ -184,7 +184,7 @@
         }
 
         .form-group small {
-            color: #888;
+            color: var(--text-secondary);
             font-size: 12px;
             margin-top: 4px;
             display: block;
@@ -199,8 +199,8 @@
 
         .skill-tag {
             padding: 6px 12px;
-            background: #667eea;
-            color: white;
+            background: var(--brand-purple);
+            color: var(--surface-50);
             border-radius: 16px;
             font-size: 13px;
             display: flex;
@@ -216,8 +216,8 @@
         .btn-save {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border: none;
             border-radius: 12px;
             font-size: 16px;
@@ -238,8 +238,8 @@
         }
 
         .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: rgba(34, 197, 94, 0.18);
+            color: var(--success);
             padding: 16px;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -247,26 +247,28 @@
         }
 
         .error-message {
-            background: #ffebee;
-            color: #c62828;
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--error);
             padding: 16px;
             border-radius: 10px;
             margin-bottom: 20px;
             display: none;
         }
 
-        .wuxing-fire { color: #ff6b6b; }
-        .wuxing-metal { color: #ffd93d; }
-        .wuxing-wood { color: #06d6a0; }
-        .wuxing-water { color: #00d9ff; }
-        .wuxing-earth { color: #c77dff; }
+        .wuxing-fire { color: var(--error); }
+        .wuxing-metal { color: var(--warning); }
+        .wuxing-wood { color: var(--brand-mint); }
+        .wuxing-water { color: var(--info); }
+        .wuxing-earth { color: var(--brand-purple); }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <div class="profile-container">
         <div class="header">
-            <h1>🎨 五行画像</h1>
+            <h1><i class="ph-bold ph-palette"></i> 五行画像</h1>
             <p>了解你的能量特质，找到最佳协作伙伴</p>
         </div>
 
@@ -281,14 +283,14 @@
             <!-- 五行评分 -->
             <div class="section">
                 <div class="section-title">
-                    <span>☯️</span>
+                    <span><i class="ph-bold ph-yin-yang"></i>️</span>
                     <span>五行能量评估</span>
                 </div>
 
                 <!-- 火 -->
                 <div class="wuxing-item">
                     <div class="wuxing-header">
-                        <div class="wuxing-name wuxing-fire">🔥 火 - 行动派</div>
+                        <div class="wuxing-name wuxing-fire"><i class="ph-bold ph-fire"></i> 火 - 行动派</div>
                         <div class="wuxing-score" id="fireScore">20</div>
                     </div>
                     <div class="wuxing-description">
@@ -300,7 +302,7 @@
                 <!-- 金 -->
                 <div class="wuxing-item">
                     <div class="wuxing-header">
-                        <div class="wuxing-name wuxing-metal">⚙️ 金 - 思考者</div>
+                        <div class="wuxing-name wuxing-metal"><i class="ph-bold ph-gear"></i>️ 金 - 思考者</div>
                         <div class="wuxing-score" id="metalScore">20</div>
                     </div>
                     <div class="wuxing-description">
@@ -312,7 +314,7 @@
                 <!-- 木 -->
                 <div class="wuxing-item">
                     <div class="wuxing-header">
-                        <div class="wuxing-name wuxing-wood">🌳 木 - 构建者</div>
+                        <div class="wuxing-name wuxing-wood"><i class="ph-bold ph-tree"></i> 木 - 构建者</div>
                         <div class="wuxing-score" id="woodScore">20</div>
                     </div>
                     <div class="wuxing-description">
@@ -324,7 +326,7 @@
                 <!-- 水 -->
                 <div class="wuxing-item">
                     <div class="wuxing-header">
-                        <div class="wuxing-name wuxing-water">💧 水 - 洞察者</div>
+                        <div class="wuxing-name wuxing-water"><i class="ph-bold ph-drop"></i> 水 - 洞察者</div>
                         <div class="wuxing-score" id="waterScore">20</div>
                     </div>
                     <div class="wuxing-description">
@@ -336,7 +338,7 @@
                 <!-- 土 -->
                 <div class="wuxing-item">
                     <div class="wuxing-header">
-                        <div class="wuxing-name wuxing-earth">🏔️ 土 - 整合者</div>
+                        <div class="wuxing-name wuxing-earth"><i class="ph-bold ph-mountains"></i>️ 土 - 整合者</div>
                         <div class="wuxing-score" id="earthScore">20</div>
                     </div>
                     <div class="wuxing-description">
@@ -349,7 +351,7 @@
             <!-- 技能标签 -->
             <div class="section">
                 <div class="section-title">
-                    <span>🛠️</span>
+                    <span><i class="ph-bold ph-wrench"></i>️</span>
                     <span>技能标签</span>
                 </div>
                 <div class="skills-container" id="skillsContainer"></div>
@@ -362,7 +364,7 @@
             <!-- 可选信息 -->
             <div class="section">
                 <div class="section-title">
-                    <span>💡</span>
+                    <span><i class="ph-bold ph-lightbulb"></i></span>
                     <span>更多信息（可选）</span>
                 </div>
 
@@ -545,7 +547,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    successMessage.textContent = '✅ 五行画像保存成功！';
+                    successMessage.textContent = '<i class="ph-bold ph-check-circle"></i> 五行画像保存成功！';
                     successMessage.style.display = 'block';
 
                     setTimeout(() => {

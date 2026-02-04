@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -21,7 +21,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -33,7 +33,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -46,7 +46,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -59,7 +59,7 @@
 
         .nav-link {
             padding: 8px 16px;
-            color: #666;
+            color: var(--text-secondary);
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
@@ -67,18 +67,18 @@
         }
 
         .nav-link:hover {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--surface-100);
+            color: var(--text-main);
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         /* 标签页 */
         .tabs-container {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -98,18 +98,18 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            color: #666;
+            color: var(--text-secondary);
             transition: all 0.3s;
         }
 
         .tab:hover {
-            color: #333;
-            background: #f5f5f5;
+            color: var(--text-main);
+            background: var(--surface-50);
         }
 
         .tab.active {
-            color: white;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--surface-50);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
         }
 
         .tab-count {
@@ -128,7 +128,7 @@
         }
 
         .member-card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -152,11 +152,11 @@
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--surface-50);
             font-weight: bold;
             font-size: 22px;
             flex-shrink: 0;
@@ -164,18 +164,18 @@
 
         .member-info h3 {
             font-size: 18px;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 4px;
         }
 
         .member-info p {
             font-size: 13px;
-            color: #888;
+            color: var(--text-secondary);
         }
 
         .member-serial {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: #667eea;
+            color: var(--brand-purple);
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 12px;
@@ -183,8 +183,8 @@
         }
 
         .ai-badge {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%);
+            color: var(--surface-50);
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 11px;
@@ -219,7 +219,7 @@
         .wuxing-bar {
             width: 100%;
             max-width: 40px;
-            background: #e0e0e0;
+            background: var(--surface-200);
             border-radius: 20px;
             overflow: hidden;
             height: 80px;
@@ -234,15 +234,15 @@
             transition: height 0.5s;
         }
 
-        .wuxing-fire .wuxing-bar-fill { background: linear-gradient(0deg, #ff6b6b, #ff2e63); }
-        .wuxing-metal .wuxing-bar-fill { background: linear-gradient(0deg, #ffd93d, #f9ca24); }
-        .wuxing-wood .wuxing-bar-fill { background: linear-gradient(0deg, #6bff92, #06d6a0); }
-        .wuxing-water .wuxing-bar-fill { background: linear-gradient(0deg, #00d9ff, #4facfe); }
-        .wuxing-earth .wuxing-bar-fill { background: linear-gradient(0deg, #c77dff, #9d4edd); }
+        .wuxing-fire .wuxing-bar-fill { background: linear-gradient(0deg, var(--error), var(--error)); }
+        .wuxing-metal .wuxing-bar-fill { background: linear-gradient(0deg, var(--warning), var(--warning)); }
+        .wuxing-wood .wuxing-bar-fill { background: linear-gradient(0deg, var(--brand-mint), var(--brand-mint)); }
+        .wuxing-water .wuxing-bar-fill { background: linear-gradient(0deg, var(--info), var(--info)); }
+        .wuxing-earth .wuxing-bar-fill { background: linear-gradient(0deg, var(--brand-purple), var(--brand-purple-dark)); }
 
         .wuxing-label {
             font-size: 11px;
-            color: #666;
+            color: var(--text-secondary);
             text-align: center;
         }
 
@@ -260,14 +260,14 @@
 
         .skill-tag {
             padding: 4px 10px;
-            background: #f0f0f0;
-            color: #555;
+            background: var(--surface-100);
+            color: var(--text-secondary);
             border-radius: 12px;
             font-size: 12px;
         }
 
         .skill-more {
-            color: #888;
+            color: var(--text-secondary);
             font-size: 12px;
         }
 
@@ -276,7 +276,7 @@
             display: flex;
             justify-content: space-around;
             padding-top: 16px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid var(--surface-200);
         }
 
         .stat-item {
@@ -286,20 +286,20 @@
         .stat-value {
             font-size: 20px;
             font-weight: bold;
-            color: #667eea;
+            color: var(--brand-purple);
         }
 
         .stat-label {
             font-size: 11px;
-            color: #888;
+            color: var(--text-secondary);
         }
 
         /* 空状态 */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
-            background: white;
+            color: var(--text-secondary);
+            background: var(--surface-50);
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
@@ -317,23 +317,23 @@
 
         .empty-hint {
             font-size: 14px;
-            color: #bbb;
+            color: var(--surface-200);
         }
 
         /* 加载状态 */
         .loading {
             text-align: center;
             padding: 60px;
-            color: #999;
-            background: white;
+            color: var(--text-secondary);
+            background: var(--surface-50);
             border-radius: 16px;
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -359,6 +359,8 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -457,8 +459,8 @@
 
             if (members.length === 0) {
                 const emptyMessages = {
-                    community: { icon: '👥', text: '暂无社区成员', hint: '邀请更多人加入超协体' },
-                    team: { icon: '🤝', text: '暂无团队成员', hint: '通过工作台注册成员' }
+                    community: { icon: '<i class="ph-bold ph-users"></i>', text: '暂无社区成员', hint: '邀请更多人加入超协体' },
+                    team: { icon: '<i class="ph-bold ph-handshake"></i>', text: '暂无团队成员', hint: '通过工作台注册成员' }
                 };
                 const msg = emptyMessages[currentTab];
 
@@ -506,31 +508,31 @@
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing.fire || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">🔥</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-fire"></i></span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-metal">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing.metal || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">⚙️</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-gear"></i>️</span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-wood">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing.wood || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">🌳</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-tree"></i></span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-water">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing.water || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">💧</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-drop"></i></span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-earth">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing.earth || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">🏔️</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-mountains"></i>️</span></span>
                                     </div>
                                 </div>
 
@@ -571,31 +573,31 @@
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing['火'] || wuxing.fire || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">🔥</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-fire"></i></span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-metal">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing['金'] || wuxing.metal || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">⚙️</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-gear"></i>️</span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-wood">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing['木'] || wuxing.wood || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">🌳</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-tree"></i></span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-water">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing['水'] || wuxing.water || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">💧</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-drop"></i></span></span>
                                     </div>
                                     <div class="wuxing-bar-item wuxing-earth">
                                         <div class="wuxing-bar">
                                             <div class="wuxing-bar-fill" style="height: ${wuxing['土'] || wuxing.earth || 0}%"></div>
                                         </div>
-                                        <span class="wuxing-label"><span class="wuxing-icon">🏔️</span></span>
+                                        <span class="wuxing-label"><span class="wuxing-icon"><i class="ph-bold ph-mountains"></i>️</span></span>
                                     </div>
                                 </div>
 

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,19 +19,19 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
       line-height: 1.6;
-      color: #333;
+      color: var(--text-main);
       overflow-x: hidden;
     }
 
     /* Hero Section */
     .hero {
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      color: white;
+      color: var(--surface-50);
       position: relative;
       overflow: hidden;
     }
@@ -104,8 +104,8 @@
     }
 
     .cta-primary {
-      background: white;
-      color: #667eea;
+      background: var(--surface-50);
+      color: var(--brand-purple);
     }
 
     .cta-primary:hover {
@@ -115,9 +115,9 @@
 
     .cta-secondary {
       background: rgba(255, 255, 255, 0.2);
-      color: white;
+      color: var(--surface-50);
       backdrop-filter: blur(10px);
-      border: 2px solid white;
+      border: 2px solid var(--surface-50);
     }
 
     .cta-secondary:hover {
@@ -149,7 +149,7 @@
 
     .stat-item {
       padding: 30px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, var(--surface-50) 0%, var(--surface-100) 100%);
       border-radius: 15px;
       transition: transform 0.3s;
     }
@@ -161,7 +161,7 @@
     .stat-number {
       font-size: 3rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -169,7 +169,7 @@
 
     .stat-label {
       font-size: 1.1rem;
-      color: #666;
+      color: var(--text-secondary);
       margin-top: 10px;
     }
 
@@ -185,7 +185,7 @@
       font-size: 3rem;
       font-weight: 800;
       margin-bottom: 1rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -194,7 +194,7 @@
     .section-subtitle {
       text-align: center;
       font-size: 1.3rem;
-      color: #666;
+      color: var(--text-secondary);
       margin-bottom: 60px;
     }
 
@@ -207,7 +207,7 @@
 
     .feature-card {
       padding: 40px;
-      background: white;
+      background: var(--surface-50);
       border-radius: 20px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
       transition: all 0.3s;
@@ -217,7 +217,7 @@
     .feature-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
-      border-color: #667eea;
+      border-color: var(--brand-purple);
     }
 
     .feature-icon {
@@ -229,17 +229,17 @@
       font-size: 1.5rem;
       font-weight: 700;
       margin-bottom: 15px;
-      color: #333;
+      color: var(--text-main);
     }
 
     .feature-description {
-      color: #666;
+      color: var(--text-secondary);
       line-height: 1.8;
     }
 
     /* Wuxing Section */
     .wuxing-section {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, var(--surface-50) 0%, var(--surface-100) 100%);
       padding: 100px 20px;
     }
 
@@ -259,7 +259,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: var(--surface-50);
       font-weight: 700;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       animation: pulse 2s ease-in-out infinite;
@@ -271,34 +271,34 @@
     }
 
     .wuxing-fire {
-      background: linear-gradient(135deg, #f93d66 0%, #ff6b9d 100%);
+      background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
       top: 0;
       left: 50%;
       transform: translateX(-50%);
     }
 
     .wuxing-earth {
-      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+      background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
     }
 
     .wuxing-metal {
-      background: linear-gradient(135deg, #9ca3af 0%, #d1d5db 100%);
-      color: #333 !important;
+      background: linear-gradient(135deg, var(--text-secondary) 0%, var(--surface-200) 100%);
+      color: var(--text-main) !important;
       top: 30%;
       right: 5%;
     }
 
     .wuxing-water {
-      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+      background: linear-gradient(135deg, var(--info) 0%, var(--info) 100%);
       bottom: 30%;
       left: 5%;
     }
 
     .wuxing-wood {
-      background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      background: linear-gradient(135deg, var(--brand-mint) 0%, var(--brand-mint) 100%);
       bottom: 30%;
       right: 5%;
     }
@@ -314,8 +314,8 @@
 
     /* AI Features */
     .ai-features {
-      background: #1a1a2e;
-      color: white;
+      background: var(--brand-navy);
+      color: var(--surface-50);
       padding: 100px 20px;
     }
 
@@ -340,14 +340,14 @@
 
     .ai-card:hover {
       background: rgba(255, 255, 255, 0.1);
-      border-color: #667eea;
+      border-color: var(--brand-purple);
       transform: translateY(-5px);
     }
 
     .ai-card h3 {
       font-size: 1.3rem;
       margin-bottom: 15px;
-      color: #667eea;
+      color: var(--brand-purple);
     }
 
     .ai-card p {
@@ -358,7 +358,7 @@
     /* Use Cases */
     .use-cases {
       padding: 100px 20px;
-      background: white;
+      background: var(--surface-50);
     }
 
     .use-case-grid {
@@ -373,7 +373,7 @@
 
     .use-case {
       padding: 40px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, var(--surface-50) 0%, var(--surface-100) 100%);
       border-radius: 20px;
       position: relative;
       overflow: hidden;
@@ -386,13 +386,13 @@
       left: 0;
       right: 0;
       height: 5px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
     }
 
     .use-case h3 {
       font-size: 1.5rem;
       margin-bottom: 20px;
-      color: #333;
+      color: var(--text-main);
     }
 
     .use-case ul {
@@ -402,26 +402,26 @@
 
     .use-case li {
       padding: 10px 0;
-      color: #666;
+      color: var(--text-secondary);
       position: relative;
       padding-left: 30px;
     }
 
     .use-case li::before {
-      content: '✓';
+      content: '<i class="ph-bold ph-check"></i>';
       position: absolute;
       left: 0;
-      color: #10b981;
+      color: var(--brand-mint);
       font-weight: bold;
       font-size: 1.2rem;
     }
 
     /* CTA Section */
     .cta-section {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
       padding: 100px 20px;
       text-align: center;
-      color: white;
+      color: var(--surface-50);
     }
 
     .cta-section h2 {
@@ -437,8 +437,8 @@
 
     /* Footer */
     .footer {
-      background: #1a1a2e;
-      color: white;
+      background: var(--brand-navy);
+      color: var(--surface-50);
       padding: 40px 20px;
       text-align: center;
     }
@@ -463,7 +463,7 @@
     }
 
     .footer-links a:hover {
-      color: #667eea;
+      color: var(--brand-purple);
     }
 
     /* Responsive */
@@ -510,18 +510,20 @@
       transform: translateY(0);
     }
   </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <div class="version-badge">✨ v2.0 AI增强版</div>
+      <div class="version-badge"><i class="ph-bold ph-stars"></i> v2.0 AI增强版</div>
       <h1>超协体</h1>
       <p>AI驱动的五行协作平台 · 让团队效能提升100倍</p>
       <div class="cta-buttons">
         <a href="/login.html" class="cta-button cta-primary">立即开始</a>
-        <a href="#features" class="cta-button cta-secondary">了解更多</a>
+        <a href="var(--brand-peach)tures" class="cta-button cta-secondary">了解更多</a>
       </div>
     </div>
   </section>
@@ -553,7 +555,7 @@
 
     <div class="features-grid">
       <div class="feature-card fade-in">
-        <div class="feature-icon">🎯</div>
+        <div class="feature-icon"><i class="ph-bold ph-target"></i></div>
         <h3 class="feature-title">任务智能推荐</h3>
         <p class="feature-description">
           基于五行画像和技能匹配，AI为每个成员推荐最合适的任务。
@@ -562,7 +564,7 @@
       </div>
 
       <div class="feature-card fade-in">
-        <div class="feature-icon">🤝</div>
+        <div class="feature-icon"><i class="ph-bold ph-handshake"></i></div>
         <h3 class="feature-title">协作对智能推荐</h3>
         <p class="feature-description">
           五行相生相克算法，推荐最佳协作搭档。
@@ -571,7 +573,7 @@
       </div>
 
       <div class="feature-card fade-in">
-        <div class="feature-icon">🤖</div>
+        <div class="feature-icon"><i class="ph-bold ph-robot"></i></div>
         <h3 class="feature-title">AI助手对话</h3>
         <p class="feature-description">
           任务详情页实时AI助手，随时召唤协助。
@@ -580,7 +582,7 @@
       </div>
 
       <div class="feature-card fade-in">
-        <div class="feature-icon">👥</div>
+        <div class="feature-icon"><i class="ph-bold ph-users"></i></div>
         <h3 class="feature-title">AI虚拟成员</h3>
         <p class="feature-description">
           4种专长AI成为团队正式成员：CodeMaster、DocWriter、Analyst、Coordinator。
@@ -589,7 +591,7 @@
       </div>
 
       <div class="feature-card fade-in">
-        <div class="feature-icon">🔄</div>
+        <div class="feature-icon"><i class="ph-bold ph-arrows-clockwise"></i></div>
         <h3 class="feature-title">多AI协作</h3>
         <p class="feature-description">
           复杂任务自动拆解为子任务，多个AI并行处理。
@@ -598,7 +600,7 @@
       </div>
 
       <div class="feature-card fade-in">
-        <div class="feature-icon">💰</div>
+        <div class="feature-icon"><i class="ph-bold ph-money"></i></div>
         <h3 class="feature-title">积分经济系统</h3>
         <p class="feature-description">
           完整的积分循环：创建任务-10积分，完成任务+20积分。
@@ -616,29 +618,29 @@
 
       <div class="wuxing-diagram">
         <div class="wuxing-element wuxing-fire">
-          <div class="element-icon">🔥</div>
+          <div class="element-icon"><i class="ph-bold ph-fire"></i></div>
           <div class="element-name">火 · 叙事</div>
         </div>
         <div class="wuxing-element wuxing-earth">
-          <div class="element-icon">🏔️</div>
+          <div class="element-icon"><i class="ph-bold ph-mountains"></i>️</div>
           <div class="element-name">土 · 资产</div>
         </div>
         <div class="wuxing-element wuxing-metal">
-          <div class="element-icon">⚙️</div>
+          <div class="element-icon"><i class="ph-bold ph-gear"></i>️</div>
           <div class="element-name">金 · 法则</div>
         </div>
         <div class="wuxing-element wuxing-water">
-          <div class="element-icon">🌊</div>
+          <div class="element-icon"><i class="ph-bold ph-wave-sine"></i></div>
           <div class="element-name">水 · 商业</div>
         </div>
         <div class="wuxing-element wuxing-wood">
-          <div class="element-icon">🌳</div>
+          <div class="element-icon"><i class="ph-bold ph-tree"></i></div>
           <div class="element-name">木 · 技术</div>
         </div>
       </div>
 
       <div style="text-align: center; margin-top: 40px;">
-        <p style="font-size: 1.2rem; color: #666; max-width: 800px; margin: 0 auto;">
+        <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 800px; margin: 0 auto;">
           <strong>五行相生：</strong>木生火 → 火生土 → 土生金 → 金生水 → 水生木<br>
           <strong>协作推荐：</strong>你的强项能生对方的弱项 = 最佳搭档<br>
           <strong>成长导向：</strong>识别短板，推荐能提升弱项的任务
@@ -650,37 +652,37 @@
   <!-- AI Features -->
   <section class="ai-features">
     <div class="section">
-      <h2 class="section-title" style="color: white;">AI能力矩阵</h2>
+      <h2 class="section-title" style="color: var(--surface-50);">AI能力矩阵</h2>
       <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">5大AI能力 · 全面覆盖协作场景</p>
 
       <div class="ai-grid">
         <div class="ai-card">
-          <h3>💻 CodeMaster AI</h3>
+          <h3><i class="ph-bold ph-laptop"></i> CodeMaster AI</h3>
           <p>木能量70%，专注代码开发。可自动处理编程任务、代码审查、架构设计。</p>
         </div>
 
         <div class="ai-card">
-          <h3>📝 DocWriter AI</h3>
+          <h3><i class="ph-bold ph-note-pencil"></i> DocWriter AI</h3>
           <p>火能量60%，专注文档撰写。自动生成技术文档、API文档、项目报告。</p>
         </div>
 
         <div class="ai-card">
-          <h3>📊 Analyst AI</h3>
+          <h3><i class="ph-bold ph-chart-bar"></i> Analyst AI</h3>
           <p>金能量60%，专注数据分析。提供决策支持、趋势预测、战略研究。</p>
         </div>
 
         <div class="ai-card">
-          <h3>🎯 Coordinator AI</h3>
+          <h3><i class="ph-bold ph-target"></i> Coordinator AI</h3>
           <p>水能量50%，专注项目协调。自动拆解任务、编排AI、汇总结果。</p>
         </div>
 
         <div class="ai-card">
-          <h3>🔍 智能推荐</h3>
+          <h3><i class="ph-bold ph-magnifying-glass"></i> 智能推荐</h3>
           <p>四维评分算法，为每个成员推荐最合适的任务和协作伙伴。</p>
         </div>
 
         <div class="ai-card">
-          <h3>💬 实时助手</h3>
+          <h3><i class="ph-bold ph-chat-text"></i> 实时助手</h3>
           <p>任务页内嵌AI对话，随时提供建议、推荐成员、拆解步骤。</p>
         </div>
       </div>
@@ -694,7 +696,7 @@
 
     <div class="use-case-grid">
       <div class="use-case fade-in">
-        <h3>🏢 青年公社</h3>
+        <h3><i class="ph-bold ph-buildings"></i> 青年公社</h3>
         <ul>
           <li>10人团队 + 4个AI成员 = 14人效能</li>
           <li>五行匹配提升协作效率30%</li>
@@ -704,7 +706,7 @@
       </div>
 
       <div class="use-case fade-in">
-        <h3>🚀 创业团队</h3>
+        <h3><i class="ph-bold ph-rocket"></i> 创业团队</h3>
         <ul>
           <li>AI辅助决策减少试错成本</li>
           <li>多AI协作处理复杂项目</li>
@@ -714,7 +716,7 @@
       </div>
 
       <div class="use-case fade-in">
-        <h3>🎓 教育机构</h3>
+        <h3><i class="ph-bold ph-graduation-cap"></i> 教育机构</h3>
         <ul>
           <li>学生五行画像个性化培养</li>
           <li>AI推荐成长方向和学习路径</li>
@@ -746,10 +748,10 @@
       </div>
       <p style="color: rgba(255,255,255,0.6); margin-top: 20px;">
         超协体 v2.0 AI增强版 · 人机协同 · 五行协作<br>
-        [五行: 🌳木40% + 🔥火25% + ⚙️金20% + 🌊水10% + 🏔️土5%]
+        [五行: <i class="ph-bold ph-tree"></i>木40% + <i class="ph-bold ph-fire"></i>火25% + <i class="ph-bold ph-gear"></i>️金20% + <i class="ph-bold ph-wave-sine"></i>水10% + <i class="ph-bold ph-mountains"></i>️土5%]
       </p>
       <p style="color: rgba(255,255,255,0.4); margin-top: 10px; font-size: 0.9rem;">
-        © 2026 SuperCoordination MCP. All rights reserved.
+        <i class="ph-bold ph-copyright"></i> 2026 SuperCoordination MCP. All rights reserved.
       </p>
     </div>
   </footer>

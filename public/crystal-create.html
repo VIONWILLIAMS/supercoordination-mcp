@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,7 +19,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -31,7 +31,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -44,7 +44,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -52,7 +52,7 @@
 
         /* 主卡片 */
         .card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -61,7 +61,7 @@
         .card-title {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 24px;
         }
 
@@ -74,24 +74,24 @@
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
         }
 
         .form-label .required {
-            color: #ef4444;
+            color: var(--error);
         }
 
         .form-hint {
             font-size: 13px;
-            color: #999;
+            color: var(--text-secondary);
             margin-top: 4px;
         }
 
         .form-input, .form-textarea {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 10px;
             font-size: 15px;
             font-family: inherit;
@@ -100,7 +100,7 @@
         }
 
         .form-input:focus, .form-textarea:focus {
-            border-color: #667eea;
+            border-color: var(--brand-purple);
         }
 
         .form-textarea {
@@ -119,7 +119,7 @@
             flex-wrap: wrap;
             gap: 8px;
             padding: 8px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 10px;
             min-height: 44px;
         }
@@ -129,8 +129,8 @@
             align-items: center;
             gap: 6px;
             padding: 6px 12px;
-            background: #f0f4ff;
-            color: #667eea;
+            background: var(--surface-100);
+            color: var(--brand-purple);
             border-radius: 16px;
             font-size: 13px;
         }
@@ -172,8 +172,8 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         .btn-primary:hover {
@@ -182,22 +182,22 @@
         }
 
         .btn-secondary {
-            background: #f5f5f5;
-            color: #666;
+            background: var(--surface-50);
+            color: var(--text-secondary);
         }
 
         .btn-secondary:hover {
-            background: #e0e0e0;
+            background: var(--surface-200);
         }
 
         .btn-outline {
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
+            background: var(--surface-50);
+            border: 2px solid var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .btn-outline:hover {
-            background: #f0f4ff;
+            background: var(--surface-100);
         }
 
         .btn:disabled {
@@ -207,8 +207,8 @@
 
         /* 提示框 */
         .tips-box {
-            background: #f0f4ff;
-            border-left: 4px solid #667eea;
+            background: var(--surface-100);
+            border-left: 4px solid var(--brand-purple);
             padding: 16px;
             border-radius: 8px;
             margin-bottom: 24px;
@@ -216,14 +216,14 @@
 
         .tips-title {
             font-weight: 600;
-            color: #667eea;
+            color: var(--brand-purple);
             margin-bottom: 8px;
             font-size: 14px;
         }
 
         .tips-list {
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
             line-height: 1.8;
             margin-left: 16px;
         }
@@ -239,6 +239,8 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -246,15 +248,15 @@
         <!-- 导航栏 -->
         <div class="navbar">
             <a href="/dashboard.html" class="navbar-brand">超协体</a>
-            <a href="/crystal-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回晶体库</a>
+            <a href="/crystal-library.html" style="text-decoration: none; color: var(--text-secondary); font-size: 14px;">← 返回晶体库</a>
         </div>
 
         <!-- 主卡片 -->
         <div class="card">
-            <h1 class="card-title">💎 发布知识晶体</h1>
+            <h1 class="card-title"><i class="ph-bold ph-diamond"></i> 发布知识晶体</h1>
 
             <div class="tips-box">
-                <div class="tips-title">✨ 发布提示</div>
+                <div class="tips-title"><i class="ph-bold ph-stars"></i> 发布提示</div>
                 <ul class="tips-list">
                     <li>清晰描述问题和知识晶体，帮助他人快速理解</li>
                     <li>提供代码片段或实现细节，增加可复用性</li>
@@ -309,7 +311,7 @@
                 <!-- 代码片段 -->
                 <div class="form-group">
                     <label class="form-label">
-                        代码片段 <span style="color: #999;">(可选)</span>
+                        代码片段 <span style="color: var(--text-secondary);">(可选)</span>
                     </label>
                     <textarea
                         id="codeSnippet"
@@ -322,7 +324,7 @@
                 <!-- 标签 -->
                 <div class="form-group">
                     <label class="form-label">
-                        标签 <span style="color: #999;">(可选)</span>
+                        标签 <span style="color: var(--text-secondary);">(可选)</span>
                     </label>
                     <div class="tags-container" id="tagsContainer">
                         <input
@@ -338,25 +340,25 @@
                 <!-- 难度级别 -->
                 <div class="form-group">
                     <label class="form-label">
-                        难度级别 <span style="color: #999;">(可选)</span>
+                        难度级别 <span style="color: var(--text-secondary);">(可选)</span>
                     </label>
                     <select id="difficultyLevel" class="form-input">
                         <option value="">请选择</option>
-                        <option value="1">⭐ 入门级</option>
-                        <option value="2">⭐⭐ 初级</option>
-                        <option value="3">⭐⭐⭐ 中级</option>
-                        <option value="4">⭐⭐⭐⭐ 高级</option>
-                        <option value="5">⭐⭐⭐⭐⭐ 专家级</option>
+                        <option value="1"><i class="ph-bold ph-star"></i> 入门级</option>
+                        <option value="2"><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i> 初级</option>
+                        <option value="3"><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i> 中级</option>
+                        <option value="4"><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i> 高级</option>
+                        <option value="5"><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i><i class="ph-bold ph-star"></i> 专家级</option>
                     </select>
                 </div>
 
                 <!-- 按钮组 -->
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="saveDraft()">
-                        💾 保存草稿
+                        <i class="ph-bold ph-floppy-disk"></i> 保存草稿
                     </button>
                     <button type="submit" class="btn btn-primary" id="publishBtn">
-                        🚀 凝结晶体 (+50积分)
+                        <i class="ph-bold ph-rocket"></i> 凝结晶体 (+50积分)
                     </button>
                 </div>
             </form>

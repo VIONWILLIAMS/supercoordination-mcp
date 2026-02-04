@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -20,17 +20,17 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy) 100%);
             min-height: 100vh;
         }
 
         .admin-nav {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
+            color: var(--surface-50);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
@@ -48,7 +48,7 @@
         }
 
         .admin-nav-link {
-            color: white;
+            color: var(--surface-50);
             text-decoration: none;
             padding: 10px 18px;
             border-radius: 8px;
@@ -83,7 +83,7 @@
         }
 
         .page-title {
-            color: white;
+            color: var(--surface-50);
             font-size: 28px;
             font-weight: bold;
         }
@@ -97,7 +97,7 @@
             padding: 8px 16px;
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.3);
-            color: white;
+            color: var(--surface-50);
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
@@ -143,7 +143,7 @@
         .chart-title {
             font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -165,12 +165,12 @@
             justify-content: space-between;
             margin-bottom: 6px;
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .progress-bar {
             height: 12px;
-            background: #e5e7eb;
+            background: var(--surface-200);
             border-radius: 6px;
             overflow: hidden;
         }
@@ -180,10 +180,10 @@
             transition: width 0.5s;
         }
 
-        .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
-        .progress-fill.in-progress { background: linear-gradient(90deg, #f59e0b, #d97706); }
-        .progress-fill.pending { background: linear-gradient(90deg, #6366f1, #4f46e5); }
-        .progress-fill.blocked { background: linear-gradient(90deg, #ef4444, #dc2626); }
+        .progress-fill.completed { background: linear-gradient(90deg, var(--brand-mint), var(--success)); }
+        .progress-fill.in-progress { background: linear-gradient(90deg, var(--warning), var(--warning)); }
+        .progress-fill.pending { background: linear-gradient(90deg, var(--brand-purple), var(--brand-purple-dark)); }
+        .progress-fill.blocked { background: linear-gradient(90deg, var(--error), var(--error)); }
 
         /* 积分统计卡片 */
         .points-stats {
@@ -200,7 +200,7 @@
         }
 
         .points-stat-item {
-            background: #f8f9fa;
+            background: var(--surface-50);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
@@ -212,13 +212,13 @@
             margin-bottom: 5px;
         }
 
-        .points-stat-value.issued { color: #10b981; }
-        .points-stat-value.consumed { color: #ef4444; }
-        .points-stat-value.circulation { color: #6366f1; }
+        .points-stat-value.issued { color: var(--brand-mint); }
+        .points-stat-value.consumed { color: var(--error); }
+        .points-stat-value.circulation { color: var(--brand-purple); }
 
         .points-stat-label {
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         /* 交易类型列表 */
@@ -231,7 +231,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--surface-200);
         }
 
         .transaction-item:last-child {
@@ -240,7 +240,7 @@
 
         .transaction-type {
             font-size: 14px;
-            color: #333;
+            color: var(--text-main);
         }
 
         .transaction-stats {
@@ -250,15 +250,15 @@
         }
 
         .transaction-count {
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .transaction-total {
             font-weight: 600;
         }
 
-        .transaction-total.positive { color: #10b981; }
-        .transaction-total.negative { color: #ef4444; }
+        .transaction-total.positive { color: var(--brand-mint); }
+        .transaction-total.negative { color: var(--error); }
 
         /* AI使用统计 */
         .ai-stats-grid {
@@ -275,8 +275,8 @@
         }
 
         .ai-stat-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
@@ -321,7 +321,7 @@
             align-items: center;
             gap: 10px;
             padding: 10px 15px;
-            background: #f8f9fa;
+            background: var(--surface-50);
             border-radius: 8px;
         }
 
@@ -331,27 +331,27 @@
 
         .wuxing-name {
             font-size: 14px;
-            color: #333;
+            color: var(--text-main);
             width: 30px;
         }
 
         .wuxing-value {
             font-weight: bold;
-            color: #667eea;
+            color: var(--brand-purple);
         }
 
         /* 加载状态 */
         .loading {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -385,33 +385,35 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <!-- 导航栏 -->
     <nav class="admin-nav">
         <div class="admin-logo">
-            <span>&#9881;</span>
+            <span><i class="ph-bold ph-gear"></i></span>
             <span>超协体管理后台</span>
         </div>
         <div class="admin-nav-links">
             <a href="/admin.html" class="admin-nav-link">
-                <span>&#128200;</span> 概览
+                <span><i class="ph-bold ph-chart-line"></i></span> 概览
             </a>
             <a href="/admin/users.html" class="admin-nav-link">
-                <span>&#128101;</span> 用户
+                <span><i class="ph-bold ph-users"></i></span> 用户
             </a>
             <a href="/admin/tasks.html" class="admin-nav-link">
-                <span>&#128203;</span> 任务
+                <span><i class="ph-bold ph-clipboard-text"></i></span> 任务
             </a>
             <a href="/admin/analytics.html" class="admin-nav-link active">
-                <span>&#128202;</span> 分析
+                <span><i class="ph-bold ph-chart-bar"></i></span> 分析
             </a>
             <a href="/admin/settings.html" class="admin-nav-link">
-                <span>&#9881;</span> 配置
+                <span><i class="ph-bold ph-gear"></i></span> 配置
             </a>
             <a href="/dashboard.html" class="admin-nav-link back">
-                <span>&#8592;</span> 返回工作台
+                <span><i class="ph-bold ph-arrow-left"></i></span> 返回工作台
             </a>
         </div>
     </nav>
@@ -432,7 +434,7 @@
             <!-- 用户增长趋势 -->
             <div class="chart-card full-width">
                 <div class="chart-title">
-                    <span>&#128200;</span> 用户增长趋势
+                    <span><i class="ph-bold ph-chart-line"></i></span> 用户增长趋势
                 </div>
                 <div class="chart-container">
                     <canvas id="userGrowthChart"></canvas>
@@ -442,7 +444,7 @@
             <!-- 任务完成率 -->
             <div class="chart-card">
                 <div class="chart-title">
-                    <span>&#128203;</span> 任务完成率
+                    <span><i class="ph-bold ph-clipboard-text"></i></span> 任务完成率
                 </div>
                 <div id="taskCompletionContainer">
                     <div class="loading">
@@ -454,7 +456,7 @@
             <!-- 五行能量分布 -->
             <div class="chart-card">
                 <div class="chart-title">
-                    <span>&#9775;</span> 五行能量分布
+                    <span><i class="ph-bold ph-yin-yang"></i></span> 五行能量分布
                 </div>
                 <div class="wuxing-container">
                     <div class="wuxing-chart">
@@ -471,7 +473,7 @@
             <!-- 积分流转统计 -->
             <div class="chart-card full-width">
                 <div class="chart-title">
-                    <span>&#128176;</span> 积分流转统计
+                    <span><i class="ph-bold ph-money"></i></span> 积分流转统计
                 </div>
                 <div id="pointsStatsContainer">
                     <div class="loading">
@@ -483,7 +485,7 @@
             <!-- AI使用统计 -->
             <div class="chart-card full-width">
                 <div class="chart-title">
-                    <span>&#129302;</span> AI使用统计
+                    <span><i class="ph-bold ph-robot"></i></span> AI使用统计
                 </div>
                 <div id="aiUsageContainer">
                     <div class="loading">
@@ -569,7 +571,7 @@
                         {
                             label: '累计用户',
                             data: totalUsers,
-                            borderColor: '#667eea',
+                            borderColor: '#545BE8',
                             backgroundColor: 'rgba(102, 126, 234, 0.1)',
                             fill: true,
                             tension: 0.4,
@@ -578,7 +580,7 @@
                         {
                             label: '新增用户',
                             data: newUsers,
-                            borderColor: '#10b981',
+                            borderColor: '#74E8AC',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
                             fill: true,
                             tension: 0.4,
@@ -649,8 +651,8 @@
 
             container.innerHTML = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 48px; font-weight: bold; color: #667eea;">${stats.completionRate}%</div>
-                    <div style="color: #666; font-size: 14px;">整体完成率</div>
+                    <div style="font-size: 48px; font-weight: bold; color: var(--brand-purple);">${stats.completionRate}%</div>
+                    <div style="color: var(--text-secondary); font-size: 14px;">整体完成率</div>
                 </div>
                 <div class="progress-section">
                     <div class="progress-label">
@@ -739,12 +741,12 @@
                         <div class="points-stat-label">当前流通</div>
                     </div>
                 </div>
-                <div style="text-align: center; color: #666; font-size: 13px; margin-bottom: 15px;">
+                <div style="text-align: center; color: var(--text-secondary); font-size: 13px; margin-bottom: 15px;">
                     共 ${stats.transactionCount} 笔交易记录
                 </div>
-                <div style="font-weight: 600; margin-bottom: 10px; color: #333;">Top交易类型</div>
+                <div style="font-weight: 600; margin-bottom: 10px; color: var(--text-main);">Top交易类型</div>
                 <div class="transaction-list">
-                    ${transactionListHtml || '<div style="text-align: center; color: #999; padding: 20px;">暂无交易记录</div>'}
+                    ${transactionListHtml || '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">暂无交易记录</div>'}
                 </div>
             `;
         }
@@ -770,17 +772,17 @@
             let aiMembersHtml = '';
             if (stats.aiMembers && stats.aiMembers.length > 0) {
                 aiMembersHtml = stats.aiMembers.map(ai => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--surface-50); border-radius: 8px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">AI</div>
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--brand-mint), var(--success)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--surface-50); font-weight: bold;">AI</div>
                             <div>
-                                <div style="font-weight: 600; color: #333;">${ai.username}</div>
-                                <div style="font-size: 12px; color: #888;">${ai.email}</div>
+                                <div style="font-weight: 600; color: var(--text-main);">${ai.username}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">${ai.email}</div>
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-weight: bold; color: #667eea;">${ai.stats?.assigned || 0} 任务</div>
-                            <div style="font-size: 12px; color: #10b981;">${ai.stats?.completed || 0} 已完成</div>
+                            <div style="font-weight: bold; color: var(--brand-purple);">${ai.stats?.assigned || 0} 任务</div>
+                            <div style="font-size: 12px; color: var(--brand-mint);">${ai.stats?.completed || 0} 已完成</div>
                         </div>
                     </div>
                 `).join('');
@@ -792,28 +794,28 @@
                         <div class="ai-stat-value">${stats.aiMemberCount}</div>
                         <div class="ai-stat-label">AI成员数</div>
                     </div>
-                    <div class="ai-stat-item" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <div class="ai-stat-item" style="background: linear-gradient(135deg, var(--brand-mint), var(--success));">
                         <div class="ai-stat-value">${stats.aiTaskCount}</div>
                         <div class="ai-stat-label">AI执行任务数</div>
                     </div>
-                    <div class="ai-stat-item" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <div class="ai-stat-item" style="background: linear-gradient(135deg, var(--warning), var(--warning));">
                         <div class="ai-stat-value">${stats.aiCompletedTaskCount}</div>
                         <div class="ai-stat-label">AI完成任务数</div>
                     </div>
-                    <div class="ai-stat-item" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                    <div class="ai-stat-item" style="background: linear-gradient(135deg, var(--brand-purple-dark), var(--brand-purple-dark));">
                         <div class="ai-stat-value">${stats.multiAICount}</div>
                         <div class="ai-stat-label">多AI协作次数</div>
                     </div>
                 </div>
                 ${stats.mostActiveAI ? `
-                    <div style="background: #fef3c7; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                        <div style="font-size: 13px; color: #92400e; margin-bottom: 5px;">最活跃AI成员</div>
-                        <div style="font-weight: 600; color: #333;">${stats.mostActiveAI.name} - ${stats.mostActiveAI.assigned}次任务</div>
+                    <div style="background: rgba(245, 158, 11, 0.18); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                        <div style="font-size: 13px; color: var(--warning); margin-bottom: 5px;">最活跃AI成员</div>
+                        <div style="font-weight: 600; color: var(--text-main);">${stats.mostActiveAI.name} - ${stats.mostActiveAI.assigned}次任务</div>
                     </div>
                 ` : ''}
-                <div style="font-weight: 600; margin-bottom: 15px; color: #333;">AI成员列表</div>
+                <div style="font-weight: 600; margin-bottom: 15px; color: var(--text-main);">AI成员列表</div>
                 <div style="display: grid; gap: 10px;">
-                    ${aiMembersHtml || '<div style="text-align: center; color: #999; padding: 20px;">暂无AI成员</div>'}
+                    ${aiMembersHtml || '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">暂无AI成员</div>'}
                 </div>
             `;
         }
@@ -850,10 +852,10 @@
                     datasets: [{
                         label: '团队平均',
                         data: [avg.fire, avg.metal, avg.wood, avg.water, avg.earth],
-                        borderColor: '#667eea',
+                        borderColor: '#545BE8',
                         backgroundColor: 'rgba(102, 126, 234, 0.2)',
                         borderWidth: 2,
-                        pointBackgroundColor: '#667eea'
+                        pointBackgroundColor: '#545BE8'
                     }]
                 },
                 options: {
@@ -878,11 +880,11 @@
 
             // 渲染图例
             const wuxingData = [
-                { icon: '&#128293;', name: '火', value: avg.fire, color: '#ef4444' },
-                { icon: '&#9881;', name: '金', value: avg.metal, color: '#f59e0b' },
-                { icon: '&#127795;', name: '木', value: avg.wood, color: '#10b981' },
-                { icon: '&#128167;', name: '水', value: avg.water, color: '#3b82f6' },
-                { icon: '&#127956;', name: '土', value: avg.earth, color: '#8b5cf6' }
+                { icon: '<i class="ph-bold ph-fire"></i>', name: '火', value: avg.fire, color: '#EF4444' },
+                { icon: '<i class="ph-bold ph-gear"></i>', name: '金', value: avg.metal, color: '#F59E0B' },
+                { icon: '<i class="ph-bold ph-tree"></i>', name: '木', value: avg.wood, color: '#74E8AC' },
+                { icon: '<i class="ph-bold ph-drop"></i>', name: '水', value: avg.water, color: '#3B82F6' },
+                { icon: '<i class="ph-bold ph-mountains"></i>', name: '土', value: avg.earth, color: '#3A40B5' }
             ];
 
             legend.innerHTML = wuxingData.map(w => `
@@ -895,10 +897,10 @@
 
             // 添加统计信息
             legend.innerHTML += `
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-                    <div style="font-size: 12px; color: #666; margin-bottom: 8px;">样本数: ${stats.userCount} 人</div>
-                    <div style="font-size: 12px; color: #10b981;">最强: ${stats.strongest?.element || '-'} (${stats.strongest?.value || 0})</div>
-                    <div style="font-size: 12px; color: #ef4444;">最弱: ${stats.weakest?.element || '-'} (${stats.weakest?.value || 0})</div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--surface-200);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">样本数: ${stats.userCount} 人</div>
+                    <div style="font-size: 12px; color: var(--brand-mint);">最强: ${stats.strongest?.element || '-'} (${stats.strongest?.value || 0})</div>
+                    <div style="font-size: 12px; color: var(--error);">最弱: ${stats.weakest?.element || '-'} (${stats.weakest?.value || 0})</div>
                 </div>
             `;
         }

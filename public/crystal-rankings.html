@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,7 +19,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -31,7 +31,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -44,7 +44,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -52,7 +52,7 @@
 
         /* 标签页 */
         .tabs {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 8px;
             margin-bottom: 20px;
@@ -69,19 +69,19 @@
             border-radius: 10px;
             font-size: 15px;
             font-weight: 600;
-            color: #666;
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         /* 时间范围过滤 */
         .filters {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -93,7 +93,7 @@
 
         .filter-label {
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 500;
         }
 
@@ -104,23 +104,23 @@
 
         .filter-btn {
             padding: 8px 16px;
-            background: #f5f5f5;
+            background: var(--surface-50);
             border: none;
             border-radius: 8px;
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .filter-btn.active {
-            background: #667eea;
-            color: white;
+            background: var(--brand-purple);
+            color: var(--surface-50);
         }
 
         /* 主卡片 */
         .card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -138,7 +138,7 @@
             align-items: center;
             gap: 16px;
             padding: 20px;
-            background: #f8f9fa;
+            background: var(--surface-50);
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
@@ -146,7 +146,7 @@
         }
 
         .ranking-item:hover {
-            background: #f0f4ff;
+            background: var(--surface-100);
             transform: translateX(4px);
         }
 
@@ -164,23 +164,23 @@
         }
 
         .rank-badge.gold {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
+            color: var(--surface-50);
         }
 
         .rank-badge.silver {
-            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--surface-200) 0%, var(--text-secondary) 100%);
+            color: var(--surface-50);
         }
 
         .rank-badge.bronze {
-            background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
+            color: var(--surface-50);
         }
 
         .rank-badge.normal {
-            background: #e0e0e0;
-            color: #666;
+            background: var(--surface-200);
+            color: var(--text-secondary);
         }
 
         /* 内容区 */
@@ -192,18 +192,18 @@
         .ranking-title {
             font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            var(--surface-50)-space: nowrap;
         }
 
         .ranking-meta {
             display: flex;
             gap: 16px;
             font-size: 13px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .ranking-meta span {
@@ -224,14 +224,14 @@
         .score-value {
             font-size: 24px;
             font-weight: bold;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .score-label {
             font-size: 12px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         /* 贡献者排行 */
@@ -239,8 +239,8 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -259,19 +259,19 @@
         .contributor-stat {
             text-align: center;
             padding: 8px;
-            background: white;
+            background: var(--surface-50);
             border-radius: 6px;
         }
 
         .contributor-stat-value {
             font-size: 16px;
             font-weight: bold;
-            color: #667eea;
+            color: var(--brand-purple);
         }
 
         .contributor-stat-label {
             font-size: 11px;
-            color: #999;
+            color: var(--text-secondary);
             margin-top: 2px;
         }
 
@@ -279,7 +279,7 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .empty-icon {
@@ -292,14 +292,14 @@
         .loading {
             text-align: center;
             padding: 60px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -325,6 +325,8 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -332,16 +334,16 @@
         <!-- 导航栏 -->
         <div class="navbar">
             <a href="/dashboard.html" class="navbar-brand">超协体</a>
-            <a href="/crystal-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回晶体库</a>
+            <a href="/crystal-library.html" style="text-decoration: none; color: var(--text-secondary); font-size: 14px;">← 返回晶体库</a>
         </div>
 
         <!-- 标签页 -->
         <div class="tabs">
             <button class="tab active" data-tab="solutions" onclick="switchTab('solutions')">
-                🏆 高品质晶体榜
+                <i class="ph-bold ph-trophy"></i> 高品质晶体榜
             </button>
             <button class="tab" data-tab="contributors" onclick="switchTab('contributors')">
-                👑 贡献者榜
+                <i class="ph-bold ph-crown"></i> 贡献者榜
             </button>
         </div>
 
@@ -420,7 +422,7 @@
                 console.error('加载排行榜失败:', error);
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">❌</div>
+                        <div class="empty-icon"><i class="ph-bold ph-x-circle"></i></div>
                         <div>加载失败，请重试</div>
                     </div>
                 `;
@@ -454,7 +456,7 @@
             if (!solutions || solutions.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">📭</div>
+                        <div class="empty-icon"><i class="ph-bold ph-mailbox"></i></div>
                         <div>暂无排行数据</div>
                     </div>
                 `;
@@ -473,21 +475,21 @@
                         return `
                             <a class="ranking-item" href="/crystal-detail.html?id=${solution.id}">
                                 <div class="rank-badge ${badgeClass}">
-                                    ${rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : rank}
+                                    ${rank <= 3 ? ['<i class="ph-bold ph-medal"></i>', '<i class="ph-bold ph-medal"></i>', '<i class="ph-bold ph-medal"></i>'][rank - 1] : rank}
                                 </div>
 
                                 <div class="ranking-content">
                                     <div class="ranking-title">${escapeHtml(solution.title)}</div>
                                     <div class="ranking-meta">
-                                        <span>👤 ${escapeHtml(solution.author.username)}</span>
-                                        <span>👁️ ${solution.viewCount || 0} 浏览</span>
-                                        <span>🔗 ${solution.referenceCount || 0} 引用</span>
-                                        <span>📊 ${solution._count?.ratings || 0} 评分</span>
+                                        <span><i class="ph-bold ph-user"></i> ${escapeHtml(solution.author.username)}</span>
+                                        <span><i class="ph-bold ph-eye"></i>️ ${solution.viewCount || 0} 浏览</span>
+                                        <span><i class="ph-bold ph-link"></i> ${solution.referenceCount || 0} 引用</span>
+                                        <span><i class="ph-bold ph-chart-bar"></i> ${solution._count?.ratings || 0} 评分</span>
                                     </div>
                                 </div>
 
                                 <div class="ranking-score">
-                                    <div class="score-value">⭐${parseFloat(solution.avgRating).toFixed(1)}</div>
+                                    <div class="score-value"><i class="ph-bold ph-star"></i>${parseFloat(solution.avgRating).toFixed(1)}</div>
                                     <div class="score-label">综合评分</div>
                                 </div>
                             </a>
@@ -504,7 +506,7 @@
             if (!contributors || contributors.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">📭</div>
+                        <div class="empty-icon"><i class="ph-bold ph-mailbox"></i></div>
                         <div>暂无贡献数据</div>
                     </div>
                 `;
@@ -523,7 +525,7 @@
                         return `
                             <div class="ranking-item">
                                 <div class="rank-badge ${badgeClass}">
-                                    ${rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : rank}
+                                    ${rank <= 3 ? ['<i class="ph-bold ph-medal"></i>', '<i class="ph-bold ph-medal"></i>', '<i class="ph-bold ph-medal"></i>'][rank - 1] : rank}
                                 </div>
 
                                 <div class="contributor-avatar">
@@ -549,7 +551,7 @@
                                             <div class="contributor-stat-label">浏览</div>
                                         </div>
                                         <div class="contributor-stat">
-                                            <div class="contributor-stat-value">⭐${contributor.avgRating}</div>
+                                            <div class="contributor-stat-value"><i class="ph-bold ph-star"></i>${contributor.avgRating}</div>
                                             <div class="contributor-stat-label">平均分</div>
                                         </div>
                                     </div>

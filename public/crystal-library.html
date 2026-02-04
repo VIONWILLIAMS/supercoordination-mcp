@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -21,7 +21,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -33,7 +33,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -46,7 +46,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -59,7 +59,7 @@
 
         .nav-link {
             padding: 8px 16px;
-            color: #666;
+            color: var(--text-secondary);
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
@@ -67,18 +67,18 @@
         }
 
         .nav-link:hover {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--surface-100);
+            color: var(--text-main);
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         /* 头部 */
         .header {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 20px;
@@ -95,13 +95,13 @@
         .header-title {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
         }
 
         .btn-create {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -131,13 +131,13 @@
 
         .filter-label {
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 500;
         }
 
         .filter-select, .filter-input {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 8px;
             font-size: 14px;
             outline: none;
@@ -145,7 +145,7 @@
         }
 
         .filter-select:focus, .filter-input:focus {
-            border-color: #667eea;
+            border-color: var(--brand-purple);
         }
 
         .filter-input {
@@ -154,7 +154,7 @@
 
         /* 主内容区 */
         .main-content {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -168,8 +168,8 @@
         }
 
         .solution-card {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--surface-50);
+            border: 1px solid var(--surface-200);
             border-radius: 12px;
             padding: 20px;
             cursor: pointer;
@@ -179,7 +179,7 @@
         }
 
         .solution-card:hover {
-            border-color: #667eea;
+            border-color: var(--brand-purple);
             transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
         }
@@ -194,24 +194,24 @@
         .solution-title {
             font-size: 18px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             flex: 1;
             margin-right: 12px;
             line-height: 1.4;
         }
 
         .solution-rating {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%);
+            color: var(--surface-50);
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: bold;
-            white-space: nowrap;
+            var(--surface-50)-space: nowrap;
         }
 
         .solution-description {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
             line-height: 1.6;
             margin-bottom: 16px;
@@ -225,7 +225,7 @@
             display: flex;
             gap: 16px;
             font-size: 13px;
-            color: #999;
+            color: var(--text-secondary);
             margin-bottom: 12px;
         }
 
@@ -240,7 +240,7 @@
             justify-content: space-between;
             align-items: center;
             padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid var(--surface-100);
         }
 
         .solution-author {
@@ -253,8 +253,8 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -264,7 +264,7 @@
 
         .author-name {
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .solution-tags {
@@ -275,8 +275,8 @@
 
         .tag {
             padding: 3px 10px;
-            background: #f0f4ff;
-            color: #667eea;
+            background: var(--surface-100);
+            color: var(--brand-purple);
             border-radius: 12px;
             font-size: 12px;
         }
@@ -285,7 +285,7 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .empty-icon {
@@ -301,21 +301,21 @@
 
         .empty-hint {
             font-size: 14px;
-            color: #bbb;
+            color: var(--surface-200);
         }
 
         /* 加载状态 */
         .loading {
             text-align: center;
             padding: 60px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -337,8 +337,8 @@
 
         .page-btn {
             padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--surface-200);
+            background: var(--surface-50);
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
@@ -346,13 +346,13 @@
         }
 
         .page-btn:hover:not(:disabled) {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .page-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border-color: transparent;
         }
 
@@ -375,6 +375,8 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -394,7 +396,7 @@
         <!-- 头部 -->
         <div class="header">
             <div class="header-top">
-                <h1 class="header-title">💎 晶体库</h1>
+                <h1 class="header-title"><i class="ph-bold ph-diamond"></i> 晶体库</h1>
                 <a href="/crystal-create.html" class="btn-create">+ 发布晶体</a>
             </div>
 
@@ -502,7 +504,7 @@
             if (!solutions || solutions.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">📭</div>
+                        <div class="empty-icon"><i class="ph-bold ph-mailbox"></i></div>
                         <div class="empty-text">暂无晶体</div>
                         <div class="empty-hint">成为第一个分享晶体的人吧！</div>
                     </div>
@@ -515,7 +517,7 @@
                     <div class="solution-header">
                         <div class="solution-title">${escapeHtml(solution.title)}</div>
                         ${solution.avgRating > 0 ? `
-                            <div class="solution-rating">⭐ ${parseFloat(solution.avgRating).toFixed(1)}</div>
+                            <div class="solution-rating"><i class="ph-bold ph-star"></i> ${parseFloat(solution.avgRating).toFixed(1)}</div>
                         ` : ''}
                     </div>
 
@@ -525,13 +527,13 @@
 
                     <div class="solution-meta">
                         <span class="solution-meta-item">
-                            👁️ ${solution.viewCount || 0} 浏览
+                            <i class="ph-bold ph-eye"></i>️ ${solution.viewCount || 0} 浏览
                         </span>
                         <span class="solution-meta-item">
-                            🔗 ${solution.referenceCount || 0} 引用
+                            <i class="ph-bold ph-link"></i> ${solution.referenceCount || 0} 引用
                         </span>
                         <span class="solution-meta-item">
-                            📊 ${solution._count?.ratings || 0} 评分
+                            <i class="ph-bold ph-chart-bar"></i> ${solution._count?.ratings || 0} 评分
                         </span>
                     </div>
 
@@ -550,7 +552,7 @@
                             </div>
                             <span class="author-name">${escapeHtml(solution.author.username)}</span>
                         </div>
-                        <span style="font-size: 12px; color: #999;">
+                        <span style="font-size: 12px; color: var(--text-secondary);">
                             ${formatDate(solution.createdAt)}
                         </span>
                     </div>
@@ -613,7 +615,7 @@
         function showError(message) {
             document.getElementById('solutionsList').innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">❌</div>
+                    <div class="empty-icon"><i class="ph-bold ph-x-circle"></i></div>
                     <div class="empty-text">${message}</div>
                 </div>
             `;

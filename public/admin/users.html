@@ -14,17 +14,17 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy) 100%);
             min-height: 100vh;
         }
 
         .admin-nav {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
+            color: var(--surface-50);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
@@ -42,7 +42,7 @@
         }
 
         .admin-nav-link {
-            color: white;
+            color: var(--surface-50);
             text-decoration: none;
             padding: 10px 18px;
             border-radius: 8px;
@@ -77,7 +77,7 @@
         }
 
         .page-title {
-            color: white;
+            color: var(--surface-50);
             font-size: 28px;
             font-weight: bold;
         }
@@ -106,8 +106,8 @@
 
         .filter-btn {
             padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--surface-200);
+            background: var(--surface-50);
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
@@ -115,13 +115,13 @@
         }
 
         .filter-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border-color: transparent;
         }
 
@@ -135,20 +135,20 @@
         .search-input {
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 8px;
             font-size: 14px;
             outline: none;
         }
 
         .search-input:focus {
-            border-color: #667eea;
+            border-color: var(--brand-purple);
         }
 
         .search-btn {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -165,26 +165,26 @@
         .user-table td {
             padding: 14px 12px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--surface-200);
         }
 
         .user-table th {
             font-weight: 600;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 13px;
             text-transform: uppercase;
         }
 
         .user-table tr:hover {
-            background: #f8f9fa;
+            background: var(--surface-50);
         }
 
         .user-avatar {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -193,7 +193,7 @@
         }
 
         .user-avatar.ai {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%);
         }
 
         .user-info {
@@ -204,12 +204,12 @@
 
         .user-name {
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
         }
 
         .user-email {
             font-size: 12px;
-            color: #888;
+            color: var(--text-secondary);
         }
 
         .badge {
@@ -220,33 +220,33 @@
         }
 
         .badge-admin {
-            background: #fee2e2;
-            color: #dc2626;
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--error);
         }
 
         .badge-member {
-            background: #d1fae5;
-            color: #059669;
+            background: rgba(34, 197, 94, 0.18);
+            color: var(--success);
         }
 
         .badge-candidate {
-            background: #fef3c7;
-            color: #d97706;
+            background: rgba(245, 158, 11, 0.18);
+            color: var(--warning);
         }
 
         .badge-disabled {
-            background: #e5e7eb;
-            color: #6b7280;
+            background: var(--surface-200);
+            color: var(--text-secondary);
         }
 
         .badge-ai {
-            background: #e0e7ff;
-            color: #4f46e5;
+            background: var(--surface-100);
+            color: var(--brand-purple-dark);
         }
 
         .points-value {
             font-weight: 600;
-            color: #f59e0b;
+            color: var(--warning);
         }
 
         .actions-cell {
@@ -265,23 +265,23 @@
         }
 
         .action-btn.primary {
-            background: #e0e7ff;
-            color: #4f46e5;
+            background: var(--surface-100);
+            color: var(--brand-purple-dark);
         }
 
         .action-btn.success {
-            background: #d1fae5;
-            color: #059669;
+            background: rgba(34, 197, 94, 0.18);
+            color: var(--success);
         }
 
         .action-btn.warning {
-            background: #fef3c7;
-            color: #d97706;
+            background: rgba(245, 158, 11, 0.18);
+            color: var(--warning);
         }
 
         .action-btn.danger {
-            background: #fee2e2;
-            color: #dc2626;
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--error);
         }
 
         .action-btn:hover {
@@ -299,16 +299,16 @@
 
         .pagination-btn {
             padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--surface-200);
+            background: var(--surface-50);
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
         }
 
         .pagination-btn:hover:not(:disabled) {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: var(--brand-purple);
+            color: var(--brand-purple);
         }
 
         .pagination-btn:disabled {
@@ -317,7 +317,7 @@
         }
 
         .pagination-info {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
@@ -325,14 +325,14 @@
         .loading, .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -362,7 +362,7 @@
         }
 
         .modal {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 30px;
             max-width: 600px;
@@ -386,13 +386,13 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .detail-section {
             margin-bottom: 20px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--surface-200);
         }
 
         .detail-section:last-child {
@@ -401,7 +401,7 @@
 
         .detail-section-title {
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 12px;
             font-size: 14px;
         }
@@ -420,12 +420,12 @@
 
         .detail-label {
             font-size: 12px;
-            color: #888;
+            color: var(--text-secondary);
         }
 
         .detail-value {
             font-size: 14px;
-            color: #333;
+            color: var(--text-main);
             font-weight: 500;
         }
 
@@ -438,20 +438,20 @@
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-main);
         }
 
         .form-input, .form-select {
             width: 100%;
             padding: 10px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--surface-200);
             border-radius: 8px;
             font-size: 14px;
             outline: none;
         }
 
         .form-input:focus, .form-select:focus {
-            border-color: #667eea;
+            border-color: var(--brand-purple);
         }
 
         .modal-actions {
@@ -472,18 +472,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--surface-100);
+            color: var(--text-main);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
+            color: var(--surface-50);
         }
 
         .btn:hover {
@@ -529,33 +529,35 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <!-- 导航栏 -->
     <nav class="admin-nav">
         <div class="admin-logo">
-            <span>&#9881;</span>
+            <span><i class="ph-bold ph-gear"></i></span>
             <span>超协体管理后台</span>
         </div>
         <div class="admin-nav-links">
             <a href="/admin.html" class="admin-nav-link">
-                <span>&#128200;</span> 概览
+                <span><i class="ph-bold ph-chart-line"></i></span> 概览
             </a>
             <a href="/admin/users.html" class="admin-nav-link active">
-                <span>&#128101;</span> 用户
+                <span><i class="ph-bold ph-users"></i></span> 用户
             </a>
             <a href="/admin/tasks.html" class="admin-nav-link">
-                <span>&#128203;</span> 任务
+                <span><i class="ph-bold ph-clipboard-text"></i></span> 任务
             </a>
             <a href="/admin/analytics.html" class="admin-nav-link">
-                <span>&#128202;</span> 分析
+                <span><i class="ph-bold ph-chart-bar"></i></span> 分析
             </a>
             <a href="/admin/settings.html" class="admin-nav-link">
-                <span>&#9881;</span> 配置
+                <span><i class="ph-bold ph-gear"></i></span> 配置
             </a>
             <a href="/dashboard.html" class="admin-nav-link back">
-                <span>&#8592;</span> 返回工作台
+                <span><i class="ph-bold ph-arrow-left"></i></span> 返回工作台
             </a>
         </div>
     </nav>
@@ -603,7 +605,7 @@
     <div class="modal-overlay" id="detailModal">
         <div class="modal">
             <h3 class="modal-title">
-                <span>&#128100;</span> 用户详情
+                <span><i class="ph-bold ph-user"></i></span> 用户详情
                 <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
             </h3>
             <div id="userDetailContent">
@@ -618,12 +620,12 @@
     <div class="modal-overlay" id="roleModal">
         <div class="modal">
             <h3 class="modal-title">
-                <span>&#128274;</span> 修改用户角色
+                <span><i class="ph-bold ph-lock"></i></span> 修改用户角色
                 <button class="modal-close" onclick="closeModal('roleModal')">&times;</button>
             </h3>
             <div class="form-group">
                 <label class="form-label">当前用户</label>
-                <p id="roleModalUsername" style="color: #333; font-weight: 600;"></p>
+                <p id="roleModalUsername" style="color: var(--text-main); font-weight: 600;"></p>
             </div>
             <div class="form-group">
                 <label class="form-label">选择角色</label>
@@ -643,13 +645,13 @@
     <div class="modal-overlay" id="pointsModal">
         <div class="modal">
             <h3 class="modal-title">
-                <span>&#128176;</span> 调整积分
+                <span><i class="ph-bold ph-money"></i></span> 调整积分
                 <button class="modal-close" onclick="closeModal('pointsModal')">&times;</button>
             </h3>
             <div class="form-group">
                 <label class="form-label">用户</label>
-                <p id="pointsModalUsername" style="color: #333; font-weight: 600;"></p>
-                <p style="font-size: 13px; color: #888;">当前余额：<span id="currentPoints">0</span> 积分</p>
+                <p id="pointsModalUsername" style="color: var(--text-main); font-weight: 600;"></p>
+                <p style="font-size: 13px; color: var(--text-secondary);">当前余额：<span id="currentPoints">0</span> 积分</p>
             </div>
             <div class="form-group">
                 <label class="form-label">调整数量（正数增加，负数减少）</label>
@@ -875,7 +877,7 @@
                 }
             } catch (error) {
                 console.error('获取用户详情失败:', error);
-                document.getElementById('userDetailContent').innerHTML = '<p style="color: #ef4444;">加载失败</p>';
+                document.getElementById('userDetailContent').innerHTML = '<p style="color: var(--error);">加载失败</p>';
             }
         }
 
@@ -911,7 +913,7 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">积分余额</span>
-                            <span class="detail-value" style="color: #f59e0b; font-weight: bold;">${user.pointsBalance}</span>
+                            <span class="detail-value" style="color: var(--warning); font-weight: bold;">${user.pointsBalance}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">注册时间</span>
@@ -927,30 +929,30 @@
                 <div class="detail-section">
                     <div class="detail-section-title">五行画像</div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <div style="text-align: center; padding: 10px 15px; background: #fee2e2; border-radius: 8px;">
-                            <div style="font-size: 20px;">&#128293;</div>
-                            <div style="font-size: 12px; color: #666;">火</div>
-                            <div style="font-weight: bold; color: #dc2626;">${wuxing.fire || 0}</div>
+                        <div style="text-align: center; padding: 10px 15px; background: rgba(239, 68, 68, 0.12); border-radius: 8px;">
+                            <div style="font-size: 20px;"><i class="ph-bold ph-fire"></i></div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">火</div>
+                            <div style="font-weight: bold; color: var(--error);">${wuxing.fire || 0}</div>
                         </div>
-                        <div style="text-align: center; padding: 10px 15px; background: #fef3c7; border-radius: 8px;">
-                            <div style="font-size: 20px;">&#9881;</div>
-                            <div style="font-size: 12px; color: #666;">金</div>
-                            <div style="font-weight: bold; color: #d97706;">${wuxing.metal || 0}</div>
+                        <div style="text-align: center; padding: 10px 15px; background: rgba(245, 158, 11, 0.18); border-radius: 8px;">
+                            <div style="font-size: 20px;"><i class="ph-bold ph-gear"></i></div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">金</div>
+                            <div style="font-weight: bold; color: var(--warning);">${wuxing.metal || 0}</div>
                         </div>
-                        <div style="text-align: center; padding: 10px 15px; background: #d1fae5; border-radius: 8px;">
-                            <div style="font-size: 20px;">&#127795;</div>
-                            <div style="font-size: 12px; color: #666;">木</div>
-                            <div style="font-weight: bold; color: #059669;">${wuxing.wood || 0}</div>
+                        <div style="text-align: center; padding: 10px 15px; background: rgba(34, 197, 94, 0.18); border-radius: 8px;">
+                            <div style="font-size: 20px;"><i class="ph-bold ph-tree"></i></div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">木</div>
+                            <div style="font-weight: bold; color: var(--success);">${wuxing.wood || 0}</div>
                         </div>
-                        <div style="text-align: center; padding: 10px 15px; background: #dbeafe; border-radius: 8px;">
-                            <div style="font-size: 20px;">&#128167;</div>
-                            <div style="font-size: 12px; color: #666;">水</div>
-                            <div style="font-weight: bold; color: #2563eb;">${wuxing.water || 0}</div>
+                        <div style="text-align: center; padding: 10px 15px; background: rgba(59, 130, 246, 0.18); border-radius: 8px;">
+                            <div style="font-size: 20px;"><i class="ph-bold ph-drop"></i></div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">水</div>
+                            <div style="font-weight: bold; color: var(--info);">${wuxing.water || 0}</div>
                         </div>
-                        <div style="text-align: center; padding: 10px 15px; background: #f3e8ff; border-radius: 8px;">
-                            <div style="font-size: 20px;">&#127956;</div>
-                            <div style="font-size: 12px; color: #666;">土</div>
-                            <div style="font-weight: bold; color: #7c3aed;">${wuxing.earth || 0}</div>
+                        <div style="text-align: center; padding: 10px 15px; background: rgba(84, 91, 232, 0.12); border-radius: 8px;">
+                            <div style="font-size: 20px;"><i class="ph-bold ph-mountains"></i></div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">土</div>
+                            <div style="font-weight: bold; color: var(--brand-purple-dark);">${wuxing.earth || 0}</div>
                         </div>
                     </div>
                 </div>
@@ -958,7 +960,7 @@
                 <div class="detail-section">
                     <div class="detail-section-title">技能标签</div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        ${skills.length > 0 ? skills.map(s => `<span style="padding: 4px 12px; background: #e0e7ff; color: #4f46e5; border-radius: 12px; font-size: 13px;">${s}</span>`).join('') : '<span style="color: #999;">暂无技能</span>'}
+                        ${skills.length > 0 ? skills.map(s => `<span style="padding: 4px 12px; background: var(--surface-100); color: var(--brand-purple-dark); border-radius: 12px; font-size: 13px;">${s}</span>`).join('') : '<span style="color: var(--text-secondary);">暂无技能</span>'}
                     </div>
                 </div>
 
@@ -984,9 +986,9 @@
                         <div class="detail-section-title">最近积分记录</div>
                         <div style="max-height: 200px; overflow-y: auto;">
                             ${user.pointsTransactions.slice(0, 5).map(t => `
-                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
-                                    <span style="font-size: 13px; color: #666;">${t.description || t.transactionType}</span>
-                                    <span style="font-weight: bold; color: ${t.amount > 0 ? '#10b981' : '#ef4444'};">${t.amount > 0 ? '+' : ''}${t.amount}</span>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--surface-200);">
+                                    <span style="font-size: 13px; color: var(--text-secondary);">${t.description || t.transactionType}</span>
+                                    <span style="font-weight: bold; color: ${t.amount > 0 ? 'var(--brand-mint)' : 'var(--error)'};">${t.amount > 0 ? '+' : ''}${t.amount}</span>
                                 </div>
                             `).join('')}
                         </div>

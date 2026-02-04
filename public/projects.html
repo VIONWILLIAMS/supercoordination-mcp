@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,7 +19,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -31,7 +31,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -44,7 +44,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -57,7 +57,7 @@
 
         /* 筛选栏 */
         .filters {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -74,24 +74,24 @@
 
         .filter-btn {
             padding: 8px 16px;
-            background: #f5f5f5;
+            background: var(--surface-50);
             border: none;
             border-radius: 8px;
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .filter-btn.active {
-            background: #667eea;
-            color: white;
+            background: var(--brand-purple);
+            color: var(--surface-50);
         }
 
         .btn-primary {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             border: none;
             border-radius: 10px;
             font-size: 14px;
@@ -113,7 +113,7 @@
         }
 
         .project-card {
-            background: white;
+            background: var(--surface-50);
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -138,7 +138,7 @@
         .project-title {
             font-size: 18px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
         }
 
@@ -150,28 +150,28 @@
         }
 
         .status-planning {
-            background: #fff4e6;
-            color: #d97706;
+            background: var(--surface-50)4e6;
+            color: var(--warning);
         }
 
         .status-active {
-            background: #dcfce7;
-            color: #16a34a;
+            background: rgba(34, 197, 94, 0.18);
+            color: var(--success);
         }
 
         .status-paused {
-            background: #fee2e2;
-            color: #dc2626;
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--error);
         }
 
         .status-completed {
-            background: #e0e7ff;
-            color: #4f46e5;
+            background: var(--surface-100);
+            color: var(--brand-purple-dark);
         }
 
         .project-description {
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
             line-height: 1.6;
             margin-bottom: 16px;
             display: -webkit-box;
@@ -185,7 +185,7 @@
             gap: 16px;
             margin-bottom: 16px;
             font-size: 13px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .project-meta span {
@@ -197,7 +197,7 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: #f0f0f0;
+            background: var(--surface-100);
             border-radius: 4px;
             overflow: hidden;
             margin-bottom: 12px;
@@ -205,14 +205,14 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             border-radius: 4px;
             transition: width 0.3s;
         }
 
         .progress-text {
             font-size: 12px;
-            color: #999;
+            color: var(--text-secondary);
             text-align: right;
         }
 
@@ -221,7 +221,7 @@
             justify-content: space-between;
             align-items: center;
             padding-top: 16px;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid var(--surface-100);
         }
 
         .project-owner {
@@ -229,15 +229,15 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .owner-avatar {
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            color: var(--surface-50);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -252,17 +252,17 @@
             font-weight: 600;
         }
 
-        .wuxing-wood { background: #dcfce7; color: #16a34a; }
-        .wuxing-fire { background: #fee2e2; color: #dc2626; }
-        .wuxing-earth { background: #fef3c7; color: #ca8a04; }
-        .wuxing-metal { background: #f3f4f6; color: #6b7280; }
-        .wuxing-water { background: #dbeafe; color: #2563eb; }
+        .wuxing-wood { background: rgba(34, 197, 94, 0.18); color: var(--success); }
+        .wuxing-fire { background: rgba(239, 68, 68, 0.12); color: var(--error); }
+        .wuxing-earth { background: rgba(245, 158, 11, 0.18); color: var(--warning); }
+        .wuxing-metal { background: var(--surface-100); color: var(--text-secondary); }
+        .wuxing-water { background: rgba(59, 130, 246, 0.18); color: var(--info); }
 
         /* 空状态 */
         .empty-state {
             text-align: center;
             padding: 80px 20px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .empty-icon {
@@ -286,14 +286,14 @@
         .loading {
             text-align: center;
             padding: 60px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--surface-50);
+            border-top: 3px solid var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -320,6 +320,8 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
@@ -329,7 +331,7 @@
             <a href="/dashboard.html" class="navbar-brand">超协体</a>
             <div class="navbar-actions">
                 <button class="btn-primary" onclick="window.location.href='/project-create.html'">
-                    ➕ 创建项目
+                    <i class="ph-bold ph-plus"></i> 创建项目
                 </button>
             </div>
         </div>
@@ -419,7 +421,7 @@
                 console.error('加载项目失败:', error);
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">❌</div>
+                        <div class="empty-icon"><i class="ph-bold ph-x-circle"></i></div>
                         <div class="empty-title">加载失败</div>
                         <div class="empty-description">请重试</div>
                     </div>
@@ -434,11 +436,11 @@
             if (!projects || projects.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">📁</div>
+                        <div class="empty-icon"><i class="ph-bold ph-folder"></i></div>
                         <div class="empty-title">暂无项目</div>
                         <div class="empty-description">创建你的第一个项目，开启协作之旅</div>
                         <button class="btn-primary" onclick="window.location.href='/project-create.html'">
-                            ➕ 创建项目
+                            <i class="ph-bold ph-plus"></i> 创建项目
                         </button>
                     </div>
                 `;
@@ -462,11 +464,11 @@
             };
 
             const wuxingMap = {
-                wood: { label: '🌳 木', class: 'wuxing-wood' },
-                fire: { label: '🔥 火', class: 'wuxing-fire' },
-                earth: { label: '🏔️ 土', class: 'wuxing-earth' },
-                metal: { label: '⚙️ 金', class: 'wuxing-metal' },
-                water: { label: '🌊 水', class: 'wuxing-water' }
+                wood: { label: '<i class="ph-bold ph-tree"></i> 木', class: 'wuxing-wood' },
+                fire: { label: '<i class="ph-bold ph-fire"></i> 火', class: 'wuxing-fire' },
+                earth: { label: '<i class="ph-bold ph-mountains"></i>️ 土', class: 'wuxing-earth' },
+                metal: { label: '<i class="ph-bold ph-gear"></i>️ 金', class: 'wuxing-metal' },
+                water: { label: '<i class="ph-bold ph-wave-sine"></i> 水', class: 'wuxing-water' }
             };
 
             const status = statusMap[project.status] || statusMap.planning;
@@ -478,7 +480,7 @@
                     <div class="project-header">
                         <div>
                             <div class="project-title">${escapeHtml(project.name)}</div>
-                            ${myRole ? `<span style="font-size: 12px; color: #999;">我的角色: ${getRoleLabel(myRole)}</span>` : ''}
+                            ${myRole ? `<span style="font-size: 12px; color: var(--text-secondary);">我的角色: ${getRoleLabel(myRole)}</span>` : ''}
                         </div>
                         <span class="project-status ${status.class}">${status.label}</span>
                     </div>
@@ -488,8 +490,8 @@
                     ` : ''}
 
                     <div class="project-meta">
-                        <span>👥 ${project._count.members || 0} 成员</span>
-                        <span>📋 ${project._count.tasks || 0} 任务</span>
+                        <span><i class="ph-bold ph-users"></i> ${project._count.members || 0} 成员</span>
+                        <span><i class="ph-bold ph-clipboard-text"></i> ${project._count.tasks || 0} 任务</span>
                         ${wuxing ? `<span class="wuxing-badge ${wuxing.class}">${wuxing.label}</span>` : ''}
                     </div>
 

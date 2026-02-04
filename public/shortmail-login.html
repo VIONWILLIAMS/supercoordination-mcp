@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#545BE8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -18,7 +18,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -55,7 +55,7 @@
         .logo-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -68,7 +68,7 @@
         .logo-text {
             font-size: 24px;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
@@ -76,7 +76,7 @@
 
         .logo-subtitle {
             font-size: 14px;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         .form-group {
@@ -87,28 +87,28 @@
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-main);
             margin-bottom: 8px;
         }
 
         .form-input {
             width: 100%;
             padding: 15px;
-            border: 2px solid #eee;
+            border: 2px solid var(--surface-200);
             border-radius: 15px;
             font-size: 16px;
             transition: all 0.3s;
-            background: white;
+            background: var(--surface-50);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--brand-purple);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-input::placeholder {
-            color: #ccc;
+            color: var(--surface-200);
         }
 
         .remember-row {
@@ -123,7 +123,7 @@
             align-items: center;
             gap: 8px;
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
             cursor: pointer;
         }
 
@@ -133,17 +133,17 @@
 
         .forgot-link {
             font-size: 14px;
-            color: #667eea;
+            color: var(--brand-purple);
             text-decoration: none;
         }
 
         .login-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
             border: none;
             border-radius: 15px;
-            color: white;
+            color: var(--surface-50);
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -163,7 +163,7 @@
         .divider {
             text-align: center;
             margin: 25px 0;
-            color: #999;
+            color: var(--text-secondary);
             position: relative;
         }
 
@@ -174,7 +174,7 @@
             top: 50%;
             width: 40%;
             height: 1px;
-            background: #eee;
+            background: var(--surface-200);
         }
 
         .divider::before {
@@ -189,18 +189,18 @@
             text-align: center;
             margin-top: 20px;
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .register-link a {
-            color: #667eea;
+            color: var(--brand-purple);
             text-decoration: none;
             font-weight: 600;
         }
 
         .error-message {
-            background: #fee;
-            color: #c33;
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--error);
             padding: 12px;
             border-radius: 10px;
             font-size: 14px;
@@ -224,7 +224,7 @@
             width: 16px;
             height: 16px;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
+            border-top-color: var(--surface-50);
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
             margin-right: 8px;
@@ -235,12 +235,14 @@
             to { transform: rotate(360deg); }
         }
     </style>
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
     <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <div class="login-container">
         <div class="logo">
-            <div class="logo-icon">📬</div>
+            <div class="logo-icon"><i class="ph-bold ph-mailbox"></i></div>
             <div class="logo-text">短邮系统</div>
             <div class="logo-subtitle">超协体移动端</div>
         </div>
