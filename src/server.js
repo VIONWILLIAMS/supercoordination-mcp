@@ -67,6 +67,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const LAN_HOST = process.env.LAN_HOST || '192.168.1.3';
 
+// Railway 等反向代理环境需要信任代理，否则限流会报 X-Forwarded-For 错误
+app.set('trust proxy', 1);
+
 const CORS_ORIGINS = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim()).filter(Boolean)
   : ['*'];
