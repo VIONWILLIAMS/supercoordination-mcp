@@ -1,21 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 :root {
-  --brand-1: #6c7bff;
-  --brand-2: #b57dff;
-  --brand-3: #7ad7ff;
-  --bg-1: #f7f8ff;
-  --bg-2: #f0f3ff;
-  --bg-3: #fff5ff;
-  --text-1: #1f1b2e;
-  --text-2: #5a5d7a;
-  --text-3: #8a8fb3;
-  --card: rgba(255, 255, 255, 0.88);
-  --card-strong: rgba(255, 255, 255, 0.96);
-  --border: rgba(108, 123, 255, 0.18);
-  --shadow-1: 0 16px 40px rgba(72, 84, 150, 0.14);
-  --shadow-2: 0 8px 24px rgba(108, 123, 255, 0.2);
-  --glow: 0 0 0 4px rgba(108, 123, 255, 0.2);
+  --brand-1: #a855f7;
+  --brand-2: #ec4899;
+  --brand-3: #22d3ee;
+  --bg-1: #0a0817;
+  --bg-2: #120b26;
+  --bg-3: #1a0f3d;
+  --text-1: #f4f1ff;
+  --text-2: #c9c3ff;
+  --text-3: #8f88c4;
+  --card: rgba(20, 12, 36, 0.85);
+  --card-strong: rgba(24, 14, 44, 0.92);
+  --border: rgba(168, 85, 247, 0.28);
+  --shadow-1: 0 22px 60px rgba(6, 2, 20, 0.55);
+  --shadow-2: 0 14px 32px rgba(168, 85, 247, 0.35);
+  --glow: 0 0 0 3px rgba(168, 85, 247, 0.45);
   --radius-1: 14px;
   --radius-2: 20px;
   --radius-3: 28px;
@@ -27,11 +27,11 @@ html, body {
 }
 
 body {
-  font-family: 'Noto Sans SC', 'Plus Jakarta Sans', sans-serif;
-  color: var(--text-1);
-  background: radial-gradient(900px 400px at 15% -10%, rgba(122, 215, 255, 0.5), transparent 60%),
-              radial-gradient(700px 350px at 90% 0%, rgba(181, 125, 255, 0.35), transparent 55%),
-              linear-gradient(135deg, var(--bg-1) 0%, var(--bg-3) 50%, var(--bg-2) 100%);
+  font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif;
+  color: var(--text-1) !important;
+  background: radial-gradient(800px 380px at 12% -10%, rgba(168, 85, 247, 0.35), transparent 60%),
+              radial-gradient(700px 350px at 88% 0%, rgba(34, 211, 238, 0.25), transparent 55%),
+              linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%) !important;
   position: relative;
 }
 
@@ -39,32 +39,47 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(108, 123, 255, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
   opacity: 0.5;
+  pointer-events: none;
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  width: 480px;
+  height: 480px;
+  right: -120px;
+  bottom: -160px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.35), transparent 65%);
+  filter: blur(10px);
   pointer-events: none;
   z-index: -1;
 }
 
 h1, h2, h3, .navbar-brand, .admin-logo, .card-title, .main-title {
-  font-family: 'Noto Serif SC', 'Noto Sans SC', serif;
-  color: var(--text-1);
-  letter-spacing: 0.3px;
+  font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  color: var(--text-1) !important;
+  letter-spacing: 0.4px;
 }
 
 a {
-  color: var(--brand-1);
+  color: var(--brand-3);
 }
 
 a:hover {
-  color: #5669ff;
+  color: #9f7bff;
 }
 
 .navbar, .admin-nav {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid var(--border);
+  background: rgba(18, 11, 38, 0.78) !important;
+  border: 1px solid var(--border) !important;
   box-shadow: var(--shadow-1);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
 }
 
 .navbar-brand,
@@ -77,7 +92,16 @@ a:hover {
 .filter-btn {
   border-radius: 999px;
   border: 1px solid transparent;
+  color: var(--text-2) !important;
   transition: all 0.2s ease;
+}
+
+.nav-link:hover,
+.admin-nav-link:hover,
+.filter-btn:hover {
+  color: #ffffff !important;
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.25);
 }
 
 .nav-link.active,
@@ -101,10 +125,11 @@ a:hover {
 .modal,
 .kanban-board {
   background: var(--card) !important;
-  border: 1px solid rgba(108, 123, 255, 0.12);
+  color: var(--text-1) !important;
+  border: 1px solid rgba(168, 85, 247, 0.2) !important;
   box-shadow: var(--shadow-1);
   border-radius: var(--radius-2);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 .card,
@@ -121,10 +146,18 @@ input,
 textarea,
 select {
   border-radius: var(--radius-1);
-  border: 1px solid rgba(108, 123, 255, 0.22);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+  background: rgba(10, 8, 24, 0.6) !important;
+  color: var(--text-1) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition: all 0.2s ease;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-3);
 }
 
 .form-input:focus,
@@ -134,7 +167,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--brand-1);
+  border-color: var(--brand-1) !important;
   box-shadow: var(--glow);
 }
 
@@ -152,15 +185,15 @@ button[type="submit"] {
   border-radius: 999px !important;
   box-shadow: var(--shadow-2);
   font-weight: 600;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-secondary,
 .task-action-btn.secondary {
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(18, 12, 36, 0.85) !important;
   color: var(--text-1) !important;
-  border: 1px solid var(--border) !important;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
   box-shadow: none;
 }
 
@@ -172,7 +205,7 @@ button[type="submit"] {
 .action-btn:hover,
 button[type="submit"]:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(108, 123, 255, 0.25);
+  box-shadow: 0 14px 28px rgba(168, 85, 247, 0.35);
 }
 
 .badge,
@@ -181,7 +214,20 @@ button[type="submit"]:hover {
 .stat-pill {
   border-radius: 999px !important;
   padding: 4px 10px;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  background: rgba(168, 85, 247, 0.12) !important;
+  color: var(--text-1) !important;
 }
+
+.task-status.pending { background: rgba(99, 102, 241, 0.18) !important; }
+.task-status.in_progress { background: rgba(34, 211, 238, 0.2) !important; }
+.task-status.completed { background: rgba(16, 185, 129, 0.2) !important; }
+.task-status.blocked { background: rgba(239, 68, 68, 0.2) !important; }
+
+.task-priority.S { background: rgba(239, 68, 68, 0.22) !important; }
+.task-priority.A { background: rgba(236, 72, 153, 0.22) !important; }
+.task-priority.B { background: rgba(59, 130, 246, 0.2) !important; }
+.task-priority.C { background: rgba(148, 163, 184, 0.18) !important; }
 
 .loading,
 .spinner {
@@ -191,7 +237,7 @@ button[type="submit"]:hover {
 .admin-card-title,
 .card-title,
 .section-title {
-  color: var(--text-1);
+  color: var(--text-1) !important;
 }
 
 .table,
