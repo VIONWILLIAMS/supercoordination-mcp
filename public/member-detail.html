@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#545BE8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>成员详情 - 超协体</title>
@@ -19,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -31,7 +26,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -44,7 +39,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -57,7 +52,7 @@
 
         .nav-link {
             padding: 8px 16px;
-            color: var(--text-secondary);
+            color: #666;
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
@@ -65,8 +60,8 @@
         }
 
         .nav-link:hover {
-            background: var(--surface-100);
-            color: var(--text-main);
+            background: #f0f0f0;
+            color: #333;
         }
 
         /* 主内容 */
@@ -83,7 +78,7 @@
         }
 
         .card {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -103,7 +98,7 @@
         .card-title {
             font-size: 16px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -128,11 +123,11 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--surface-50);
+            color: white;
             font-weight: bold;
             font-size: 40px;
             flex-shrink: 0;
@@ -140,7 +135,7 @@
 
         .member-info h1 {
             font-size: 28px;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 8px;
         }
 
@@ -149,19 +144,19 @@
             flex-wrap: wrap;
             gap: 12px;
             font-size: 14px;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .member-serial {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: var(--brand-purple);
+            color: #667eea;
             padding: 4px 12px;
             border-radius: 12px;
             font-weight: 600;
         }
 
         .member-points {
-            color: var(--warning);
+            color: #ffa726;
             font-weight: 600;
         }
 
@@ -199,7 +194,7 @@
             width: 100%;
             max-width: 50px;
             height: 150px;
-            background: var(--surface-100);
+            background: #f0f0f0;
             border-radius: 25px;
             overflow: hidden;
             display: flex;
@@ -213,11 +208,11 @@
             transition: height 0.8s ease-out;
         }
 
-        .wuxing-fire .wuxing-bar-fill { background: linear-gradient(0deg, var(--error), var(--error)); }
-        .wuxing-metal .wuxing-bar-fill { background: linear-gradient(0deg, var(--warning), var(--warning)); }
-        .wuxing-wood .wuxing-bar-fill { background: linear-gradient(0deg, var(--brand-mint), var(--brand-mint)); }
-        .wuxing-water .wuxing-bar-fill { background: linear-gradient(0deg, var(--info), var(--info)); }
-        .wuxing-earth .wuxing-bar-fill { background: linear-gradient(0deg, var(--brand-purple), var(--brand-purple-dark)); }
+        .wuxing-fire .wuxing-bar-fill { background: linear-gradient(0deg, #ff6b6b, #ff2e63); }
+        .wuxing-metal .wuxing-bar-fill { background: linear-gradient(0deg, #ffd93d, #f9ca24); }
+        .wuxing-wood .wuxing-bar-fill { background: linear-gradient(0deg, #6bff92, #06d6a0); }
+        .wuxing-water .wuxing-bar-fill { background: linear-gradient(0deg, #00d9ff, #4facfe); }
+        .wuxing-earth .wuxing-bar-fill { background: linear-gradient(0deg, #c77dff, #9d4edd); }
 
         .wuxing-label {
             text-align: center;
@@ -231,13 +226,13 @@
 
         .wuxing-name {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .wuxing-value {
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
         }
 
         /* 技能标签 */
@@ -250,7 +245,7 @@
         .skill-tag {
             padding: 8px 16px;
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: var(--brand-purple);
+            color: #667eea;
             border-radius: 20px;
             font-size: 14px;
             font-weight: 500;
@@ -259,7 +254,7 @@
         .empty-skills {
             text-align: center;
             padding: 20px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         /* 信息列表 */
@@ -272,7 +267,7 @@
             display: flex;
             justify-content: space-between;
             padding: 14px 0;
-            border-bottom: 1px solid var(--surface-200);
+            border-bottom: 1px solid #eee;
             font-size: 14px;
         }
 
@@ -281,11 +276,11 @@
         }
 
         .info-label {
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .info-value {
-            color: var(--text-main);
+            color: #333;
             font-weight: 500;
         }
 
@@ -298,24 +293,24 @@
 
         .task-item {
             padding: 16px;
-            background: var(--surface-50);
+            background: #f8f9fa;
             border-radius: 12px;
-            border-left: 4px solid var(--brand-purple);
+            border-left: 4px solid #667eea;
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .task-item:hover {
-            background: var(--surface-100);
+            background: #f0f4ff;
         }
 
-        .task-item.completed { border-left-color: var(--success); }
-        .task-item.in_progress { border-left-color: var(--info); }
-        .task-item.pending { border-left-color: var(--warning); }
+        .task-item.completed { border-left-color: #388e3c; }
+        .task-item.in_progress { border-left-color: #1976d2; }
+        .task-item.pending { border-left-color: #f57c00; }
 
         .task-title {
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 6px;
         }
 
@@ -323,7 +318,7 @@
             display: flex;
             gap: 12px;
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .task-status {
@@ -332,9 +327,9 @@
             font-size: 11px;
         }
 
-        .task-status.completed { background: rgba(34, 197, 94, 0.18); color: var(--success); }
-        .task-status.in_progress { background: rgba(59, 130, 246, 0.18); color: var(--info); }
-        .task-status.pending { background: var(--surface-50)3e0; color: var(--warning); }
+        .task-status.completed { background: #e8f5e9; color: #388e3c; }
+        .task-status.in_progress { background: #e3f2fd; color: #1976d2; }
+        .task-status.pending { background: #fff3e0; color: #f57c00; }
 
         /* 积分历史 */
         .points-list {
@@ -348,7 +343,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 16px;
-            background: var(--surface-50);
+            background: #f8f9fa;
             border-radius: 10px;
         }
 
@@ -358,13 +353,13 @@
 
         .points-desc {
             font-size: 14px;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 4px;
         }
 
         .points-date {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .points-amount {
@@ -372,14 +367,14 @@
             font-weight: 700;
         }
 
-        .points-amount.positive { color: var(--success); }
-        .points-amount.negative { color: var(--error); }
+        .points-amount.positive { color: #388e3c; }
+        .points-amount.negative { color: #c62828; }
 
         /* 空状态 */
         .empty-state {
             text-align: center;
             padding: 30px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .empty-icon {
@@ -392,14 +387,14 @@
         .loading {
             text-align: center;
             padding: 60px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid var(--surface-50);
-            border-top: 3px solid var(--brand-purple);
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -416,8 +411,8 @@
             align-items: center;
             gap: 6px;
             padding: 10px 16px;
-            background: var(--surface-50);
-            color: var(--text-secondary);
+            background: white;
+            color: #666;
             text-decoration: none;
             border-radius: 10px;
             font-size: 14px;
@@ -426,23 +421,23 @@
         }
 
         .btn-back:hover {
-            background: var(--surface-50);
-            color: var(--text-main);
+            background: #f5f5f5;
+            color: #333;
         }
 
         /* 推荐搭档样式 */
         .recommended-partners-section {
             margin-top: 20px;
             padding: 24px;
-            background: linear-gradient(135deg, var(--surface-100) 0%, rgba(59, 130, 246, 0.12) 100%);
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
             border-radius: 16px;
-            border: 2px solid var(--surface-100);
+            border: 2px solid #e0e7ff;
         }
 
         .partners-title {
             font-size: 18px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -451,25 +446,25 @@
 
         .partners-badge {
             font-size: 11px;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 4px 10px;
             border-radius: 12px;
             font-weight: normal;
         }
 
         .partner-card {
-            background: var(--surface-50);
+            background: white;
             padding: 18px;
             border-radius: 12px;
             margin-bottom: 15px;
-            border: 2px solid var(--surface-200);
+            border: 2px solid #e5e7eb;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .partner-card:hover {
-            border-color: var(--brand-purple-dark);
+            border-color: #8b5cf6;
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2);
         }
@@ -491,30 +486,30 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--surface-50);
+            color: white;
             font-weight: bold;
             font-size: 20px;
         }
 
         .partner-name {
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             font-size: 16px;
         }
 
         .partner-serial {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .complement-score {
             display: inline-block;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 6px 16px;
             border-radius: 20px;
             font-weight: bold;
@@ -523,7 +518,7 @@
 
         .partner-scores {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #666;
             margin-bottom: 12px;
             display: flex;
             gap: 16px;
@@ -537,11 +532,11 @@
 
         .reason-tag {
             display: inline-block;
-            background: var(--surface-100);
+            background: #f3f4f6;
             padding: 6px 12px;
             border-radius: 6px;
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #4b5563;
         }
 
         .medal-icon {
@@ -552,7 +547,7 @@
         .partners-empty {
             text-align: center;
             padding: 30px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         /* 响应式 */
@@ -578,9 +573,6 @@
             }
         }
     </style>
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <div class="container">
@@ -591,8 +583,7 @@
                 <a href="/dashboard.html" class="nav-link">工作台</a>
                 <a href="/task-create.html" class="nav-link">创建任务</a>
                 <a href="/my-tasks.html" class="nav-link">我的任务</a>
-                <a href="/crystal-library.html" class="nav-link">晶体库</a>
-                <a href="/members.html" class="nav-link active">成员</a>
+                <a href="/members.html" class="nav-link">成员</a>
                 <a href="/profile.html" class="nav-link">画像</a>
             </div>
         </nav>
@@ -626,8 +617,8 @@
         if (!memberId) {
             document.getElementById('content').innerHTML = `
                 <div class="card">
-                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                        <div style="font-size: 48px; margin-bottom: 16px;"><i class="ph-bold ph-magnifying-glass"></i></div>
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
                         <div>未找到成员</div>
                         <a href="/members.html" class="btn-back" style="display: inline-block; margin-top: 20px;">返回成员列表</a>
                     </div>
@@ -665,8 +656,8 @@
                 console.error('加载成员失败:', error);
                 document.getElementById('content').innerHTML = `
                     <div class="card">
-                        <div style="text-align: center; padding: 40px; color: var(--error);">
-                            <div style="font-size: 48px; margin-bottom: 16px;"><i class="ph-bold ph-x-circle"></i></div>
+                        <div style="text-align: center; padding: 40px; color: #c62828;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">❌</div>
                             <div>加载失败：${error.message}</div>
                             <a href="/members.html" class="btn-back" style="display: inline-block; margin-top: 20px;">返回成员列表</a>
                         </div>
@@ -703,8 +694,8 @@
                                 <h1>${escapeHtml(member.username)}</h1>
                                 <div class="member-meta">
                                     ${member.serialNumber ? `<span class="member-serial">#${member.serialNumber}</span>` : ''}
-                                    <span class="member-points"><i class="ph-bold ph-money"></i> ${member.pointsBalance || 0} 积分</span>
-                                    <span><i class="ph-bold ph-calendar"></i> 加入于 ${formatDate(member.approvedAt || member.createdAt)}</span>
+                                    <span class="member-points">💰 ${member.pointsBalance || 0} 积分</span>
+                                    <span>📅 加入于 ${formatDate(member.approvedAt || member.createdAt)}</span>
                                 </div>
                             </div>
                         </div>
@@ -712,14 +703,14 @@
 
                     <!-- 五行画像 -->
                     <div class="card">
-                        <div class="card-title"><i class="ph-bold ph-yin-yang"></i>️ 五行画像</div>
+                        <div class="card-title">☯️ 五行画像</div>
                         <div class="wuxing-bars-vertical">
                             <div class="wuxing-bar-item wuxing-fire">
                                 <div class="wuxing-bar">
                                     <div class="wuxing-bar-fill" style="height: ${wuxing.fire || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-fire"></i></span>
+                                    <span class="wuxing-icon">🔥</span>
                                     <span class="wuxing-name">火</span>
                                     <span class="wuxing-value">${wuxing.fire || 0}</span>
                                 </div>
@@ -729,7 +720,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing.metal || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-gear"></i>️</span>
+                                    <span class="wuxing-icon">⚙️</span>
                                     <span class="wuxing-name">金</span>
                                     <span class="wuxing-value">${wuxing.metal || 0}</span>
                                 </div>
@@ -739,7 +730,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing.wood || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-tree"></i></span>
+                                    <span class="wuxing-icon">🌳</span>
                                     <span class="wuxing-name">木</span>
                                     <span class="wuxing-value">${wuxing.wood || 0}</span>
                                 </div>
@@ -749,7 +740,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing.water || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-drop"></i></span>
+                                    <span class="wuxing-icon">💧</span>
                                     <span class="wuxing-name">水</span>
                                     <span class="wuxing-value">${wuxing.water || 0}</span>
                                 </div>
@@ -759,7 +750,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing.earth || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-mountains"></i>️</span>
+                                    <span class="wuxing-icon">🏔️</span>
                                     <span class="wuxing-name">土</span>
                                     <span class="wuxing-value">${wuxing.earth || 0}</span>
                                 </div>
@@ -769,7 +760,7 @@
 
                     <!-- 技能标签 -->
                     <div class="card">
-                        <div class="card-title"><i class="ph-bold ph-wrench"></i>️ 技能标签</div>
+                        <div class="card-title">🛠️ 技能标签</div>
                         ${skills.length > 0 ? `
                             <div class="skills-list">
                                 ${skills.map(skill => `<span class="skill-tag">${escapeHtml(skill)}</span>`).join('')}
@@ -781,7 +772,7 @@
 
                     <!-- 积分历史 -->
                     <div class="card card-full">
-                        <div class="card-title"><i class="ph-bold ph-money"></i> 积分历史</div>
+                        <div class="card-title">💰 积分历史</div>
                         ${pointsHistory.length > 0 ? `
                             <div class="points-list">
                                 ${pointsHistory.map(tx => `
@@ -798,7 +789,7 @@
                             </div>
                         ` : `
                             <div class="empty-state">
-                                <div class="empty-icon"><i class="ph-bold ph-money"></i></div>
+                                <div class="empty-icon">💰</div>
                                 <div>暂无积分记录</div>
                             </div>
                         `}
@@ -807,7 +798,7 @@
                     <!-- 推荐协作搭档 -->
                     <div class="card card-full recommended-partners-section">
                         <div class="partners-title">
-                            <span><i class="ph-bold ph-handshake"></i> 推荐协作搭档</span>
+                            <span>🤝 推荐协作搭档</span>
                             <span class="partners-badge">五行互补</span>
                         </div>
                         <div id="recommendedPartnersList">
@@ -840,9 +831,9 @@
                             <div class="member-info">
                                 <h1>${escapeHtml(member.name)}</h1>
                                 <div class="member-meta">
-                                    <span><i class="ph-bold ph-calendar"></i> 注册于 ${formatDate(member.created_at)}</span>
-                                    <span><i class="ph-bold ph-clipboard-text"></i> ${stats.total_tasks || 0} 个任务</span>
-                                    <span style="color: var(--success);"><i class="ph-bold ph-check-circle"></i> ${stats.completed || 0} 已完成</span>
+                                    <span>📅 注册于 ${formatDate(member.created_at)}</span>
+                                    <span>📋 ${stats.total_tasks || 0} 个任务</span>
+                                    <span style="color: #388e3c;">✅ ${stats.completed || 0} 已完成</span>
                                 </div>
                             </div>
                         </div>
@@ -850,14 +841,14 @@
 
                     <!-- 五行画像 -->
                     <div class="card">
-                        <div class="card-title"><i class="ph-bold ph-yin-yang"></i>️ 五行画像</div>
+                        <div class="card-title">☯️ 五行画像</div>
                         <div class="wuxing-bars-vertical">
                             <div class="wuxing-bar-item wuxing-fire">
                                 <div class="wuxing-bar">
                                     <div class="wuxing-bar-fill" style="height: ${wuxing['火'] || wuxing.fire || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-fire"></i></span>
+                                    <span class="wuxing-icon">🔥</span>
                                     <span class="wuxing-name">火</span>
                                     <span class="wuxing-value">${wuxing['火'] || wuxing.fire || 0}</span>
                                 </div>
@@ -867,7 +858,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing['金'] || wuxing.metal || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-gear"></i>️</span>
+                                    <span class="wuxing-icon">⚙️</span>
                                     <span class="wuxing-name">金</span>
                                     <span class="wuxing-value">${wuxing['金'] || wuxing.metal || 0}</span>
                                 </div>
@@ -877,7 +868,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing['木'] || wuxing.wood || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-tree"></i></span>
+                                    <span class="wuxing-icon">🌳</span>
                                     <span class="wuxing-name">木</span>
                                     <span class="wuxing-value">${wuxing['木'] || wuxing.wood || 0}</span>
                                 </div>
@@ -887,7 +878,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing['水'] || wuxing.water || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-drop"></i></span>
+                                    <span class="wuxing-icon">💧</span>
                                     <span class="wuxing-name">水</span>
                                     <span class="wuxing-value">${wuxing['水'] || wuxing.water || 0}</span>
                                 </div>
@@ -897,7 +888,7 @@
                                     <div class="wuxing-bar-fill" style="height: ${wuxing['土'] || wuxing.earth || 0}%"></div>
                                 </div>
                                 <div class="wuxing-label">
-                                    <span class="wuxing-icon"><i class="ph-bold ph-mountains"></i>️</span>
+                                    <span class="wuxing-icon">🏔️</span>
                                     <span class="wuxing-name">土</span>
                                     <span class="wuxing-value">${wuxing['土'] || wuxing.earth || 0}</span>
                                 </div>
@@ -907,7 +898,7 @@
 
                     <!-- 技能标签 -->
                     <div class="card">
-                        <div class="card-title"><i class="ph-bold ph-wrench"></i>️ 技能标签</div>
+                        <div class="card-title">🛠️ 技能标签</div>
                         ${skills.length > 0 ? `
                             <div class="skills-list">
                                 ${skills.map(skill => `<span class="skill-tag">${escapeHtml(skill)}</span>`).join('')}
@@ -919,7 +910,7 @@
 
                     <!-- 任务历史 -->
                     <div class="card card-full">
-                        <div class="card-title"><i class="ph-bold ph-clipboard-text"></i> 任务历史</div>
+                        <div class="card-title">📋 任务历史</div>
                         ${tasks.length > 0 ? `
                             <div class="task-list">
                                 ${tasks.map(task => `
@@ -927,8 +918,8 @@
                                         <div class="task-title">${escapeHtml(task.title)}</div>
                                         <div class="task-meta">
                                             <span class="task-status ${task.status}">${statusMap[task.status] || task.status}</span>
-                                            ${task.wuxing ? `<span><i class="ph-bold ph-yin-yang"></i>️ ${task.wuxing}</span>` : ''}
-                                            <span><i class="ph-bold ph-chart-bar"></i> ${task.progress || 0}%</span>
+                                            ${task.wuxing ? `<span>☯️ ${task.wuxing}</span>` : ''}
+                                            <span>📊 ${task.progress || 0}%</span>
                                             <span>${formatDate(task.updated_at)}</span>
                                         </div>
                                     </div>
@@ -936,7 +927,7 @@
                             </div>
                         ` : `
                             <div class="empty-state">
-                                <div class="empty-icon"><i class="ph-bold ph-clipboard-text"></i></div>
+                                <div class="empty-icon">📋</div>
                                 <div>暂无任务记录</div>
                             </div>
                         `}
@@ -980,7 +971,7 @@
                     console.error('获取推荐搭档失败:', data.message);
                     document.getElementById('recommendedPartnersList').innerHTML = `
                         <div class="partners-empty">
-                            <div style="font-size: 36px; margin-bottom: 12px;"><i class="ph-bold ph-warning"></i>️</div>
+                            <div style="font-size: 36px; margin-bottom: 12px;">⚠️</div>
                             <div>加载推荐搭档失败</div>
                         </div>
                     `;
@@ -989,7 +980,7 @@
                 console.error('Failed to load recommended partners:', error);
                 document.getElementById('recommendedPartnersList').innerHTML = `
                     <div class="partners-empty">
-                        <div style="font-size: 36px; margin-bottom: 12px;"><i class="ph-bold ph-warning"></i>️</div>
+                        <div style="font-size: 36px; margin-bottom: 12px;">⚠️</div>
                         <div>加载推荐搭档失败</div>
                     </div>
                 `;
@@ -1003,9 +994,9 @@
             if (!recommendations || recommendations.length === 0) {
                 container.innerHTML = `
                     <div class="partners-empty">
-                        <div style="font-size: 36px; margin-bottom: 12px;"><i class="ph-bold ph-users"></i></div>
+                        <div style="font-size: 36px; margin-bottom: 12px;">👥</div>
                         <div>暂无推荐搭档</div>
-                        <div style="font-size: 13px; margin-top: 8px; color: var(--text-secondary);">
+                        <div style="font-size: 13px; margin-top: 8px; color: #888;">
                             需要更多成员加入才能进行五行互补分析
                         </div>
                     </div>
@@ -1013,7 +1004,7 @@
                 return;
             }
 
-            const medals = ['<i class="ph-bold ph-medal"></i>', '<i class="ph-bold ph-medal"></i>', '<i class="ph-bold ph-medal"></i>'];
+            const medals = ['🥇', '🥈', '🥉'];
 
             container.innerHTML = recommendations.map((rec, index) => {
                 const { member, score, wuxingScore, skillScore, reasons } = rec;
@@ -1044,7 +1035,7 @@
 
                         ${reasons && reasons.length > 0 ? `
                             <div class="partner-reasons">
-                                ${reasons.map(r => `<span class="reason-tag"><i class="ph-bold ph-lightbulb"></i> ${r}</span>`).join('')}
+                                ${reasons.map(r => `<span class="reason-tag">💡 ${r}</span>`).join('')}
                             </div>
                         ` : ''}
                     </div>
@@ -1057,7 +1048,5 @@
             loadMember();
         }
     </script>
-
-    <script src="/js/pwa.js" defer></script>
 </body>
 </html>

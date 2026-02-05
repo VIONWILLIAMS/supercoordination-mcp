@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#545BE8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>创建项目 - 超协体</title>
@@ -19,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -31,7 +26,7 @@
 
         /* 导航栏 */
         .navbar {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -44,7 +39,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -52,7 +47,7 @@
 
         /* 主卡片 */
         .card {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -61,20 +56,20 @@
         .card-title {
             font-size: 24px;
             font-weight: bold;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 8px;
         }
 
         .card-subtitle {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: #999;
             margin-bottom: 24px;
         }
 
         /* 提示框 */
         .tips-box {
-            background: var(--surface-100);
-            border-left: 4px solid var(--brand-purple);
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
             padding: 16px;
             border-radius: 8px;
             margin-bottom: 24px;
@@ -82,14 +77,14 @@
 
         .tips-title {
             font-weight: 600;
-            color: var(--brand-purple);
+            color: #667eea;
             margin-bottom: 8px;
             font-size: 14px;
         }
 
         .tips-list {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #666;
             line-height: 1.8;
             margin-left: 16px;
         }
@@ -103,24 +98,24 @@
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 8px;
         }
 
         .form-label .required {
-            color: var(--error);
+            color: #ef4444;
         }
 
         .form-hint {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #999;
             margin-top: 4px;
         }
 
         .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid var(--surface-200);
+            border: 1px solid #ddd;
             border-radius: 10px;
             font-size: 15px;
             font-family: inherit;
@@ -129,7 +124,7 @@
         }
 
         .form-input:focus, .form-textarea:focus, .form-select:focus {
-            border-color: var(--brand-purple);
+            border-color: #667eea;
         }
 
         .form-textarea {
@@ -147,7 +142,7 @@
 
         .wuxing-option {
             padding: 16px;
-            border: 2px solid var(--surface-200);
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
             text-align: center;
             cursor: pointer;
@@ -155,13 +150,13 @@
         }
 
         .wuxing-option:hover {
-            border-color: var(--brand-purple);
+            border-color: #667eea;
             transform: translateY(-2px);
         }
 
         .wuxing-option.selected {
-            border-color: var(--brand-purple);
-            background: var(--surface-100);
+            border-color: #667eea;
+            background: #f0f4ff;
         }
 
         .wuxing-icon {
@@ -172,7 +167,7 @@
         .wuxing-label {
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
         }
 
         /* 按钮组 */
@@ -194,8 +189,8 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .btn-primary:hover {
@@ -204,12 +199,12 @@
         }
 
         .btn-secondary {
-            background: var(--surface-50);
-            color: var(--text-secondary);
+            background: #f5f5f5;
+            color: #666;
         }
 
         .btn-secondary:hover {
-            background: var(--surface-200);
+            background: #e0e0e0;
         }
 
         .btn:disabled {
@@ -219,13 +214,13 @@
 
         /* 积分提示 */
         .points-notice {
-            background: var(--surface-50)4e6;
-            border: 1px solid var(--warning);
+            background: #fff4e6;
+            border: 1px solid #fbbf24;
             border-radius: 8px;
             padding: 12px 16px;
             margin-bottom: 24px;
             font-size: 14px;
-            color: var(--warning);
+            color: #d97706;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -241,40 +236,27 @@
             }
         }
     </style>
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <div class="container">
         <!-- 导航栏 -->
         <div class="navbar">
-            <div class="navbar-left">
-                <a href="/dashboard.html" class="navbar-brand">超协体</a>
-                <div class="navbar-nav">
-                    <a href="/dashboard.html" class="nav-link">工作台</a>
-                    <a href="/task-create.html" class="nav-link">创建任务</a>
-                    <a href="/my-tasks.html" class="nav-link">我的任务</a>
-                    <a href="/crystal-library.html" class="nav-link">晶体库</a>
-                    <a href="/members.html" class="nav-link">成员</a>
-                    <a href="/profile.html" class="nav-link">画像</a>
-                </div>
-            </div>
-            <a href="/projects.html" class="nav-link nav-back">← 返回项目列表</a>
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
+            <a href="/projects.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回项目列表</a>
         </div>
 
         <!-- 主卡片 -->
         <div class="card">
-            <h1 class="card-title"><i class="ph-bold ph-rocket"></i> 创建新项目</h1>
+            <h1 class="card-title">🚀 创建新项目</h1>
             <p class="card-subtitle">无项目不团队，开启协作新篇章</p>
 
             <div class="points-notice">
-                <span><i class="ph-bold ph-money"></i></span>
+                <span>💰</span>
                 <span>创建项目需要消耗 <strong>50积分</strong>，当前积分余额: <strong id="pointsBalance">--</strong></span>
             </div>
 
             <div class="tips-box">
-                <div class="tips-title"><i class="ph-bold ph-stars"></i> 项目创建提示</div>
+                <div class="tips-title">✨ 项目创建提示</div>
                 <ul class="tips-list">
                     <li>项目名称要简洁明了，突出核心目标</li>
                     <li>选择与战略目标对齐的五行属性</li>
@@ -301,7 +283,7 @@
                 <!-- 项目描述 -->
                 <div class="form-group">
                     <label class="form-label">
-                        项目描述 <span style="color: var(--text-secondary);">(可选)</span>
+                        项目描述 <span style="color: #999;">(可选)</span>
                     </label>
                     <textarea
                         id="description"
@@ -314,7 +296,7 @@
                 <!-- 战略目标 -->
                 <div class="form-group">
                     <label class="form-label">
-                        战略目标对齐 <span style="color: var(--text-secondary);">(可选)</span>
+                        战略目标对齐 <span style="color: #999;">(可选)</span>
                     </label>
                     <select id="strategicGoal" class="form-select">
                         <option value="">请选择</option>
@@ -328,27 +310,27 @@
                 <!-- 五行属性 -->
                 <div class="form-group">
                     <label class="form-label">
-                        五行主属性 <span style="color: var(--text-secondary);">(可选)</span>
+                        五行主属性 <span style="color: #999;">(可选)</span>
                     </label>
                     <div class="wuxing-selector">
                         <div class="wuxing-option" data-wuxing="wood" onclick="selectWuxing('wood')">
-                            <div class="wuxing-icon"><i class="ph-bold ph-tree"></i></div>
+                            <div class="wuxing-icon">🌳</div>
                             <div class="wuxing-label">木</div>
                         </div>
                         <div class="wuxing-option" data-wuxing="fire" onclick="selectWuxing('fire')">
-                            <div class="wuxing-icon"><i class="ph-bold ph-fire"></i></div>
+                            <div class="wuxing-icon">🔥</div>
                             <div class="wuxing-label">火</div>
                         </div>
                         <div class="wuxing-option" data-wuxing="earth" onclick="selectWuxing('earth')">
-                            <div class="wuxing-icon"><i class="ph-bold ph-mountains"></i>️</div>
+                            <div class="wuxing-icon">🏔️</div>
                             <div class="wuxing-label">土</div>
                         </div>
                         <div class="wuxing-option" data-wuxing="metal" onclick="selectWuxing('metal')">
-                            <div class="wuxing-icon"><i class="ph-bold ph-gear"></i>️</div>
+                            <div class="wuxing-icon">⚙️</div>
                             <div class="wuxing-label">金</div>
                         </div>
                         <div class="wuxing-option" data-wuxing="water" onclick="selectWuxing('water')">
-                            <div class="wuxing-icon"><i class="ph-bold ph-wave-sine"></i></div>
+                            <div class="wuxing-icon">🌊</div>
                             <div class="wuxing-label">水</div>
                         </div>
                     </div>
@@ -358,7 +340,7 @@
                 <!-- 预计结束日期 -->
                 <div class="form-group">
                     <label class="form-label">
-                        预计结束日期 <span style="color: var(--text-secondary);">(可选)</span>
+                        预计结束日期 <span style="color: #999;">(可选)</span>
                     </label>
                     <input
                         type="date"
@@ -370,7 +352,7 @@
                 <!-- 积分预算 -->
                 <div class="form-group">
                     <label class="form-label">
-                        项目积分预算 <span style="color: var(--text-secondary);">(可选)</span>
+                        项目积分预算 <span style="color: #999;">(可选)</span>
                     </label>
                     <input
                         type="number"
@@ -388,7 +370,7 @@
                         取消
                     </button>
                     <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <i class="ph-bold ph-rocket"></i> 创建项目 (-50积分)
+                        🚀 创建项目 (-50积分)
                     </button>
                 </div>
             </form>
@@ -421,12 +403,12 @@
                     if (data.user.pointsBalance < 50) {
                         document.getElementById('submitBtn').disabled = true;
                         document.querySelector('.points-notice').innerHTML = `
-                            <span><i class="ph-bold ph-warning"></i>️</span>
+                            <span>⚠️</span>
                             <span>积分不足！创建项目需要 <strong>50积分</strong>，当前余额: <strong>${data.user.pointsBalance}</strong></span>
                         `;
-                        document.querySelector('.points-notice').style.background = 'rgba(239, 68, 68, 0.12)';
-                        document.querySelector('.points-notice').style.borderColor = '#EF4444';
-                        document.querySelector('.points-notice').style.color = '#EF4444';
+                        document.querySelector('.points-notice').style.background = '#fee2e2';
+                        document.querySelector('.points-notice').style.borderColor = '#dc2626';
+                        document.querySelector('.points-notice').style.color = '#dc2626';
                     }
                 }
             } catch (error) {
@@ -485,7 +467,5 @@
             }
         });
     </script>
-
-    <script src="/js/pwa.js" defer></script>
 </body>
 </html>

@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#545BE8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>创建任务 - 超协体</title>
     <script src="/js/auth.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/js/websocket-client.js"></script>
     <style>
         * {
             margin: 0;
@@ -19,18 +16,19 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
+        /* 导航栏 */
         .navbar {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -43,7 +41,7 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
@@ -52,12 +50,11 @@
         .navbar-nav {
             display: flex;
             gap: 8px;
-            align-items: center;
         }
 
         .nav-link {
             padding: 8px 16px;
-            color: var(--text-secondary);
+            color: #666;
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
@@ -65,400 +62,592 @@
         }
 
         .nav-link:hover {
-            background: var(--surface-100);
-            color: var(--text-main);
+            background: #f0f0f0;
+            color: #333;
         }
 
-        .card {
-            background: var(--surface-50);
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
-        .card-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--text-main);
+        /* 表单容器 */
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-header h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
 
-        .card-subtitle {
+        .form-header p {
+            color: #666;
             font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
-
-        .tips-box {
-            background: var(--surface-100);
-            border-left: 4px solid var(--brand-purple);
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-        }
-
-        .tips-title {
-            font-weight: 600;
-            color: var(--brand-purple);
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .tips-list {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin-left: 16px;
         }
 
         .form-group {
             margin-bottom: 24px;
         }
 
-        .form-label {
+        .form-group label {
             display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-main);
             margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
         }
 
-        .form-label .required {
-            color: var(--error);
+        .form-group label .required {
+            color: #e53935;
+            margin-left: 4px;
         }
 
-        .form-hint {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        .form-input, .form-textarea, .form-select {
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--surface-200);
-            border-radius: 10px;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             font-size: 15px;
+            transition: all 0.3s;
             font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
-            transition: border-color 0.3s;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            border-color: var(--brand-purple);
-        }
-
-        .form-textarea {
+        .form-group textarea {
+            min-height: 120px;
             resize: vertical;
-            min-height: 140px;
-            line-height: 1.6;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+        .form-group small {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            margin-top: 6px;
         }
 
-        .btn-group {
+        /* 五行选择 */
+        .wuxing-options {
             display: flex;
             gap: 12px;
-            margin-top: 8px;
+            flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 12px 24px;
-            border-radius: 10px;
-            border: none;
-            font-size: 15px;
-            font-weight: 600;
+        .wuxing-option {
+            flex: 1;
+            min-width: 100px;
+            padding: 16px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+        .wuxing-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
         }
 
-        .btn-primary:hover {
+        .wuxing-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .wuxing-option .icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .wuxing-option .name {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 优先级选择 */
+        .priority-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .priority-option {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .priority-option:hover {
+            border-color: #667eea;
+        }
+
+        .priority-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .priority-option .level {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .priority-option .desc {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .priority-s { color: #e53935; }
+        .priority-a { color: #fb8c00; }
+        .priority-b { color: #43a047; }
+        .priority-c { color: #757575; }
+
+        /* 技能标签 */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            min-height: 36px;
+        }
+
+        .skill-tag {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .skill-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .skill-tag .remove:hover {
+            opacity: 1;
+        }
+
+        /* 积分提示 */
+        .points-info {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .points-info-icon {
+            font-size: 24px;
+        }
+
+        .points-info-text {
+            flex: 1;
+        }
+
+        .points-info-text strong {
+            color: #f57c00;
+        }
+
+        /* 提交按钮 */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-secondary {
-            background: var(--surface-100);
-            color: var(--text-secondary);
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .btn-secondary:hover {
-            background: var(--surface-200);
+        /* 消息提示 */
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
         }
 
-        .result-msg {
-            margin-top: 16px;
-            font-size: 14px;
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
         }
 
-        .result-success { color: var(--success); }
-        .result-error { color: var(--error); }
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
 
-        .project-only { display: none; }
-
-        @media (max-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .wuxing-options {
+                flex-direction: column;
             }
 
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
+            .wuxing-option {
+                min-width: auto;
+            }
+
+            .priority-options {
+                flex-wrap: wrap;
+            }
+
+            .priority-option {
+                flex: 1 1 45%;
+            }
+
+            .navbar-nav {
+                display: none;
             }
         }
     </style>
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <div class="container">
-        <div class="navbar">
-            <a href="/dashboard.html" class="navbar-brand">超协体 · 任务中心</a>
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <a href="/dashboard.html" class="navbar-brand">超协体</a>
             <div class="navbar-nav">
                 <a href="/dashboard.html" class="nav-link">工作台</a>
                 <a href="/task-create.html" class="nav-link active">创建任务</a>
                 <a href="/my-tasks.html" class="nav-link">我的任务</a>
-                <a href="/crystal-library.html" class="nav-link">晶体库</a>
                 <a href="/members.html" class="nav-link">成员</a>
                 <a href="/profile.html" class="nav-link">画像</a>
             </div>
-        </div>
+        </nav>
 
-        <div class="card">
-            <div class="card-title" id="pageTitle">创建任务</div>
-            <div class="card-subtitle" id="pageSubtitle">填写任务信息，创建后可在任务列表中管理</div>
+        <!-- 表单 -->
+        <div class="form-container">
+            <div class="form-header">
+                <h1>创建新任务</h1>
+                <p>详细描述任务需求，系统将智能匹配最佳执行者</p>
+            </div>
 
-            <div class="tips-box" id="projectTips" style="display:none;">
-                <div class="tips-title">项目任务提示</div>
-                <ul class="tips-list">
-                    <li>该任务将归属到当前项目</li>
-                    <li>可以选择指派给项目成员</li>
-                    <li>任务优先级使用：低/中/高</li>
-                </ul>
+            <div id="successMessage" class="message success"></div>
+            <div id="errorMessage" class="message error"></div>
+
+            <!-- 积分提示 -->
+            <div class="points-info">
+                <span class="points-info-icon">💰</span>
+                <div class="points-info-text">
+                    创建任务将消耗 <strong>10积分</strong>，当前余额：<strong id="currentPoints">--</strong> 积分
+                </div>
             </div>
 
             <form id="taskForm">
+                <!-- 任务标题 -->
                 <div class="form-group">
-                    <label class="form-label">任务标题 <span class="required">*</span></label>
-                    <input class="form-input" id="title" required placeholder="例如：整理客户调研报告" />
+                    <label>任务标题 <span class="required">*</span></label>
+                    <input type="text" id="title" placeholder="简洁明确的任务标题" maxlength="100" required>
+                    <small>最多100字符</small>
                 </div>
 
+                <!-- 任务描述 -->
                 <div class="form-group">
-                    <label class="form-label">任务描述 <span class="required">*</span></label>
-                    <textarea class="form-textarea" id="description" required placeholder="请描述任务目标、边界和期望产出"></textarea>
+                    <label>任务描述 <span class="required">*</span></label>
+                    <textarea id="description" placeholder="详细描述任务目标、要求和验收标准..." required></textarea>
+                    <small>清晰的描述有助于获得更好的执行结果</small>
                 </div>
 
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label">优先级</label>
-                        <select class="form-select" id="priorityWorkspace">
-                            <option value="S">S（最高）</option>
-                            <option value="A">A</option>
-                            <option value="B" selected>B（默认）</option>
-                            <option value="C">C</option>
-                        </select>
-                        <select class="form-select project-only" id="priorityProject">
-                            <option value="low">低</option>
-                            <option value="medium" selected>中（默认）</option>
-                            <option value="high">高</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">五行倾向</label>
-                        <select class="form-select" id="wuxing">
-                            <option value="">不限制</option>
-                            <option value="火">火</option>
-                            <option value="金">金</option>
-                            <option value="木">木</option>
-                            <option value="水">水</option>
-                            <option value="土">土</option>
-                        </select>
-                        <div class="form-hint">用于任务推荐匹配</div>
-                    </div>
-                </div>
-
+                <!-- 五行需求 -->
                 <div class="form-group">
-                    <label class="form-label">所需技能</label>
-                    <input class="form-input" id="skillsInput" placeholder="用逗号分隔，例如：产品、调研、运营" />
-                    <div class="form-hint">支持英文逗号或中文逗号</div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label">奖励积分</label>
-                        <input class="form-input" type="number" id="rewardPoints" min="0" value="20" />
-                        <div class="form-hint">默认 20 分，可按需调整</div>
+                    <label>五行能量需求</label>
+                    <div class="wuxing-options" id="wuxingOptions">
+                        <div class="wuxing-option" data-value="火">
+                            <div class="icon">🔥</div>
+                            <div class="name">火 - 行动</div>
+                        </div>
+                        <div class="wuxing-option" data-value="金">
+                            <div class="icon">⚙️</div>
+                            <div class="name">金 - 思考</div>
+                        </div>
+                        <div class="wuxing-option" data-value="木">
+                            <div class="icon">🌳</div>
+                            <div class="name">木 - 构建</div>
+                        </div>
+                        <div class="wuxing-option" data-value="水">
+                            <div class="icon">💧</div>
+                            <div class="name">水 - 洞察</div>
+                        </div>
+                        <div class="wuxing-option" data-value="土">
+                            <div class="icon">🏔️</div>
+                            <div class="name">土 - 整合</div>
+                        </div>
                     </div>
+                    <small>选择最能代表此任务特质的五行能量</small>
+                </div>
 
-                    <div class="form-group project-only" id="estimatedGroup">
-                        <label class="form-label">预计工时（小时）</label>
-                        <input class="form-input" type="number" id="estimatedHours" min="1" placeholder="例如 8" />
+                <!-- 优先级 -->
+                <div class="form-group">
+                    <label>优先级</label>
+                    <div class="priority-options" id="priorityOptions">
+                        <div class="priority-option" data-value="S">
+                            <div class="level priority-s">S</div>
+                            <div class="desc">紧急重要</div>
+                        </div>
+                        <div class="priority-option" data-value="A">
+                            <div class="level priority-a">A</div>
+                            <div class="desc">重要</div>
+                        </div>
+                        <div class="priority-option selected" data-value="B">
+                            <div class="level priority-b">B</div>
+                            <div class="desc">一般</div>
+                        </div>
+                        <div class="priority-option" data-value="C">
+                            <div class="level priority-c">C</div>
+                            <div class="desc">可延后</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group project-only" id="assignedGroup">
-                    <label class="form-label">指派给成员（可选）</label>
-                    <select class="form-select" id="assignedTo">
-                        <option value="">暂不指派</option>
-                    </select>
+                <!-- 技能需求 -->
+                <div class="form-group">
+                    <label>技能需求</label>
+                    <div class="skills-container" id="skillsContainer"></div>
+                    <input type="text" id="skillInput" placeholder="输入技能后按回车添加（如：Python、产品设计、数据分析）">
+                    <small>添加所需技能标签，有助于智能匹配合适的执行者</small>
                 </div>
 
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-primary" id="submitBtn">创建任务</button>
-                    <button type="button" class="btn btn-secondary" onclick="goBack()">取消</button>
+                <!-- 奖励积分 -->
+                <div class="form-group">
+                    <label>完成奖励积分</label>
+                    <input type="number" id="rewardPoints" value="20" min="10" max="100" step="5">
+                    <small>执行者完成任务后获得的积分奖励（10-100积分）</small>
                 </div>
 
-                <div class="result-msg" id="resultMsg"></div>
+                <!-- 多AI协作选项 -->
+                <div class="form-group" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); padding: 16px; border-radius: 12px; border: 2px solid rgba(102, 126, 234, 0.3);">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                        <input type="checkbox" id="enableMultiAI" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-size: 15px;">🤖 启用多AI协作</span>
+                    </label>
+                    <small style="display: block; margin-top: 8px; color: #666;">
+                        复杂任务将自动拆解并由多个AI成员并行处理（需要先创建AI成员）
+                    </small>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    创建任务（消耗10积分）
+                </button>
             </form>
         </div>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const projectId = params.get('projectId');
-        const isProjectTask = !!projectId;
-
-        const projectTips = document.getElementById('projectTips');
-        const projectOnlyEls = document.querySelectorAll('.project-only');
-        const pageTitle = document.getElementById('pageTitle');
-        const pageSubtitle = document.getElementById('pageSubtitle');
-        const priorityWorkspace = document.getElementById('priorityWorkspace');
-        const priorityProject = document.getElementById('priorityProject');
-
-        function showMessage(text, type) {
-            const msg = document.getElementById('resultMsg');
-            msg.textContent = text;
-            msg.className = `result-msg ${type === 'success' ? 'result-success' : 'result-error'}`;
+        // 检查登录状态
+        if (!isLoggedIn()) {
+            window.location.href = '/login.html';
         }
 
-        function parseSkills(raw) {
-            if (!raw) return [];
-            return raw
-                .split(/[,，\s]+/)
-                .map(item => item.trim())
-                .filter(Boolean);
-        }
+        // 状态变量
+        let selectedWuxing = null;
+        let selectedPriority = 'B';
+        let skills = [];
 
-        function goBack() {
-            if (isProjectTask) {
-                window.location.href = `/project-detail.html?id=${projectId}`;
-            } else {
-                window.location.href = '/my-tasks.html';
-            }
-        }
-
-        async function loadProjectMembers() {
+        // 加载用户积分
+        async function loadUserPoints() {
             try {
-                const response = await authFetch(`/api/projects/${projectId}/members`);
+                const response = await authFetch('/api/auth/me');
                 const data = await response.json();
-                if (!data.success) return;
+                if (data.success) {
+                    document.getElementById('currentPoints').textContent = data.user.pointsBalance;
 
-                const select = document.getElementById('assignedTo');
-                data.members.forEach(member => {
-                    const option = document.createElement('option');
-                    option.value = member.user.id;
-                    const serial = member.user.serialNumber ? `#${member.user.serialNumber} ` : '';
-                    option.textContent = `${serial}${member.user.username}`;
-                    select.appendChild(option);
-                });
+                    // 如果积分不足，禁用提交
+                    if (data.user.pointsBalance < 10) {
+                        document.getElementById('submitBtn').disabled = true;
+                        document.getElementById('submitBtn').textContent = '积分不足';
+                        showError('积分不足，创建任务需要10积分');
+                    }
+                }
             } catch (error) {
-                console.error('加载项目成员失败:', error);
+                console.error('加载用户信息失败:', error);
             }
         }
 
-        if (isProjectTask) {
-            projectTips.style.display = 'block';
-            projectOnlyEls.forEach(el => { el.style.display = 'block'; });
-            pageTitle.textContent = '创建项目任务';
-            pageSubtitle.textContent = '该任务将归属于当前项目';
-            priorityWorkspace.style.display = 'none';
-            priorityProject.style.display = 'block';
-            loadProjectMembers();
-        } else {
-            priorityProject.style.display = 'none';
-            priorityWorkspace.style.display = 'block';
+        // 五行选择
+        const wuxingOptions = document.querySelectorAll('#wuxingOptions .wuxing-option');
+        wuxingOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                wuxingOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedWuxing = option.dataset.value;
+            });
+        });
+
+        // 优先级选择
+        const priorityOptions = document.querySelectorAll('#priorityOptions .priority-option');
+        priorityOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                priorityOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedPriority = option.dataset.value;
+            });
+        });
+
+        // 技能标签
+        const skillInput = document.getElementById('skillInput');
+        const skillsContainer = document.getElementById('skillsContainer');
+
+        skillInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const skill = skillInput.value.trim();
+                if (skill && !skills.includes(skill)) {
+                    skills.push(skill);
+                    renderSkills();
+                    skillInput.value = '';
+                }
+            }
+        });
+
+        function renderSkills() {
+            skillsContainer.innerHTML = skills.map((skill, index) => `
+                <div class="skill-tag">
+                    <span>${skill}</span>
+                    <span class="remove" onclick="removeSkill(${index})">x</span>
+                </div>
+            `).join('');
         }
 
-        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+        function removeSkill(index) {
+            skills.splice(index, 1);
+            renderSkills();
+        }
+
+        // 显示消息
+        function showSuccess(message) {
+            const el = document.getElementById('successMessage');
+            el.textContent = message;
+            el.style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // 提交表单
+        const taskForm = document.getElementById('taskForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        taskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const title = document.getElementById('title').value.trim();
             const description = document.getElementById('description').value.trim();
-            const skills = parseSkills(document.getElementById('skillsInput').value);
-            const wuxing = document.getElementById('wuxing').value;
-            const rewardPoints = parseInt(document.getElementById('rewardPoints').value || '20', 10);
+            const rewardPoints = parseInt(document.getElementById('rewardPoints').value) || 20;
 
             if (!title || !description) {
-                showMessage('标题和描述不能为空', 'error');
+                showError('请填写任务标题和描述');
                 return;
             }
 
-            let endpoint = '/api/tasks';
-            let payload = {
-                title,
-                description,
-                wuxing: wuxing || null,
-                priority: priorityWorkspace.value,
-                skills_required: skills,
-                reward_points: rewardPoints
-            };
-
-            if (isProjectTask) {
-                endpoint = `/api/projects/${projectId}/tasks`;
-                const assignedTo = document.getElementById('assignedTo').value || null;
-                const estimatedHoursRaw = document.getElementById('estimatedHours').value;
-                const estimatedHours = estimatedHoursRaw ? parseInt(estimatedHoursRaw, 10) : null;
-                payload = {
-                    title,
-                    description,
-                    requiredSkills: skills,
-                    requiredWuxing: wuxing ? { [wuxing]: 60 } : {},
-                    assignedTo,
-                    priority: priorityProject.value,
-                    rewardPoints: rewardPoints,
-                    estimatedHours
-                };
-            }
+            submitBtn.disabled = true;
+            submitBtn.textContent = '创建中...';
 
             try {
-                const response = await authFetch(endpoint, {
+                const enableMultiAI = document.getElementById('enableMultiAI').checked;
+
+                const response = await authFetch('/api/tasks', {
                     method: 'POST',
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        wuxing: selectedWuxing,
+                        priority: selectedPriority,
+                        skills_required: skills,
+                        reward_points: rewardPoints
+                    })
                 });
 
                 const data = await response.json();
 
-                if (!response.ok || !data.success) {
-                    showMessage(data.message || '创建失败，请重试', 'error');
-                    return;
-                }
-
-                showMessage('创建成功，正在跳转...', 'success');
-                setTimeout(() => {
-                    if (isProjectTask) {
-                        window.location.href = `/project-detail.html?id=${projectId}`;
+                if (data.success) {
+                    // 如果启用多AI协作，自动触发
+                    if (enableMultiAI && data.task_id) {
+                        showSuccess('任务创建成功！正在启动多AI协作...');
+                        try {
+                            const multiAIResponse = await authFetch(`/api/tasks/${data.task_id}/multi-ai-collaborate`, {
+                                method: 'POST'
+                            });
+                            const multiAIData = await multiAIResponse.json();
+                            if (multiAIData.success) {
+                                showSuccess('任务创建成功，多AI协作已启动！正在跳转...');
+                            }
+                        } catch (e) {
+                            console.error('Multi-AI start failed:', e);
+                        }
                     } else {
-                        window.location.href = '/my-tasks.html';
+                        showSuccess('任务创建成功！正在跳转...');
                     }
-                }, 800);
+                    setTimeout(() => {
+                        window.location.href = `/task-detail.html?id=${data.task_id}`;
+                    }, 1500);
+                } else {
+                    showError(data.message || '创建失败，请重试');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '创建任务（消耗10积分）';
+                }
             } catch (error) {
                 console.error('创建任务失败:', error);
-                showMessage('创建失败，请稍后重试', 'error');
+                showError('网络错误，请重试');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '创建任务（消耗10积分）';
             }
         });
+
+        // 页面加载
+        loadUserPoints();
     </script>
-    <script src="/js/pwa.js" defer></script>
 </body>
 </html>
