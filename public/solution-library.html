@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>晶体库 - 超协体</title>
+    <title>方案库 - 超协体</title>
     <script src="/js/auth.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="/js/websocket-client.js"></script>
@@ -155,7 +155,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        /* 晶体卡片 */
+        /* 方案卡片 */
         .solutions-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -380,7 +380,7 @@
                 <a href="/dashboard.html" class="nav-link">工作台</a>
                 <a href="/task-create.html" class="nav-link">创建任务</a>
                 <a href="/my-tasks.html" class="nav-link">我的任务</a>
-                <a href="/crystal-library.html" class="nav-link active">晶体库</a>
+                <a href="/solution-library.html" class="nav-link active">方案库</a>
                 <a href="/members.html" class="nav-link">成员</a>
             </nav>
         </div>
@@ -388,8 +388,8 @@
         <!-- 头部 -->
         <div class="header">
             <div class="header-top">
-                <h1 class="header-title">💎 晶体库</h1>
-                <a href="/crystal-create.html" class="btn-create">+ 发布晶体</a>
+                <h1 class="header-title">💡 方案库</h1>
+                <a href="/solution-create.html" class="btn-create">+ 发布方案</a>
             </div>
 
             <!-- 过滤器 -->
@@ -416,7 +416,7 @@
             <div id="solutionsList" class="solutions-grid">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>正在加载晶体...</div>
+                    <div>正在加载方案...</div>
                 </div>
             </div>
 
@@ -459,7 +459,7 @@
             });
         });
 
-        // 加载晶体列表
+        // 加载方案列表
         async function loadSolutions() {
             try {
                 const params = new URLSearchParams({
@@ -484,12 +484,12 @@
                     showError('加载失败：' + data.message);
                 }
             } catch (error) {
-                console.error('加载晶体失败:', error);
-                showError('加载晶体失败，请重试');
+                console.error('加载方案失败:', error);
+                showError('加载方案失败，请重试');
             }
         }
 
-        // 渲染晶体列表
+        // 渲染方案列表
         function renderSolutions(solutions) {
             const container = document.getElementById('solutionsList');
 
@@ -497,15 +497,15 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📭</div>
-                        <div class="empty-text">暂无晶体</div>
-                        <div class="empty-hint">成为第一个分享晶体的人吧！</div>
+                        <div class="empty-text">暂无方案</div>
+                        <div class="empty-hint">成为第一个分享方案的人吧！</div>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = solutions.map(solution => `
-                <a class="solution-card" href="/crystal-detail.html?id=${solution.id}">
+                <a class="solution-card" href="/solution-detail.html?id=${solution.id}">
                     <div class="solution-header">
                         <div class="solution-title">${escapeHtml(solution.title)}</div>
                         ${solution.avgRating > 0 ? `

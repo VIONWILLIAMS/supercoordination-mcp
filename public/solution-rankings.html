@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>晶体排行榜 - 超协体</title>
+    <title>方案排行榜 - 超协体</title>
     <script src="/js/auth.js"></script>
     <style>
         * {
@@ -326,13 +326,13 @@
         <!-- 导航栏 -->
         <div class="navbar">
             <a href="/dashboard.html" class="navbar-brand">超协体</a>
-            <a href="/crystal-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回晶体库</a>
+            <a href="/solution-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回方案库</a>
         </div>
 
         <!-- 标签页 -->
         <div class="tabs">
             <button class="tab active" data-tab="solutions" onclick="switchTab('solutions')">
-                🏆 高品质晶体榜
+                🏆 高分方案榜
             </button>
             <button class="tab" data-tab="contributors" onclick="switchTab('contributors')">
                 👑 贡献者榜
@@ -421,7 +421,7 @@
             }
         }
 
-        // 加载高品质晶体榜
+        // 加载高分方案榜
         async function loadTopRatedSolutions() {
             const response = await authFetch(`/api/solutions/rankings/top-rated?limit=20&timeRange=${currentTimeRange}`);
             const data = await response.json();
@@ -441,7 +441,7 @@
             }
         }
 
-        // 渲染晶体排行榜
+        // 渲染方案排行榜
         function renderSolutionsRanking(solutions) {
             const container = document.getElementById('rankingContent');
 
@@ -465,7 +465,7 @@
                         else if (rank === 3) badgeClass = 'bronze';
 
                         return `
-                            <a class="ranking-item" href="/crystal-detail.html?id=${solution.id}">
+                            <a class="ranking-item" href="/solution-detail.html?id=${solution.id}">
                                 <div class="rank-badge ${badgeClass}">
                                     ${rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : rank}
                                 </div>
@@ -532,7 +532,7 @@
                                     <div class="contributor-stats">
                                         <div class="contributor-stat">
                                             <div class="contributor-stat-value">${contributor.solutionCount}</div>
-                                            <div class="contributor-stat-label">晶体</div>
+                                            <div class="contributor-stat-label">方案</div>
                                         </div>
                                         <div class="contributor-stat">
                                             <div class="contributor-stat-value">${contributor.totalReferences}</div>

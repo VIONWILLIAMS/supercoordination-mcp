@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>晶体详情 - 超协体</title>
+    <title>方案详情 - 超协体</title>
     <script src="/js/auth.js"></script>
     <style>
         * {
@@ -65,7 +65,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        /* 晶体头部 */
+        /* 方案头部 */
         .solution-header {
             margin-bottom: 32px;
         }
@@ -457,7 +457,7 @@
         <!-- 导航栏 -->
         <div class="navbar">
             <a href="/dashboard.html" class="navbar-brand">超协体</a>
-            <a href="/crystal-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回晶体库</a>
+            <a href="/solution-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回方案库</a>
         </div>
 
         <!-- 加载状态 -->
@@ -470,10 +470,10 @@
 
         <!-- 主内容 -->
         <div id="mainContent" class="main-content" style="display: none;">
-            <!-- 左侧：晶体内容 -->
+            <!-- 左侧：方案内容 -->
             <div>
                 <div class="card">
-                    <!-- 晶体头部 -->
+                    <!-- 方案头部 -->
                     <div class="solution-header">
                         <h1 class="solution-title" id="solutionTitle"></h1>
                         <div class="solution-meta" id="solutionMeta"></div>
@@ -494,9 +494,9 @@
                         <div class="section-content" id="problemDefinition"></div>
                     </div>
 
-                    <!-- 知识晶体 -->
+                    <!-- 解决方案 -->
                     <div class="section">
-                        <div class="section-title">💎 知识晶体</div>
+                        <div class="section-title">💡 解决方案</div>
                         <div class="section-content" id="solutionContent"></div>
                     </div>
 
@@ -527,7 +527,7 @@
                         <div class="rating-overall" id="ratingOverall"></div>
                         <div class="rating-bars" id="ratingBars"></div>
                         <button class="btn btn-primary" onclick="openRatingModal()" id="rateBtn">
-                            ⭐ 评分晶体
+                            ⭐ 评分方案
                         </button>
                     </div>
                 </div>
@@ -535,10 +535,10 @@
                 <!-- 操作卡片 -->
                 <div class="stats-card">
                     <button class="btn btn-outline" onclick="citeThis()" style="margin-bottom: 12px;">
-                        🔗 引用此晶体
+                        🔗 引用此方案
                     </button>
-                    <button class="btn btn-outline" onclick="window.location.href='/crystal-library.html'">
-                        📚 浏览更多晶体
+                    <button class="btn btn-outline" onclick="window.location.href='/solution-library.html'">
+                        📚 浏览更多方案
                     </button>
                 </div>
             </div>
@@ -548,7 +548,7 @@
     <!-- 评分模态框 -->
     <div class="modal" id="ratingModal">
         <div class="modal-content">
-            <h2 class="modal-title">为晶体评分</h2>
+            <h2 class="modal-title">为方案评分</h2>
 
             <div class="rating-input-group">
                 <label class="rating-input-label">代码质量</label>
@@ -600,8 +600,8 @@
         // 页面加载
         document.addEventListener('DOMContentLoaded', async () => {
             if (!solutionId) {
-                alert('晶体ID不存在');
-                window.location.href = '/crystal-library.html';
+                alert('方案ID不存在');
+                window.location.href = '/solution-library.html';
                 return;
             }
 
@@ -610,7 +610,7 @@
             initRatingStars();
         });
 
-        // 加载晶体详情
+        // 加载方案详情
         async function loadSolution() {
             try {
                 const response = await authFetch(`/api/solutions/${solutionId}`);
@@ -621,15 +621,15 @@
                     renderSolution();
                 } else {
                     alert('加载失败：' + data.message);
-                    window.location.href = '/crystal-library.html';
+                    window.location.href = '/solution-library.html';
                 }
             } catch (error) {
-                console.error('加载晶体失败:', error);
+                console.error('加载方案失败:', error);
                 alert('加载失败，请重试');
             }
         }
 
-        // 渲染晶体
+        // 渲染方案
         function renderSolution() {
             // 标题
             document.getElementById('solutionTitle').textContent = solution.title;
@@ -664,7 +664,7 @@
             // 问题描述
             document.getElementById('problemDefinition').textContent = solution.problemDefinition;
 
-            // 知识晶体
+            // 解决方案
             document.getElementById('solutionContent').textContent = solution.solutionContent;
 
             // 代码片段
@@ -852,11 +852,11 @@
             }
         }
 
-        // 引用晶体
+        // 引用方案
         function citeThis() {
-            const msg = `引用此晶体需要在您自己的晶体中添加。\n\n请先创建或编辑您的晶体，然后调用引用API。\n\n晶体ID: ${solutionId}`;
+            const msg = `引用此方案需要在您自己的方案中添加。\n\n请先创建或编辑您的方案，然后调用引用API。\n\n方案ID: ${solutionId}`;
             alert(msg);
-            // 实际应用中，这里应该打开一个选择晶体的界面
+            // 实际应用中，这里应该打开一个选择方案的界面
         }
 
         // HTML转义

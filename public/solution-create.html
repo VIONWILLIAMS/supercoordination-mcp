@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>凝结晶体 - 超协体</title>
+    <title>发布方案 - 超协体</title>
     <script src="/js/auth.js"></script>
     <style>
         * {
@@ -240,17 +240,17 @@
         <!-- 导航栏 -->
         <div class="navbar">
             <a href="/dashboard.html" class="navbar-brand">超协体</a>
-            <a href="/crystal-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回晶体库</a>
+            <a href="/solution-library.html" style="text-decoration: none; color: #666; font-size: 14px;">← 返回方案库</a>
         </div>
 
         <!-- 主卡片 -->
         <div class="card">
-            <h1 class="card-title">💎 发布知识晶体</h1>
+            <h1 class="card-title">💡 发布解决方案</h1>
 
             <div class="tips-box">
                 <div class="tips-title">✨ 发布提示</div>
                 <ul class="tips-list">
-                    <li>清晰描述问题和知识晶体，帮助他人快速理解</li>
+                    <li>清晰描述问题和解决方案，帮助他人快速理解</li>
                     <li>提供代码片段或实现细节，增加可复用性</li>
                     <li>添加相关标签，方便其他成员搜索和引用</li>
                     <li>发布后获得<strong>50积分</strong>，被引用还有额外奖励</li>
@@ -261,7 +261,7 @@
                 <!-- 标题 -->
                 <div class="form-group">
                     <label class="form-label">
-                        晶体标题 <span class="required">*</span>
+                        方案标题 <span class="required">*</span>
                     </label>
                     <input
                         type="text"
@@ -286,10 +286,10 @@
                     <div class="form-hint">清晰描述问题背景，帮助他人判断适用性</div>
                 </div>
 
-                <!-- 知识晶体 -->
+                <!-- 解决方案 -->
                 <div class="form-group">
                     <label class="form-label">
-                        知识晶体 <span class="required">*</span>
+                        解决方案 <span class="required">*</span>
                     </label>
                     <textarea
                         id="solutionContent"
@@ -350,7 +350,7 @@
                         💾 保存草稿
                     </button>
                     <button type="submit" class="btn btn-primary" id="publishBtn">
-                        🚀 凝结晶体 (+50积分)
+                        🚀 发布方案 (+50积分)
                     </button>
                 </div>
             </form>
@@ -410,7 +410,7 @@
             const data = collectFormData('draft');
 
             if (!data.title || !data.problemDefinition || !data.solutionContent) {
-                alert('请至少填写标题、问题描述和知识晶体');
+                alert('请至少填写标题、问题描述和解决方案');
                 return;
             }
 
@@ -422,7 +422,7 @@
             e.preventDefault();
 
             const data = collectFormData('published');
-            await submitSolution(data, '晶体发布成功！获得50积分');
+            await submitSolution(data, '方案发布成功！获得50积分');
         });
 
         // 收集表单数据
@@ -438,7 +438,7 @@
             };
         }
 
-        // 提交晶体
+        // 提交方案
         async function submitSolution(data, successMessage) {
             const btn = document.getElementById('publishBtn');
             const originalText = btn.textContent;
@@ -456,14 +456,14 @@
 
                 if (result.success) {
                     alert(successMessage);
-                    window.location.href = `/crystal-detail.html?id=${result.solution.id}`;
+                    window.location.href = `/solution-detail.html?id=${result.solution.id}`;
                 } else {
                     alert('提交失败：' + result.message);
                     btn.disabled = false;
                     btn.textContent = originalText;
                 }
             } catch (error) {
-                console.error('提交晶体失败:', error);
+                console.error('提交方案失败:', error);
                 alert('提交失败，请重试');
                 btn.disabled = false;
                 btn.textContent = originalText;
