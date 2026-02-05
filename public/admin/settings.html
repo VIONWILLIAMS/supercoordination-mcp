@@ -14,17 +14,17 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy) 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
         }
 
         .admin-nav {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: var(--surface-50);
+            color: white;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
@@ -42,7 +42,7 @@
         }
 
         .admin-nav-link {
-            color: var(--surface-50);
+            color: white;
             text-decoration: none;
             padding: 10px 18px;
             border-radius: 8px;
@@ -74,7 +74,7 @@
         }
 
         .page-title {
-            color: var(--surface-50);
+            color: white;
             font-size: 28px;
             font-weight: bold;
         }
@@ -97,13 +97,13 @@
         .settings-card-title {
             font-size: 18px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--surface-200);
+            border-bottom: 1px solid #eee;
         }
 
         .settings-grid {
@@ -127,19 +127,19 @@
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
-            color: var(--text-main);
+            color: #333;
         }
 
         .form-hint {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #888;
             margin-top: 5px;
         }
 
         .form-input, .form-select {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid var(--surface-200);
+            border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
             outline: none;
@@ -147,12 +147,12 @@
         }
 
         .form-input:focus, .form-select:focus {
-            border-color: var(--brand-purple);
+            border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-input:disabled {
-            background: var(--surface-50);
+            background: #f5f5f5;
             cursor: not-allowed;
         }
 
@@ -169,7 +169,7 @@
             right: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-secondary);
+            color: #888;
             font-size: 13px;
         }
 
@@ -179,7 +179,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 15px 0;
-            border-bottom: 1px solid var(--surface-200);
+            border-bottom: 1px solid #eee;
         }
 
         .switch-group:last-child {
@@ -194,12 +194,12 @@
 
         .switch-title {
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
         }
 
         .switch-desc {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .switch {
@@ -221,7 +221,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--surface-200);
+            background-color: #ccc;
             transition: .4s;
             border-radius: 26px;
         }
@@ -233,13 +233,13 @@
             width: 20px;
             left: 3px;
             bottom: 3px;
-            background-color: var(--surface-50);
+            background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
 
         input:checked + .slider {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         input:checked + .slider:before {
@@ -264,8 +264,8 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .btn-primary:hover {
@@ -274,8 +274,8 @@
         }
 
         .btn-secondary {
-            background: var(--surface-100);
-            color: var(--text-main);
+            background: #f0f0f0;
+            color: #333;
         }
 
         /* 状态指示 */
@@ -290,18 +290,18 @@
         }
 
         .status-indicator.success {
-            background: rgba(34, 197, 94, 0.18);
-            color: var(--success);
+            background: #d1fae5;
+            color: #059669;
         }
 
         .status-indicator.warning {
-            background: rgba(245, 158, 11, 0.18);
-            color: var(--warning);
+            background: #fef3c7;
+            color: #d97706;
         }
 
         .status-indicator.error {
-            background: rgba(239, 68, 68, 0.12);
-            color: var(--error);
+            background: #fee2e2;
+            color: #dc2626;
         }
 
         .status-dot {
@@ -310,9 +310,9 @@
             border-radius: 50%;
         }
 
-        .status-indicator.success .status-dot { background: var(--success); }
-        .status-indicator.warning .status-dot { background: var(--warning); }
-        .status-indicator.error .status-dot { background: var(--error); }
+        .status-indicator.success .status-dot { background: #059669; }
+        .status-indicator.warning .status-dot { background: #d97706; }
+        .status-indicator.error .status-dot { background: #dc2626; }
 
         /* 提示框 */
         .alert {
@@ -323,29 +323,29 @@
         }
 
         .alert-info {
-            background: var(--surface-100);
-            color: var(--brand-purple-dark);
-            border: 1px solid rgba(84, 91, 232, 0.16);
+            background: #e0e7ff;
+            color: #4f46e5;
+            border: 1px solid #c7d2fe;
         }
 
         .alert-warning {
-            background: rgba(245, 158, 11, 0.18);
-            color: var(--warning);
-            border: 1px solid rgba(245, 158, 11, 0.18);
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
         }
 
         /* 加载状态 */
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid var(--surface-50);
-            border-top: 3px solid var(--brand-purple);
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -373,35 +373,32 @@
             }
         }
     </style>
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <!-- 导航栏 -->
     <nav class="admin-nav">
         <div class="admin-logo">
-            <span><i class="ph-bold ph-gear"></i></span>
+            <span>&#9881;</span>
             <span>超协体管理后台</span>
         </div>
         <div class="admin-nav-links">
             <a href="/admin.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-chart-line"></i></span> 概览
+                <span>&#128200;</span> 概览
             </a>
             <a href="/admin/users.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-users"></i></span> 用户
+                <span>&#128101;</span> 用户
             </a>
             <a href="/admin/tasks.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-clipboard-text"></i></span> 任务
+                <span>&#128203;</span> 任务
             </a>
             <a href="/admin/analytics.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-chart-bar"></i></span> 分析
+                <span>&#128202;</span> 分析
             </a>
             <a href="/admin/settings.html" class="admin-nav-link active">
-                <span><i class="ph-bold ph-gear"></i></span> 配置
+                <span>&#9881;</span> 配置
             </a>
             <a href="/dashboard.html" class="admin-nav-link back">
-                <span><i class="ph-bold ph-arrow-left"></i></span> 返回工作台
+                <span>&#8592;</span> 返回工作台
             </a>
         </div>
     </nav>
@@ -420,7 +417,7 @@
         <!-- 积分规则配置 -->
         <div class="settings-card">
             <div class="settings-card-title">
-                <span><i class="ph-bold ph-money"></i></span> 积分规则配置
+                <span>&#128176;</span> 积分规则配置
             </div>
             <div class="settings-grid">
                 <div class="form-group">
@@ -472,7 +469,7 @@
         <!-- 门票配置 -->
         <div class="settings-card">
             <div class="settings-card-title">
-                <span><i class="ph-bold ph-ticket"></i></span> 门票配置
+                <span>&#127915;</span> 门票配置
             </div>
             <div class="settings-grid">
                 <div class="form-group">
@@ -500,7 +497,7 @@
         <!-- AI配置 -->
         <div class="settings-card">
             <div class="settings-card-title">
-                <span><i class="ph-bold ph-robot"></i></span> AI配置
+                <span>&#129302;</span> AI配置
                 <span id="aiStatusBadge" class="status-indicator warning">
                     <span class="status-dot"></span>
                     <span>检测中...</span>
@@ -538,7 +535,7 @@
         <!-- 系统参数 -->
         <div class="settings-card">
             <div class="settings-card-title">
-                <span><i class="ph-bold ph-gear"></i></span> 系统参数
+                <span>&#9881;</span> 系统参数
             </div>
             <div class="settings-grid">
                 <div class="form-group">
@@ -565,9 +562,9 @@
         </div>
 
         <!-- 危险操作区域 -->
-        <div class="settings-card" style="border: 2px solid rgba(239, 68, 68, 0.12);">
-            <div class="settings-card-title" style="color: var(--error);">
-                <span><i class="ph-bold ph-warning"></i></span> 危险操作
+        <div class="settings-card" style="border: 2px solid #fee2e2;">
+            <div class="settings-card-title" style="color: #dc2626;">
+                <span>&#9888;</span> 危险操作
             </div>
             <div class="alert alert-warning" style="margin-bottom: 20px;">
                 以下操作可能会影响系统正常运行，请谨慎操作。

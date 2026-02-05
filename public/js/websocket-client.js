@@ -292,7 +292,7 @@ class WebSocketClient {
       top: 20px;
       right: 20px;
       padding: 12px 20px;
-      background: ${type === 'success' ? '#74E8AC' : type === 'error' ? '#EF4444' : '#3B82F6'};
+      background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
       color: white;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自动登录 - 超协体管理后台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 500px;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .step {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .step h3 {
+      margin-bottom: 10px;
+      color: #ffd93d;
+    }
+
+    .credentials {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      margin: 10px 0;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 15px 40px;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      margin: 10px;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+    }
+
+    .status {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .status.success {
+      background: rgba(16, 185, 129, 0.3);
+      border: 2px solid #10b981;
+      display: block;
+    }
+
+    .status.error {
+      background: rgba(239, 68, 68, 0.3);
+      border: 2px solid #ef4444;
+      display: block;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 快速登录管理后台</h1>
+
+    <div class="step">
+      <h3>📝 方式1：使用测试账号（推荐）</h3>
+      <div class="credentials">
+        📧 邮箱：admin@test.com<br>
+        🔑 密码：123456
+      </div>
+      <button class="button" onclick="quickLogin()">一键登录并跳转</button>
+    </div>
+
+    <div class="step">
+      <h3>🆕 方式2：创建新管理员账号</h3>
+      <p style="margin: 10px 0; font-size: 0.9rem;">如果测试账号无法登录，点击下方注册</p>
+      <button class="button button-secondary" onclick="goToRegister()">前往注册</button>
+    </div>
+
+    <div class="step">
+      <h3>🔧 方式3：直接访问管理后台</h3>
+      <p style="margin: 10px 0; font-size: 0.9rem;">如果您已登录，可直接访问</p>
+      <button class="button button-secondary" onclick="goToAdmin()">打开管理后台</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <p style="margin-top: 30px; opacity: 0.8; font-size: 0.9rem;">
+      💡 提示：第一个注册的用户自动成为管理员
+    </p>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+
+    async function quickLogin() {
+      const statusEl = document.getElementById('status');
+      statusEl.className = 'status';
+      statusEl.innerHTML = '<div class="loading"></div> 正在登录...';
+      statusEl.classList.add('success');
+
+      try {
+        // 尝试登录
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: 'admin@test.com',
+            password: '123456'
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.token) {
+          // 保存token
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          statusEl.innerHTML = '✅ 登录成功！正在跳转到管理后台...';
+
+          // 延迟1秒后跳转
+          setTimeout(() => {
+            window.location.href = '/admin.html';
+          }, 1000);
+        } else {
+          // 登录失败，可能是账号不存在
+          statusEl.className = 'status error';
+          statusEl.innerHTML = `❌ ${data.message || '登录失败'}<br><br>请点击「前往注册」创建账号`;
+        }
+      } catch (error) {
+        statusEl.className = 'status error';
+        statusEl.innerHTML = `❌ 网络错误：${error.message}<br><br>请确保服务器正在运行`;
+      }
+    }
+
+    function goToRegister() {
+      window.location.href = '/register.html';
+    }
+
+    function goToAdmin() {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        const statusEl = document.getElementById('status');
+        statusEl.className = 'status error';
+        statusEl.innerHTML = '❌ 您还未登录，请先使用上方的登录按钮';
+        return;
+      }
+
+      window.location.href = '/admin.html';
+    }
+
+    // 检查是否已登录
+    window.addEventListener('load', () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const statusEl = document.getElementById('status');
+        statusEl.className = 'status success';
+        statusEl.innerHTML = '✅ 检测到您已登录！可以直接访问管理后台';
+      }
+    });
+  </script>
+</body>
+</html>

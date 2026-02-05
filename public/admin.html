@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#545BE8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台 - 超协体</title>
@@ -21,18 +16,18 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy) 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
         }
 
         /* 管理后台导航栏 */
         .admin-nav {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: var(--surface-50);
+            color: white;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
@@ -50,7 +45,7 @@
         }
 
         .admin-nav-link {
-            color: var(--surface-50);
+            color: white;
             text-decoration: none;
             padding: 10px 18px;
             border-radius: 8px;
@@ -84,7 +79,7 @@
         }
 
         .page-title {
-            color: var(--surface-50);
+            color: white;
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 8px;
@@ -104,8 +99,8 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 25px;
             border-radius: 16px;
             text-align: center;
@@ -118,27 +113,27 @@
         }
 
         .stat-card.users {
-            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             box-shadow: 0 8px 30px rgba(16, 185, 129, 0.3);
         }
 
         .stat-card.tasks {
-            background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             box-shadow: 0 8px 30px rgba(245, 158, 11, 0.3);
         }
 
         .stat-card.ai {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
         }
 
         .stat-card.pending {
-            background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             box-shadow: 0 8px 30px rgba(239, 68, 68, 0.3);
         }
 
         .stat-card.active {
-            background: linear-gradient(135deg, var(--brand-purple-dark) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
             box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
         }
 
@@ -166,7 +161,7 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 20px;
-            color: var(--text-main);
+            color: #333;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -181,8 +176,8 @@
 
         .quick-action-btn {
             padding: 20px;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
             border-radius: 12px;
             cursor: pointer;
@@ -201,15 +196,15 @@
         }
 
         .quick-action-btn.success {
-            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
 
         .quick-action-btn.warning {
-            background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
 
         .quick-action-btn.info {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
         }
 
         .quick-action-icon {
@@ -232,14 +227,14 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid var(--surface-50);
-            border-top: 3px solid var(--brand-purple);
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -270,7 +265,7 @@
         }
 
         .modal {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 30px;
             max-width: 500px;
@@ -303,18 +298,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .btn-secondary {
-            background: var(--surface-100);
-            color: var(--text-main);
+            background: #f0f0f0;
+            color: #333;
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
         }
 
         .btn:hover {
@@ -343,35 +338,32 @@
             }
         }
     </style>
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <!-- 导航栏 -->
     <nav class="admin-nav">
         <div class="admin-logo">
-            <span><i class="ph-bold ph-gear"></i></span>
+            <span>&#9881;</span>
             <span>超协体管理后台</span>
         </div>
         <div class="admin-nav-links">
             <a href="/admin.html" class="admin-nav-link active">
-                <span><i class="ph-bold ph-chart-line"></i></span> 概览
+                <span>&#128200;</span> 概览
             </a>
             <a href="/admin/users.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-users"></i></span> 用户
+                <span>&#128101;</span> 用户
             </a>
             <a href="/admin/tasks.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-clipboard-text"></i></span> 任务
+                <span>&#128203;</span> 任务
             </a>
             <a href="/admin/analytics.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-chart-bar"></i></span> 分析
+                <span>&#128202;</span> 分析
             </a>
             <a href="/admin/settings.html" class="admin-nav-link">
-                <span><i class="ph-bold ph-gear"></i></span> 配置
+                <span>&#9881;</span> 配置
             </a>
             <a href="/dashboard.html" class="admin-nav-link back">
-                <span><i class="ph-bold ph-arrow-left"></i></span> 返回工作台
+                <span>&#8592;</span> 返回工作台
             </a>
         </div>
     </nav>
@@ -415,32 +407,32 @@
         <!-- 快速操作 -->
         <div class="admin-card">
             <div class="admin-card-title">
-                <span><i class="ph-bold ph-lightning"></i></span> 快速操作
+                <span>&#9889;</span> 快速操作
             </div>
             <div class="quick-actions-grid">
                 <button class="quick-action-btn success" onclick="approveAllCandidates()">
-                    <span class="quick-action-icon"><i class="ph-bold ph-check"></i></span>
+                    <span class="quick-action-icon">&#10003;</span>
                     <span class="quick-action-text">
                         批准所有候选者
                         <small>将符合条件的候选者升级为成员</small>
                     </span>
                 </button>
                 <a href="/admin/users.html?isAI=true" class="quick-action-btn info">
-                    <span class="quick-action-icon"><i class="ph-bold ph-robot"></i></span>
+                    <span class="quick-action-icon">&#129302;</span>
                     <span class="quick-action-text">
                         管理AI成员
                         <small>查看和管理AI虚拟成员</small>
                     </span>
                 </a>
                 <a href="/admin/analytics.html" class="quick-action-btn warning">
-                    <span class="quick-action-icon"><i class="ph-bold ph-chart-bar"></i></span>
+                    <span class="quick-action-icon">&#128202;</span>
                     <span class="quick-action-text">
                         查看数据分析
                         <small>用户增长、任务统计、积分流转</small>
                     </span>
                 </a>
                 <a href="/admin/settings.html" class="quick-action-btn">
-                    <span class="quick-action-icon"><i class="ph-bold ph-gear"></i></span>
+                    <span class="quick-action-icon">&#9881;</span>
                     <span class="quick-action-text">
                         系统配置
                         <small>积分规则、门票配置、AI设置</small>
@@ -452,7 +444,7 @@
         <!-- 用户分布 -->
         <div class="admin-card">
             <div class="admin-card-title">
-                <span><i class="ph-bold ph-users"></i></span> 用户分布
+                <span>&#128101;</span> 用户分布
             </div>
             <div id="userDistribution" class="loading">
                 <div class="spinner"></div>
@@ -463,7 +455,7 @@
         <!-- 任务概况 -->
         <div class="admin-card">
             <div class="admin-card-title">
-                <span><i class="ph-bold ph-clipboard-text"></i></span> 任务概况
+                <span>&#128203;</span> 任务概况
             </div>
             <div id="taskOverview" class="loading">
                 <div class="spinner"></div>
@@ -549,21 +541,21 @@
             const container = document.getElementById('userDistribution');
             container.innerHTML = `
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px;">
-                    <div style="text-align: center; padding: 20px; background: var(--surface-50); border-radius: 12px;">
-                        <div style="font-size: 28px; font-weight: bold; color: var(--brand-mint);">${users.member}</div>
-                        <div style="color: var(--text-secondary); font-size: 13px;">正式成员</div>
+                    <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                        <div style="font-size: 28px; font-weight: bold; color: #10b981;">${users.member}</div>
+                        <div style="color: #666; font-size: 13px;">正式成员</div>
                     </div>
-                    <div style="text-align: center; padding: 20px; background: var(--surface-50); border-radius: 12px;">
-                        <div style="font-size: 28px; font-weight: bold; color: var(--warning);">${users.candidate}</div>
-                        <div style="color: var(--text-secondary); font-size: 13px;">候选者</div>
+                    <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                        <div style="font-size: 28px; font-weight: bold; color: #f59e0b;">${users.candidate}</div>
+                        <div style="color: #666; font-size: 13px;">候选者</div>
                     </div>
-                    <div style="text-align: center; padding: 20px; background: var(--surface-50); border-radius: 12px;">
-                        <div style="font-size: 28px; font-weight: bold; color: var(--error);">${users.admin}</div>
-                        <div style="color: var(--text-secondary); font-size: 13px;">管理员</div>
+                    <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                        <div style="font-size: 28px; font-weight: bold; color: #ef4444;">${users.admin}</div>
+                        <div style="color: #666; font-size: 13px;">管理员</div>
                     </div>
-                    <div style="text-align: center; padding: 20px; background: var(--surface-50); border-radius: 12px;">
-                        <div style="font-size: 28px; font-weight: bold; color: var(--brand-purple);">${users.aiMember}</div>
-                        <div style="color: var(--text-secondary); font-size: 13px;">AI成员</div>
+                    <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                        <div style="font-size: 28px; font-weight: bold; color: #6366f1;">${users.aiMember}</div>
+                        <div style="color: #666; font-size: 13px;">AI成员</div>
                     </div>
                 </div>
             `;
@@ -584,8 +576,8 @@
                         <span>已完成</span>
                         <span>${tasks.completed} (${completedPercent}%)</span>
                     </div>
-                    <div style="height: 10px; background: var(--surface-200); border-radius: 5px; overflow: hidden;">
-                        <div style="height: 100%; width: ${completedPercent}%; background: linear-gradient(90deg, var(--brand-mint), var(--success));"></div>
+                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden;">
+                        <div style="height: 100%; width: ${completedPercent}%; background: linear-gradient(90deg, #10b981, #059669);"></div>
                     </div>
                 </div>
                 <div style="margin-bottom: 20px;">
@@ -593,8 +585,8 @@
                         <span>进行中</span>
                         <span>${tasks.inProgress} (${inProgressPercent}%)</span>
                     </div>
-                    <div style="height: 10px; background: var(--surface-200); border-radius: 5px; overflow: hidden;">
-                        <div style="height: 100%; width: ${inProgressPercent}%; background: linear-gradient(90deg, var(--warning), var(--warning));"></div>
+                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden;">
+                        <div style="height: 100%; width: ${inProgressPercent}%; background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
                     </div>
                 </div>
                 <div style="margin-bottom: 20px;">
@@ -602,8 +594,8 @@
                         <span>待处理</span>
                         <span>${tasks.pending} (${pendingPercent}%)</span>
                     </div>
-                    <div style="height: 10px; background: var(--surface-200); border-radius: 5px; overflow: hidden;">
-                        <div style="height: 100%; width: ${pendingPercent}%; background: linear-gradient(90deg, var(--brand-purple), var(--brand-purple-dark));"></div>
+                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden;">
+                        <div style="height: 100%; width: ${pendingPercent}%; background: linear-gradient(90deg, #6366f1, #4f46e5);"></div>
                     </div>
                 </div>
                 <div>
@@ -611,8 +603,8 @@
                         <span>已阻塞</span>
                         <span>${tasks.blocked} (${blockedPercent}%)</span>
                     </div>
-                    <div style="height: 10px; background: var(--surface-200); border-radius: 5px; overflow: hidden;">
-                        <div style="height: 100%; width: ${blockedPercent}%; background: linear-gradient(90deg, var(--error), var(--error));"></div>
+                    <div style="height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden;">
+                        <div style="height: 100%; width: ${blockedPercent}%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
                     </div>
                 </div>
             `;
@@ -672,7 +664,5 @@
             }
         });
     </script>
-
-    <script src="/js/pwa.js" defer></script>
 </body>
 </html>
