@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超协体短邮系统 v2.0 - 三层协作架构预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: #0f172a;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Hero区域 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 20px;
+            opacity: 0.95;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-btn-primary {
+            background: white;
+            color: #667eea;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .cta-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* 三层架构展示 */
+        .architecture {
+            padding: 100px 20px;
+            background: #1e293b;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .section-desc {
+            font-size: 18px;
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .layers-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .layer-card {
+            background: linear-gradient(135deg, #334155, #1e293b);
+            border-radius: 20px;
+            padding: 35px;
+            border: 2px solid #475569;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .layer-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.3);
+        }
+
+        .layer-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .layer-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .layer-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .layer-features {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .layer-features li {
+            padding: 10px 0;
+            color: #cbd5e1;
+            font-size: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .layer-features li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* 核心特性 */
+        .features {
+            padding: 100px 20px;
+            background: #0f172a;
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .feature-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* 交互演示 */
+        .demo {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+        }
+
+        .demo-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .phone-mockup {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #1f2937;
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            border: 8px solid #374151;
+        }
+
+        .phone-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            overflow: hidden;
+            height: 700px;
+            position: relative;
+        }
+
+        .demo-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 30px;
+        }
+
+        .demo-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            padding: 12px 25px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid #667eea;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .demo-btn:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .demo-btn.active {
+            background: #667eea;
+        }
+
+        /* 技术栈 */
+        .tech-stack {
+            padding: 100px 20px;
+            background: #1e293b;
+        }
+
+        .tech-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .tech-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.05);
+        }
+
+        .tech-name {
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .tech-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 20px;
+            background: #0f172a;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .wuxing-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid #667eea;
+            border-radius: 20px;
+            font-size: 13px;
+            margin: 5px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .phone-mockup {
+                max-width: 100%;
+            }
+
+            .phone-screen {
+                height: 600px;
+            }
+        }
+
+        /* 滚动动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="version-badge">🚀 Version 2.0 · 生态版</div>
+            <h1>超协体短邮系统</h1>
+            <p class="subtitle">
+                AI时代的协作新范式<br>
+                意图交流 × 异步协作 × 线下对齐 = 完整生态闭环
+            </p>
+            <div class="cta-buttons">
+                <a href="./shortmail-v2.html" class="cta-btn cta-btn-primary" target="_blank">
+                    <span>🎯</span>
+                    <span>立即体验原型</span>
+                </a>
+                <a href="#demo" class="cta-btn cta-btn-secondary">
+                    <span>📱</span>
+                    <span>查看交互演示</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 三层架构 -->
+    <section class="architecture">
+        <div class="section-header fade-in">
+            <h2 class="section-title">🏗️ 三层协作架构</h2>
+            <p class="section-desc">
+                从纯线上聊天到线上线下融合的协作生态，重新定义AI时代的团队协作
+            </p>
+        </div>
+
+        <div class="layers-container">
+            <div class="layer-card fade-in">
+                <div class="layer-icon">📬</div>
+                <div class="layer-title">维度1：异步线上协作</div>
+                <div class="layer-subtitle">Daily · 持续进行</div>
+                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">
+                    ShortMail短邮系统承载日常协作，结构化意图表达，高信息密度，AI全程辅助。
+                </p>
+                <ul class="layer-features">
+                    <li>意图识别与结构化</li>
+                    <li>多模态输入（文字/图片/语音）</li>
+                    <li>决策框架自动生成</li>
+                    <li>PWP全程记录</li>
+                    <li>离线可用，云端同步</li>
+                </ul>
+            </div>
+
+            <div class="layer-card fade-in">
+                <div class="layer-icon">🤝</div>
+                <div class="layer-title">维度2：项目级线下对齐</div>
+                <div class="layer-subtitle">As Needed · 按需触发</div>
+                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">
+                    AI智能判断何时应该转线下，深度讨论复杂问题，快速达成共识。
+                </p>
+                <ul class="layer-features">
+                    <li>AI智能路由建议</li>
+                    <li>自动触发线下对齐</li>
+                    <li>结构化会议记录</li>
+                    <li>决策质量评分</li>
+                    <li>行动项自动分配</li>
+                </ul>
+            </div>
+
+            <div class="layer-card fade-in">
+                <div class="layer-icon">🌟</div>
+                <div class="layer-title">维度3：周六开放日</div>
+                <div class="layer-subtitle">Weekly Ritual · 固定仪式</div>
+                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;">
+                    每周固定的生态聚集日，项目对齐+跨项目碰撞+仪式感营造。
+                </p>
+                <ul class="layer-features">
+                    <li>6小时完整流程设计</li>
+                    <li>多项目并行对齐</li>
+                    <li>强制跨项目混合进餐</li>
+                    <li>创新讨论与学习分享</li>
+                    <li>生态网络效应显现</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心特性 -->
+    <section class="features">
+        <div class="section-header fade-in">
+            <h2 class="section-title">✨ 核心特性</h2>
+            <p class="section-desc">
+                不仅仅是通讯工具，更是协作智能的基础设施
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI智能路由</div>
+                <div class="feature-desc">
+                    系统自动判断哪些对话应该转线下，基于问题类型、参与人数、复杂度等多维度评分。
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🔗</div>
+                <div class="feature-title">决策链追踪</div>
+                <div class="feature-desc">
+                    短邮不是消息，而是决策链的原子单元。完整追踪从线上到线下的决策过程。
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">PWP集成</div>
+                <div class="feature-desc">
+                    所有协作过程记录在个人工作空间协议中，形成完整的工作状态追踪。
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">SERE学习</div>
+                <div class="feature-desc">
+                    系统从每次协作中学习规律，不断优化AI路由准确度和协作建议。
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">💎</div>
+                <div class="feature-title">本地网络优势</div>
+                <div class="feature-desc">
+                    良渚10分钟物理距离，线上异步+线下聚集，形成独特的协作优势。
+                </div>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">System 3激励</div>
+                <div class="feature-desc">
+                    参与短邮讨论、线下对齐、周六开放日都计入激励系统，形成正反馈循环。
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 交互演示 -->
+    <section class="demo" id="demo">
+        <div class="section-header fade-in">
+            <h2 class="section-title">📱 交互演示</h2>
+            <p class="section-desc">
+                完整的移动端交互体验，三个标签页展示三层架构
+            </p>
+        </div>
+
+        <div class="demo-container fade-in">
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <iframe id="demoFrame" src="./shortmail-v2.html" class="demo-iframe"></iframe>
+                </div>
+            </div>
+
+            <div class="demo-controls">
+                <button class="demo-btn active" onclick="switchView('inbox')">
+                    📬 收件箱 · 线上协作
+                </button>
+                <button class="demo-btn" onclick="switchView('saturday')">
+                    📅 周六开放日
+                </button>
+                <button class="demo-btn" onclick="switchView('chain')">
+                    🔗 决策链
+                </button>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px; color: #94a3b8; font-size: 14px;">
+                💡 提示：点击短邮卡片中的"预约周六对齐"按钮查看AI路由功能
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术栈 -->
+    <section class="tech-stack">
+        <div class="section-header fade-in">
+            <h2 class="section-title">🛠️ 技术架构</h2>
+            <p class="section-desc">
+                现代化技术栈，支撑复杂协作场景
+            </p>
+        </div>
+
+        <div class="tech-grid">
+            <div class="tech-item fade-in">
+                <div style="font-size: 32px;">📱</div>
+                <div class="tech-name">PWA</div>
+                <div class="tech-desc">渐进式Web应用</div>
+            </div>
+
+            <div class="tech-item fade-in">
+                <div style="font-size: 32px;">🤖</div>
+                <div class="tech-name">AI引擎</div>
+                <div class="tech-desc">智能路由与学习</div>
+            </div>
+
+            <div class="tech-item fade-in">
+                <div style="font-size: 32px;">🔄</div>
+                <div class="tech-name">实时同步</div>
+                <div class="tech-desc">离线优先架构</div>
+            </div>
+
+            <div class="tech-item fade-in">
+                <div style="font-size: 32px;">📊</div>
+                <div class="tech-name">PWP协议</div>
+                <div class="tech-desc">工作状态追踪</div>
+            </div>
+
+            <div class="tech-item fade-in">
+                <div style="font-size: 32px;">🧠</div>
+                <div class="tech-name">SERE系统</div>
+                <div class="tech-desc">自进化学习</div>
+            </div>
+
+            <div class="tech-item fade-in">
+                <div style="font-size: 32px;">💎</div>
+                <div class="tech-name">System 3</div>
+                <div class="tech-desc">激励机制</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content fade-in">
+            <h3 class="footer-title">🌟 超协体：新型组织的诞生</h3>
+            <p class="footer-text">
+                短邮不仅是一个通讯工具，而是AI时代协作的基础协议。<br>
+                通过三层架构的有机融合，我们正在创造一个自组织、自学习、自进化的协作生态。
+            </p>
+
+            <div>
+                <span class="wuxing-badge">🌳 木：技术产品</span>
+                <span class="wuxing-badge">🔥 火：叙事传播</span>
+                <span class="wuxing-badge">⚙️ 金：协作框架</span>
+            </div>
+
+            <div style="margin-top: 30px; color: #64748b; font-size: 13px;">
+                超协体 · 主权智能枢纽 · 2026<br>
+                术→器 · 系统化工具实现
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 切换演示视图
+        function switchView(view) {
+            // 更新按钮状态
+            document.querySelectorAll('.demo-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 通过postMessage通知iframe切换标签
+            const iframe = document.getElementById('demoFrame');
+            iframe.contentWindow.postMessage({ action: 'switchTab', tab: view }, '*');
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!-- 在iframe中监听postMessage -->
+    <script>
+        // 注入到iframe的脚本
+        window.addEventListener('message', (event) => {
+            if (event.data.action === 'switchTab') {
+                const targetTab = event.data.tab;
+                const tabs = document.querySelectorAll('.nav-tab');
+                const targetButton = Array.from(tabs).find(tab => tab.dataset.tab === targetTab);
+                if (targetButton) {
+                    targetButton.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

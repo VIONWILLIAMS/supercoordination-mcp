@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#545BE8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>短邮系统 MVP - 简化版</title>
@@ -18,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
@@ -54,7 +49,7 @@
 
         .nav-tab.active {
             background: rgba(255, 255, 255, 0.3);
-            color: var(--surface-50);
+            color: white;
             font-weight: 600;
         }
 
@@ -62,11 +57,11 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--error) 100%);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--surface-50);
+            color: white;
             font-weight: bold;
         }
 
@@ -117,11 +112,11 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--surface-50);
+            color: white;
             font-weight: bold;
             font-size: 14px;
         }
@@ -139,12 +134,12 @@
 
         .mail-time {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #9ca3af;
         }
 
         .project-tag {
-            background: var(--surface-100);
-            color: var(--brand-purple-dark);
+            background: #e0e7ff;
+            color: #4f46e5;
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 12px;
@@ -152,7 +147,7 @@
         }
 
         .mail-intent {
-            background: var(--surface-100);
+            background: #f3f4f6;
             padding: 12px;
             border-radius: 12px;
             margin-bottom: 12px;
@@ -160,7 +155,7 @@
 
         .intent-label {
             font-size: 11px;
-            color: var(--text-secondary);
+            color: #6b7280;
             margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -173,7 +168,7 @@
         }
 
         .mail-content {
-            color: var(--text-secondary);
+            color: #4b5563;
             font-size: 14px;
             line-height: 1.6;
             margin-bottom: 12px;
@@ -189,7 +184,7 @@
             width: 60px;
             height: 60px;
             border-radius: 10px;
-            background: var(--surface-200);
+            background: #e5e7eb;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -198,8 +193,8 @@
 
         /* AI建议（简化版） */
         .ai-suggestion {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), var(--brand-peach));
-            border: 2px solid var(--warning);
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
+            border: 2px solid #f59e0b;
             border-radius: 15px;
             padding: 15px;
             margin-top: 15px;
@@ -215,7 +210,7 @@
         .ai-icon {
             width: 30px;
             height: 30px;
-            background: var(--warning);
+            background: #f59e0b;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -225,12 +220,12 @@
 
         .ai-suggestion-title {
             font-weight: 700;
-            color: var(--warning);
+            color: #92400e;
             font-size: 14px;
         }
 
         .ai-framework {
-            background: var(--surface-50);
+            background: white;
             padding: 12px;
             border-radius: 10px;
             margin-top: 10px;
@@ -238,7 +233,7 @@
 
         .framework-question {
             font-size: 13px;
-            color: var(--warning);
+            color: #92400e;
             font-weight: 600;
             margin-bottom: 8px;
         }
@@ -251,17 +246,17 @@
 
         .framework-option {
             padding: 6px 12px;
-            background: rgba(245, 158, 11, 0.18);
-            border: 1px solid var(--warning);
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
             border-radius: 8px;
             font-size: 12px;
-            color: var(--warning);
+            color: #92400e;
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .framework-option:active {
-            background: var(--warning);
+            background: #fcd34d;
         }
 
         /* 决策链 */
@@ -286,7 +281,7 @@
 
         .chain-subtitle {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #6b7280;
         }
 
         .chain-flow {
@@ -296,21 +291,21 @@
         }
 
         .chain-node {
-            background: var(--surface-50);
-            border: 2px solid var(--surface-200);
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
             border-radius: 15px;
             padding: 15px;
             position: relative;
         }
 
         .chain-node.online {
-            border-color: var(--info);
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.18));
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
         }
 
         .chain-node.completed {
-            border-color: var(--brand-mint);
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.18));
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
             opacity: 0.7;
         }
 
@@ -323,11 +318,11 @@
         }
 
         .chain-node.online .chain-node-type {
-            color: var(--info);
+            color: #2563eb;
         }
 
         .chain-node.completed .chain-node-type {
-            color: var(--success);
+            color: #059669;
         }
 
         .chain-node-content {
@@ -339,12 +334,12 @@
 
         .chain-node-meta {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #6b7280;
         }
 
         .chain-arrow {
             text-align: center;
-            color: var(--text-secondary);
+            color: #9ca3af;
             font-size: 20px;
             height: 15px;
         }
@@ -356,12 +351,12 @@
             right: 30px;
             width: 65px;
             height: 65px;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--error) 100%);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--surface-50);
+            color: white;
             font-size: 28px;
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
@@ -402,7 +397,7 @@
             width: 40px;
             height: 40px;
             border: 4px solid rgba(102, 126, 234, 0.2);
-            border-top-color: var(--brand-purple);
+            border-top-color: #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -413,7 +408,7 @@
 
         .loading-placeholder p {
             margin-top: 15px;
-            color: var(--text-secondary);
+            color: #6b7280;
             font-size: 14px;
         }
 
@@ -443,7 +438,7 @@
         }
 
         .modal-content {
-            background: var(--surface-50);
+            background: white;
             border-radius: 20px;
             max-width: 600px;
             width: 100%;
@@ -460,7 +455,7 @@
 
         .modal-header {
             padding: 20px;
-            border-bottom: 1px solid var(--surface-200);
+            border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -476,7 +471,7 @@
             background: none;
             border: none;
             font-size: 24px;
-            color: var(--text-secondary);
+            color: #9ca3af;
             cursor: pointer;
             padding: 0;
             width: 30px;
@@ -492,13 +487,13 @@
 
         .modal-footer {
             padding: 20px;
-            border-top: 1px solid var(--surface-200);
+            border-top: 1px solid #e5e7eb;
         }
 
         .comment-input {
             width: 100%;
             padding: 12px;
-            border: 1px solid var(--surface-200);
+            border: 1px solid #d1d5db;
             border-radius: 10px;
             font-size: 14px;
             font-family: inherit;
@@ -509,13 +504,13 @@
 
         .comment-input:focus {
             outline: none;
-            border-color: var(--brand-purple);
+            border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 10px;
@@ -547,7 +542,7 @@
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: rgba(0, 0, 0, 0.85);
-            color: var(--surface-50);
+            color: white;
             padding: 15px 25px;
             border-radius: 10px;
             font-size: 14px;
@@ -577,7 +572,7 @@
         }
 
         .empty-state-text {
-            color: var(--text-secondary);
+            color: #6b7280;
             font-size: 14px;
             text-align: center;
         }
@@ -613,7 +608,7 @@
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 8px;
         }
 
@@ -622,7 +617,7 @@
         .form-textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid var(--surface-200);
+            border: 2px solid #eee;
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s;
@@ -632,7 +627,7 @@
         .form-input:focus,
         .form-textarea:focus {
             outline: none;
-            border-color: var(--brand-purple);
+            border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
@@ -642,8 +637,8 @@
         }
 
         .btn-secondary {
-            background: var(--surface-200);
-            color: var(--text-secondary);
+            background: #e5e7eb;
+            color: #4b5563;
             border: none;
             padding: 12px 24px;
             border-radius: 10px;
@@ -654,7 +649,7 @@
         }
 
         .btn-secondary:hover {
-            background: var(--surface-200);
+            background: #d1d5db;
         }
 
         /* 决策链容器 */
@@ -676,18 +671,18 @@
             align-items: center;
             margin-bottom: 15px;
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--surface-200);
+            border-bottom: 1px solid #eee;
         }
 
         .chain-item .chain-header h3 {
             font-size: 16px;
-            color: var(--text-main);
+            color: #333;
             margin: 0;
         }
 
         .chain-time {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .chain-timeline {
@@ -708,7 +703,7 @@
         .node-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -718,7 +713,7 @@
         }
 
         .timeline-node.responded .node-icon {
-            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--info) 100%);
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
         }
 
         .node-content {
@@ -728,19 +723,19 @@
         .node-title {
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 4px;
         }
 
         .node-user {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #666;
             margin-bottom: 2px;
         }
 
         .node-time {
             font-size: 11px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .connector {
@@ -749,20 +744,17 @@
             top: 36px;
             width: 2px;
             height: calc(100% + 20px);
-            background: linear-gradient(180deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
             opacity: 0.3;
         }
     </style>
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <!-- 顶部导航 -->
     <div class="top-nav">
         <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="inbox"><i class="ph-bold ph-mailbox"></i> 收件箱</button>
-            <button class="nav-tab" data-tab="chain"><i class="ph-bold ph-link"></i> 决策链</button>
+            <button class="nav-tab active" data-tab="inbox">📬 收件箱</button>
+            <button class="nav-tab" data-tab="chain">🔗 决策链</button>
         </div>
         <div class="user-avatar">A</div>
     </div>
@@ -789,7 +781,7 @@
     </div>
 
     <!-- 撰写按钮 -->
-    <button class="compose-btn" onclick="openCompose()"><i class="ph-bold ph-pencil"></i>️</button>
+    <button class="compose-btn" onclick="openCompose()">✏️</button>
 
     <!-- 决策详情模态框 -->
     <div class="modal-overlay" id="decision-modal">
@@ -882,7 +874,7 @@
         function showEmpty(container, message = '暂无内容') {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon"><i class="ph-bold ph-mailbox"></i></div>
+                    <div class="empty-state-icon">📭</div>
                     <div class="empty-state-text">${message}</div>
                 </div>
             `;
@@ -891,15 +883,15 @@
         // ==================== 决策意图图标映射 ====================
         function getIntentIcon(intent) {
             const iconMap = {
-                'DECISION_REQUEST': '<i class="ph-bold ph-target"></i>',
-                'TASK_ASSIGNMENT': '<i class="ph-bold ph-clipboard-text"></i>',
+                'DECISION_REQUEST': '🎯',
+                'TASK_ASSIGNMENT': '📋',
                 'INFO_SYNC': 'ℹ️',
-                'APPROVAL_REQUEST': '<i class="ph-bold ph-check-circle"></i>',
-                'FEEDBACK_REQUEST': '<i class="ph-bold ph-chat-text"></i>',
-                'QUESTION': '<i class="ph-bold ph-question"></i>',
-                'RESOURCE_REQUEST': '<i class="ph-bold ph-package"></i>'
+                'APPROVAL_REQUEST': '✅',
+                'FEEDBACK_REQUEST': '💬',
+                'QUESTION': '❓',
+                'RESOURCE_REQUEST': '📦'
             };
-            return iconMap[intent] || '<i class="ph-bold ph-mailbox"></i>';
+            return iconMap[intent] || '📬';
         }
 
         function getIntentLabel(intent) {
@@ -962,7 +954,7 @@
                 console.error('加载收件箱失败:', error);
                 mailList.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon"><i class="ph-bold ph-warning"></i>️</div>
+                        <div class="empty-state-icon">⚠️</div>
                         <div class="empty-state-text">加载失败，请稍后重试<br/>${error.message}</div>
                     </div>
                 `;
@@ -998,7 +990,7 @@
                 aiSuggestionHtml = `
                     <div class="ai-suggestion">
                         <div class="ai-suggestion-header">
-                            <div class="ai-icon"><i class="ph-bold ph-robot"></i></div>
+                            <div class="ai-icon">🤖</div>
                             <div class="ai-suggestion-title">AI决策框架</div>
                         </div>
                         <div class="ai-framework">
@@ -1010,8 +1002,8 @@
                             </div>
                         </div>
                         ${decision.ai_suggestion.context ? `
-                            <div style="font-size: 12px; color: var(--warning); margin-top: 10px;">
-                                <i class="ph-bold ph-lightbulb"></i> ${decision.ai_suggestion.context}
+                            <div style="font-size: 12px; color: #78350f; margin-top: 10px;">
+                                💡 ${decision.ai_suggestion.context}
                             </div>
                         ` : ''}
                     </div>
@@ -1092,17 +1084,17 @@
                     <div style="font-weight: 600; color: #1f2937; margin-bottom: 10px; font-size: 16px;">
                         ${decision.summary || '无标题'}
                     </div>
-                    <div style="color: var(--text-secondary); line-height: 1.6; font-size: 14px;">
+                    <div style="color: #4b5563; line-height: 1.6; font-size: 14px;">
                         ${decision.content || decision.summary || '无详细内容'}
                     </div>
                 </div>
 
                 ${decision.ai_suggestion && decision.ai_suggestion.reasoning ? `
-                    <div style="background: rgba(245, 158, 11, 0.18); border-left: 3px solid var(--warning); padding: 15px; border-radius: 8px; margin-top: 15px;">
-                        <div style="font-weight: 600; color: var(--warning); margin-bottom: 8px; font-size: 13px;">
-                            <i class="ph-bold ph-robot"></i> AI 分析建议
+                    <div style="background: #fef3c7; border-left: 3px solid #f59e0b; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <div style="font-weight: 600; color: #92400e; margin-bottom: 8px; font-size: 13px;">
+                            🤖 AI 分析建议
                         </div>
-                        <div style="color: var(--warning); font-size: 13px; line-height: 1.5;">
+                        <div style="color: #78350f; font-size: 13px; line-height: 1.5;">
                             ${decision.ai_suggestion.reasoning}
                         </div>
                     </div>
@@ -1203,7 +1195,7 @@
                     throw new Error(`HTTP ${response.status}`);
                 }
 
-                showToast('<i class="ph-bold ph-check"></i> 响应已提交');
+                showToast('✓ 响应已提交');
                 closeDecisionModal();
 
                 // 刷新收件箱
@@ -1249,7 +1241,7 @@
             modal.innerHTML = `
                 <div class="modal-content create-modal">
                     <div class="modal-header">
-                        <h2><i class="ph-bold ph-tray-arrow-up"></i> 创建决策请求</h2>
+                        <h2>📤 创建决策请求</h2>
                         <button class="modal-close" onclick="closeComposeModal()">×</button>
                     </div>
 
@@ -1387,7 +1379,7 @@
 
                 if (data.success) {
                     closeComposeModal();
-                    showToast('<i class="ph-bold ph-check-circle"></i> 决策请求已发送');
+                    showToast('✅ 决策请求已发送');
                 } else {
                     showToast('发送失败: ' + data.error);
                     if (submitBtn) {
@@ -1516,16 +1508,16 @@
 
         function getEventIcon(eventType) {
             const icons = {
-                'decision_requested': '<i class="ph-bold ph-mailbox"></i>',
-                'decision_made': '<i class="ph-bold ph-check-circle"></i>',
-                'task_assignment_requested': '<i class="ph-bold ph-clipboard-text"></i>',
-                'task_assignment_responded': '<i class="ph-bold ph-thumbs-up"></i>',
-                'deliverable_submitted': '<i class="ph-bold ph-package"></i>',
-                'deliverable_reviewed': '<i class="ph-bold ph-check"></i>',
-                'feedback_requested': '<i class="ph-bold ph-chat-text"></i>',
-                'feedback_provided': '<i class="ph-bold ph-lightbulb"></i>'
+                'decision_requested': '📬',
+                'decision_made': '✅',
+                'task_assignment_requested': '📋',
+                'task_assignment_responded': '👍',
+                'deliverable_submitted': '📦',
+                'deliverable_reviewed': '✓',
+                'feedback_requested': '💬',
+                'feedback_provided': '💡'
             };
-            return icons[eventType] || '<i class="ph-bold ph-push-pin"></i>';
+            return icons[eventType] || '📌';
         }
 
         function getEventTitle(eventType) {
@@ -1567,7 +1559,5 @@
             }
         });
     </script>
-
-    <script src="/js/pwa.js" defer></script>
 </body>
 </html>

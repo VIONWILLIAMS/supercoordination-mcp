@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>短邮系统 MVP - 简化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            padding: 8px 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 内容区域 */
+        .content-area {
+            display: none;
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        /* 短邮列表 */
+        .mail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mail-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .mail-card:active {
+            transform: scale(0.98);
+        }
+
+        .mail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .sender-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sender-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .sender-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sender-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1f2937;
+        }
+
+        .mail-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .project-tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mail-intent {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .intent-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .intent-text {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .mail-content {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .mail-attachments {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .attachment {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* AI建议（简化版） */
+        .ai-suggestion {
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .ai-suggestion-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ai-icon {
+            width: 30px;
+            height: 30px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .ai-suggestion-title {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 14px;
+        }
+
+        .ai-framework {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .framework-question {
+            font-size: 13px;
+            color: #92400e;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .framework-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .framework-option {
+            padding: 6px 12px;
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #92400e;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .framework-option:active {
+            background: #fcd34d;
+        }
+
+        /* 决策链 */
+        .decision-chain {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .chain-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .chain-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .chain-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .chain-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chain-node {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .chain-node.online {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        .chain-node.completed {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            opacity: 0.7;
+        }
+
+        .chain-node-type {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .chain-node.online .chain-node-type {
+            color: #2563eb;
+        }
+
+        .chain-node.completed .chain-node-type {
+            color: #059669;
+        }
+
+        .chain-node-content {
+            font-size: 14px;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .chain-node-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .chain-arrow {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 20px;
+            height: 15px;
+        }
+
+        /* 撰写按钮 */
+        .compose-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .compose-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .compose-btn {
+                width: 55px;
+                height: 55px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="inbox">📬 收件箱</button>
+            <button class="nav-tab" data-tab="chain">🔗 决策链</button>
+        </div>
+        <div class="user-avatar">A</div>
+    </div>
+
+    <!-- 收件箱 -->
+    <div class="content-area active" id="inbox">
+        <div class="mail-list">
+            <!-- 短邮1: 带AI决策框架 -->
+            <div class="mail-card" data-mail-id="1">
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">B</div>
+                        <div class="sender-details">
+                            <div class="sender-name">Bob (设计师)</div>
+                            <div class="mail-time">2小时前</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">Project-X</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">🎨 决策请求：UI配色方案选择</div>
+                </div>
+
+                <div class="mail-content">
+                    我准备了三个配色方案：<br>
+                    方案A - 高对比度（适合夜间）<br>
+                    方案B - 温暖色系（更舒适）<br>
+                    方案C - 中性色（通用性强）<br><br>
+                    需要你的决策。
+                </div>
+
+                <div class="mail-attachments">
+                    <div class="attachment">🎨</div>
+                    <div class="attachment">🎨</div>
+                    <div class="attachment">🎨</div>
+                </div>
+
+                <!-- AI决策框架 -->
+                <div class="ai-suggestion">
+                    <div class="ai-suggestion-header">
+                        <div class="ai-icon">🤖</div>
+                        <div class="ai-suggestion-title">AI决策框架</div>
+                    </div>
+
+                    <div class="ai-framework">
+                        <div class="framework-question">这个设计稿质量如何？</div>
+                        <div class="framework-options">
+                            <div class="framework-option">✅ 批准</div>
+                            <div class="framework-option">🔄 需要改</div>
+                            <div class="framework-option">💬 需要讨论</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 12px; color: #78350f; margin-top: 10px;">
+                        💡 提示：类似项目一次通过率 88%
+                    </div>
+                </div>
+            </div>
+
+            <!-- 短邮2: 已响应 -->
+            <div class="mail-card" data-mail-id="2" style="opacity: 0.8;">
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">C</div>
+                        <div class="sender-details">
+                            <div class="sender-name">Charlie (开发)</div>
+                            <div class="mail-time">昨天</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">Project-X</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">📋 任务分配：新功能开发</div>
+                </div>
+
+                <div class="mail-content">
+                    需要开发用户认证模块，预计3天完成。<br>
+                    是否可以接受此任务？
+                </div>
+
+                <div style="background: #f0fdf4; border: 1px solid #10b981; border-radius: 12px; padding: 12px; margin-top: 12px;">
+                    <div style="font-size: 12px; color: #059669; font-weight: 600; margin-bottom: 5px;">
+                        ✓ 你已响应：接受
+                    </div>
+                    <div style="font-size: 13px; color: #047857;">
+                        "好的，我会在周五前完成"
+                    </div>
+                </div>
+            </div>
+
+            <!-- 短邮3: 普通信息同步 -->
+            <div class="mail-card" data-mail-id="3">
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">D</div>
+                        <div class="sender-details">
+                            <div class="sender-name">David (产品)</div>
+                            <div class="mail-time">30分钟前</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">Project-Y</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">ℹ️ 信息同步：用户测试数据</div>
+                </div>
+
+                <div class="mail-content">
+                    本周完成了20个用户访谈：<br>
+                    • 核心功能满意度 4.2/5<br>
+                    • 最常用功能：短邮发送<br>
+                    • 改进建议：增加语音输入<br><br>
+                    完整报告见附件。
+                </div>
+
+                <div class="mail-attachments">
+                    <div class="attachment">📊</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 决策链视图 -->
+    <div class="content-area" id="chain">
+        <div class="decision-chain">
+            <div class="chain-header">
+                <div class="chain-title">🔗 Project-X 决策链</div>
+                <div class="chain-subtitle">跟踪完整的决策过程</div>
+            </div>
+
+            <div class="chain-flow">
+                <!-- 完成的短邮 -->
+                <div class="chain-node online completed">
+                    <div class="chain-node-type">✓ 短邮 (已完成)</div>
+                    <div class="chain-node-content">
+                        项目启动对齐：确定核心功能范围
+                    </div>
+                    <div class="chain-node-meta">
+                        2月1日 14:30 · 参与者: Alice, Bob, Charlie · 已达成共识
+                    </div>
+                </div>
+
+                <div class="chain-arrow">↓</div>
+
+                <!-- 进行中的短邮 -->
+                <div class="chain-node online">
+                    <div class="chain-node-type">📬 短邮 (进行中)</div>
+                    <div class="chain-node-content">
+                        UI配色方案选择：3个方案权衡中
+                    </div>
+                    <div class="chain-node-meta">
+                        2月3日 12:00 · 参与者: Bob, Alice · AI建议使用决策框架
+                    </div>
+                </div>
+
+                <div class="chain-arrow">↓</div>
+
+                <!-- 已响应的短邮 -->
+                <div class="chain-node online completed">
+                    <div class="chain-node-type">✓ 短邮 (已响应)</div>
+                    <div class="chain-node-content">
+                        任务分配：用户认证模块开发
+                    </div>
+                    <div class="chain-node-meta">
+                        2月2日 18:30 · Charlie接受任务 · 预计周五完成
+                    </div>
+                </div>
+
+                <div class="chain-arrow">↓</div>
+
+                <!-- 预期的后续 -->
+                <div class="chain-node online" style="opacity: 0.5; border-style: dashed;">
+                    <div class="chain-node-type">📋 后续行动 (预期)</div>
+                    <div class="chain-node-content">
+                        基于配色决策的设计稿更新
+                    </div>
+                    <div class="chain-node-meta">
+                        预计决策后通过短邮分配给Bob
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #eff6ff; padding: 15px; border-radius: 12px; margin-top: 25px; border-left: 3px solid #3b82f6;">
+                <div style="font-size: 13px; color: #1e40af; font-weight: 600; margin-bottom: 8px;">
+                    💡 决策链价值
+                </div>
+                <div style="font-size: 12px; color: #1e3a8a; line-height: 1.6;">
+                    • 短邮不仅是消息，而是决策链的原子单元<br>
+                    • 完整追踪项目的协作过程<br>
+                    • 所有决策可追溯、可复盘<br>
+                    • 记录在PWP，供未来学习参考
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 撰写按钮 -->
+    <button class="compose-btn" onclick="openCompose()">✏️</button>
+
+    <script>
+        // 标签切换
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 更新标签样式
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // 切换内容区域
+                const targetTab = tab.dataset.tab;
+                document.querySelectorAll('.content-area').forEach(area => area.classList.remove('active'));
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // 点击短邮卡片
+        document.querySelectorAll('.mail-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.framework-option')) {
+                    // 点击决策选项
+                    const option = e.target.closest('.framework-option');
+                    alert(`✓ 已选择：${option.textContent}\n\n短邮将被标记为已响应，发送者会收到通知。`);
+                    return;
+                }
+
+                const mailId = card.dataset.mailId;
+                alert(`查看短邮 #${mailId} 完整详情`);
+            });
+        });
+
+        // 打开撰写界面
+        function openCompose() {
+            alert('打开短邮撰写界面\n\n功能包括：\n- 接收者选择\n- 项目选择\n- 摘要输入\n- 多模态附件\n- AI实时建议');
+        }
+    </script>
+</body>
+</html>

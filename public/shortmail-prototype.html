@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>超协短邮 - 交互原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: #0f0f23;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Container */
+        .app-container {
+            max-width: 430px;
+            height: 100vh;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #16213e 0%, #0f0f23 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .app-header {
+            padding: 60px 20px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Inbox */
+        .inbox {
+            padding: 20px;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mail-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mail-card::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .mail-card:active::before {
+            left: 100%;
+        }
+
+        .mail-card:active {
+            transform: scale(0.98);
+        }
+
+        .mail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mail-icon {
+            font-size: 28px;
+        }
+
+        .mail-title {
+            font-size: 17px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .mail-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%);
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .mail-meta {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .mail-action {
+            font-size: 15px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .mail-attachments {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .attachment-badge {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        /* Compose Button */
+        .compose-btn {
+            position: fixed;
+            bottom: 30px;
+            right: calc(50% - 195px);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.6);
+            transition: all 0.3s;
+            z-index: 100;
+            user-select: none;
+            border: none;
+            color: white;
+        }
+
+        .compose-btn:active {
+            transform: scale(0.9);
+        }
+
+        .compose-btn.pressed {
+            width: 100px;
+            height: 100px;
+            bottom: calc(50% - 50px);
+            right: calc(50% - 50px);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.8);
+        }
+
+        /* Compose Modal */
+        .compose-modal {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background: rgba(22, 33, 62, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 30px 30px 0 0;
+            transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 200;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .compose-modal.active {
+            bottom: 0;
+        }
+
+        .compose-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+
+        .compose-content {
+            padding: 20px;
+            height: calc(100% - 80px);
+            overflow-y: auto;
+        }
+
+        .compose-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* AI Guide */
+        .ai-guide {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ai-avatar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-avatar-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .ai-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .ai-question {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .ai-typing {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .ai-typing.active {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        /* Voice Input */
+        .voice-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(102, 126, 234, 0.5);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .voice-input.recording {
+            background: rgba(102, 126, 234, 0.2);
+            border-style: solid;
+            border-color: #667eea;
+        }
+
+        .voice-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .voice-input.recording .voice-icon {
+            animation: pulse-voice 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-voice {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .voice-text {
+            font-size: 16px;
+            color: #888;
+        }
+
+        .voice-input.recording .voice-text {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .voice-result {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 15px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .voice-result.active {
+            display: block;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-action:active {
+            transform: scale(0.95);
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .quick-action-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Preview Card */
+        .preview-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .preview-card.active {
+            display: block;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .preview-header {
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .preview-subject {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-action-type {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .preview-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .preview-attachments {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .preview-attachment {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-ai-insight {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .preview-ai-label {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 15px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Detail Modal */
+        .detail-modal {
+            position: fixed;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0f23;
+            transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 300;
+            overflow-y: auto;
+        }
+
+        .detail-modal.active {
+            top: 0;
+        }
+
+        .detail-header {
+            padding: 60px 20px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .detail-back {
+            font-size: 24px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .detail-content {
+            padding: 20px;
+        }
+
+        .detail-subject {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .detail-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .detail-meta-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .detail-meta-label {
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .detail-meta-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+        }
+
+        .detail-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #e0e0e0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .attachment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .attachment-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-item:active {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(0.98);
+        }
+
+        .attachment-icon {
+            font-size: 32px;
+        }
+
+        .attachment-info {
+            flex: 1;
+        }
+
+        .attachment-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .attachment-desc {
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* Success Animation */
+        .success-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 200px;
+            height: 200px;
+            background: rgba(16, 185, 129, 0.9);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .success-animation.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 10px;
+        }
+
+        .success-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Haptic Feedback Visual */
+        @keyframes haptic {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        /* Gesture Hints */
+        .gesture-hint {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .gesture-hint.active {
+            opacity: 1;
+        }
+
+        /* Swipe Actions */
+        .mail-card {
+            touch-action: pan-y;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            display: flex;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .swipe-action {
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .swipe-action.reply {
+            background: #10b981;
+        }
+
+        .swipe-action.archive {
+            background: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-title">📬 收件箱</div>
+            <div class="header-subtitle">超协短邮 · 良渚节点</div>
+        </div>
+
+        <!-- Inbox -->
+        <div class="inbox" id="inbox">
+            <div class="mail-card" data-id="1">
+                <div class="mail-header">
+                    <span class="mail-icon">💎</span>
+                    <span class="mail-title">积分方案选择</span>
+                    <span class="mail-badge">高价值</span>
+                </div>
+                <div class="mail-meta">👤 产品经理节点 • ⏱️ 20分钟前</div>
+                <div class="mail-action">🎯 需要你选择方案A或B</div>
+                <div class="mail-attachments">
+                    <span class="attachment-badge">📎 产品流程图</span>
+                    <span class="attachment-badge">🎤 语音说明 2'30"</span>
+                    <span class="attachment-badge">📊 数据分析.xlsx</span>
+                </div>
+            </div>
+
+            <div class="mail-card" data-id="2">
+                <div class="mail-header">
+                    <span class="mail-icon">📊</span>
+                    <span class="mail-title">本周进度汇报</span>
+                </div>
+                <div class="mail-meta">👤 运营节点 • ⏱️ 1小时前</div>
+                <div class="mail-action">📋 项目进展更新</div>
+                <div class="mail-attachments">
+                    <span class="attachment-badge">🎬 数据面板录屏</span>
+                    <span class="attachment-badge">🤖 AI: 用户增长30%</span>
+                </div>
+            </div>
+
+            <div class="mail-card" data-id="3">
+                <div class="mail-header">
+                    <span class="mail-icon">❓</span>
+                    <span class="mail-title">技术难题求助</span>
+                </div>
+                <div class="mail-meta">👤 技术节点 • ⏱️ 3小时前</div>
+                <div class="mail-action">🆘 API调用报错</div>
+                <div class="mail-attachments">
+                    <span class="attachment-badge">📷 报错截图</span>
+                    <span class="attachment-badge">🤖 已关联历史晶体</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compose Button -->
+        <button class="compose-btn" id="composeBtn">+</button>
+
+        <!-- Gesture Hint -->
+        <div class="gesture-hint" id="gestureHint">长按发起短邮</div>
+
+        <!-- Compose Modal -->
+        <div class="compose-modal" id="composeModal">
+            <div class="compose-handle"></div>
+            <div class="compose-close" id="closeCompose">×</div>
+
+            <div class="compose-content" id="composeContent">
+                <!-- Step 1: AI Guide -->
+                <div class="ai-guide" id="aiGuide">
+                    <div class="ai-avatar">
+                        <div class="ai-avatar-icon">🤖</div>
+                        <div class="ai-name">AI协作助手</div>
+                    </div>
+                    <div class="ai-question" id="aiQuestion">
+                        这次短邮关于什么？
+                    </div>
+                    <div class="ai-typing" id="aiTyping">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <span style="margin-left: 5px;">AI正在思考...</span>
+                    </div>
+                </div>
+
+                <!-- Voice Input -->
+                <div class="voice-input" id="voiceInput">
+                    <div class="voice-icon">🎤</div>
+                    <div class="voice-text" id="voiceText">点击开始说话</div>
+                    <div class="voice-result" id="voiceResult"></div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="quick-action" data-action="photo">
+                        <div class="quick-action-icon">📷</div>
+                        <div class="quick-action-label">拍照</div>
+                    </div>
+                    <div class="quick-action" data-action="file">
+                        <div class="quick-action-icon">📎</div>
+                        <div class="quick-action-label">文件</div>
+                    </div>
+                    <div class="quick-action" data-action="scan">
+                        <div class="quick-action-icon">📄</div>
+                        <div class="quick-action-label">扫描</div>
+                    </div>
+                </div>
+
+                <!-- Preview Card -->
+                <div class="preview-card" id="previewCard">
+                    <div class="preview-header">🤖 AI为你构建的短邮预览</div>
+
+                    <div class="preview-subject">
+                        <span>📌</span>
+                        <span id="previewSubject">积分方案讨论</span>
+                    </div>
+
+                    <div class="preview-action-type" id="previewActionType">
+                        🎯 需要决策
+                    </div>
+
+                    <div class="preview-content" id="previewContent">
+                        我们需要在积分方案A和B中选一个，A方案更注重长期激励，B方案更灵活...
+                    </div>
+
+                    <div class="preview-attachments" id="previewAttachments">
+                        <div class="preview-attachment">
+                            <span>📷</span>
+                            <span>产品流程图</span>
+                        </div>
+                        <div class="preview-attachment">
+                            <span>🎤</span>
+                            <span>语音说明 2'30"</span>
+                        </div>
+                    </div>
+
+                    <div class="preview-ai-insight">
+                        <div class="preview-ai-label">🤖 AI洞察</div>
+                        这个方案偏 🏔️ 土属性（长期主义），适合注重持续发展的团队。建议强调长期价值和稳定性。
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons" id="actionButtons" style="display: none;">
+                    <button class="btn btn-secondary" id="editBtn">✏️ 修改</button>
+                    <button class="btn btn-primary" id="sendBtn">📤 发送</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Modal -->
+        <div class="detail-modal" id="detailModal">
+            <div class="detail-header">
+                <div class="detail-back" id="detailBack">← 返回</div>
+                <div class="header-subtitle">短邮详情</div>
+            </div>
+
+            <div class="detail-content" id="detailContent">
+                <!-- Content will be dynamically inserted -->
+            </div>
+        </div>
+
+        <!-- Success Animation -->
+        <div class="success-animation" id="successAnimation">
+            <div class="success-icon">✅</div>
+            <div class="success-text">发送成功</div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let isRecording = false;
+        let longPressTimer = null;
+        let currentStep = 1;
+        let mailData = {
+            subject: '',
+            content: '',
+            attachments: [],
+            actionType: 'decision'
+        };
+
+        // Sample mail details
+        const mailDetails = {
+            '1': {
+                icon: '💎',
+                subject: '积分方案选择',
+                from: '产品经理节点',
+                time: '20分钟前',
+                actionType: '需要决策',
+                content: '基于上次会议讨论，我整理了两个积分分配方案：\n\n方案A（长期激励型）：\n- 70%长期贡献积分\n- 30%短期激励积分\n- 重点奖励持续贡献\n\n方案B（灵活平衡型）：\n- 50%任务完成积分\n- 30%质量评价积分\n- 20%创新奖励积分\n\n请团队决策选择哪个方案。',
+                attachments: [
+                    { icon: '📷', name: '产品流程图', desc: 'AI识别：展示了积分获取的3条路径' },
+                    { icon: '🎤', name: '语音说明', desc: '2分30秒，已转文字' },
+                    { icon: '📊', name: '数据分析.xlsx', desc: 'AI摘要：用户留存率提升30%' }
+                ],
+                aiInsight: '五行分析：方案A偏🏔️土属性（长期主义），适合注重持续发展；方案B偏🔥火+🌊水，更灵活但需要精细运营。\n\n建议：如果团队处于成长期，建议方案A；如果需要快速激活用户，建议方案B。'
+            },
+            '2': {
+                icon: '📊',
+                subject: '本周进度汇报',
+                from: '运营节点',
+                time: '1小时前',
+                actionType: '进度更新',
+                content: '本周项目进展汇报：\n\n核心数据：\n- 日活用户：2,580人（↑30%）\n- 新增用户：450人（↑25%）\n- 晶体数量：127个（↑15%）\n- 活跃项目：23个（↑40%）\n\n重点成果：\n1. 完成积分系统v2.0开发\n2. 上线3个新项目\n3. 用户留存率提升至65%\n\n下周计划：\n- 优化推荐算法\n- 举办线下交流会',
+                attachments: [
+                    { icon: '🎬', name: '数据面板录屏', desc: '30秒演示，AI已提取关键数据' }
+                ],
+                aiInsight: 'AI识别到关键指标都在上升，特别是活跃项目增长40%说明项目制管理效果显著。建议继续加大项目创建的引导。'
+            },
+            '3': {
+                icon: '❓',
+                subject: '技术难题求助',
+                from: '技术节点',
+                time: '3小时前',
+                actionType: '技术支持',
+                content: '遇到技术问题需要支持：\n\n问题描述：\n用户登录时偶尔出现500错误，但不是每次都复现。初步排查是数据库连接池的问题。\n\n已尝试：\n- 检查日志，发现高峰期出现\n- 增加连接池大小，未解决\n- 查看服务器资源，正常\n\n需要：\n技术专家帮忙分析，是否有类似经验？',
+                attachments: [
+                    { icon: '📷', name: '报错截图', desc: 'Error 500: Database connection timeout' },
+                    { icon: '📄', name: '错误日志', desc: 'server.log (最近1小时)' }
+                ],
+                aiInsight: 'AI关联到历史晶体中有2个相似问题：\n1. "高并发下的连接池优化" - 建议使用连接池监控\n2. "数据库慢查询排查" - 可能是某个查询占用连接\n\n建议：先检查是否有慢查询，然后配置连接池超时告警。'
+            }
+        };
+
+        // Elements
+        const composeBtn = document.getElementById('composeBtn');
+        const composeModal = document.getElementById('composeModal');
+        const closeCompose = document.getElementById('closeCompose');
+        const voiceInput = document.getElementById('voiceInput');
+        const voiceText = document.getElementById('voiceText');
+        const voiceResult = document.getElementById('voiceResult');
+        const aiQuestion = document.getElementById('aiQuestion');
+        const aiTyping = document.getElementById('aiTyping');
+        const previewCard = document.getElementById('previewCard');
+        const actionButtons = document.getElementById('actionButtons');
+        const gestureHint = document.getElementById('gestureHint');
+        const successAnimation = document.getElementById('successAnimation');
+        const detailModal = document.getElementById('detailModal');
+        const detailBack = document.getElementById('detailBack');
+
+        // Show gesture hint on load
+        setTimeout(() => {
+            gestureHint.classList.add('active');
+            setTimeout(() => gestureHint.classList.remove('active'), 3000);
+        }, 1000);
+
+        // Long press to compose
+        composeBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            longPressTimer = setTimeout(() => {
+                composeBtn.classList.add('pressed');
+                startVoiceRecording();
+                navigator.vibrate && navigator.vibrate(50);
+            }, 500);
+        });
+
+        composeBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            clearTimeout(longPressTimer);
+            if (composeBtn.classList.contains('pressed')) {
+                stopVoiceRecording();
+                composeBtn.classList.remove('pressed');
+            } else {
+                openComposeModal();
+            }
+        });
+
+        composeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openComposeModal();
+        });
+
+        // Open compose modal
+        function openComposeModal() {
+            composeModal.classList.add('active');
+            resetCompose();
+        }
+
+        // Close compose modal
+        closeCompose.addEventListener('click', () => {
+            composeModal.classList.remove('active');
+        });
+
+        // Reset compose state
+        function resetCompose() {
+            currentStep = 1;
+            voiceInput.classList.remove('recording');
+            voiceResult.classList.remove('active');
+            previewCard.classList.remove('active');
+            actionButtons.style.display = 'none';
+            aiQuestion.textContent = '这次短邮关于什么？';
+            voiceText.textContent = '点击开始说话';
+        }
+
+        // Voice input
+        voiceInput.addEventListener('click', () => {
+            if (!isRecording) {
+                startVoiceRecording();
+            } else {
+                stopVoiceRecording();
+            }
+        });
+
+        function startVoiceRecording() {
+            isRecording = true;
+            voiceInput.classList.add('recording');
+            voiceText.textContent = '正在录音...松手完成';
+            gestureHint.textContent = '上滑添加附件';
+            gestureHint.classList.add('active');
+            setTimeout(() => gestureHint.classList.remove('active'), 2000);
+        }
+
+        function stopVoiceRecording() {
+            isRecording = false;
+            voiceInput.classList.remove('recording');
+            voiceText.textContent = '语音已录制';
+
+            // Simulate AI processing
+            aiTyping.classList.add('active');
+
+            setTimeout(() => {
+                // Show voice result
+                const sampleText = "我们需要在积分方案A和B中选一个，A方案更注重长期激励，B方案更灵活。大家看看哪个更适合我们现在的阶段？";
+                voiceResult.textContent = sampleText;
+                voiceResult.classList.add('active');
+
+                // AI next question
+                setTimeout(() => {
+                    aiTyping.classList.remove('active');
+                    aiQuestion.textContent = '明白了！需要团队做什么？';
+
+                    // Show next step options
+                    setTimeout(() => {
+                        aiQuestion.textContent = 'AI已为你构建短邮，要补充附件吗？';
+
+                        // Show preview
+                        setTimeout(() => {
+                            showPreview();
+                        }, 1500);
+                    }, 2000);
+                }, 1500);
+            }, 2000);
+        }
+
+        // Show preview
+        function showPreview() {
+            previewCard.classList.add('active');
+            actionButtons.style.display = 'flex';
+
+            // Update preview content
+            document.getElementById('previewSubject').textContent = '积分方案讨论';
+            document.getElementById('previewActionType').textContent = '🎯 需要决策';
+            document.getElementById('previewContent').textContent =
+                '我们需要在积分方案A和B中选一个，A方案更注重长期激励，B方案更灵活。大家看看哪个更适合我们现在的阶段？';
+        }
+
+        // Quick actions
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('click', (e) => {
+                const actionType = e.currentTarget.dataset.action;
+                handleQuickAction(actionType);
+                navigator.vibrate && navigator.vibrate(30);
+            });
+        });
+
+        function handleQuickAction(type) {
+            const messages = {
+                photo: '📷 已添加照片',
+                file: '📎 已添加文件',
+                scan: '📄 扫描完成'
+            };
+
+            gestureHint.textContent = messages[type];
+            gestureHint.classList.add('active');
+
+            // Add attachment to preview
+            const attachmentHTML = `
+                <div class="preview-attachment">
+                    <span>${type === 'photo' ? '📷' : type === 'file' ? '📎' : '📄'}</span>
+                    <span>${type === 'photo' ? '产品流程图' : type === 'file' ? '数据分析.xlsx' : '扫描文档.pdf'}</span>
+                </div>
+            `;
+            document.getElementById('previewAttachments').innerHTML += attachmentHTML;
+
+            setTimeout(() => gestureHint.classList.remove('active'), 2000);
+        }
+
+        // Edit button
+        document.getElementById('editBtn').addEventListener('click', () => {
+            gestureHint.textContent = '可以继续语音输入或添加附件';
+            gestureHint.classList.add('active');
+            setTimeout(() => gestureHint.classList.remove('active'), 2000);
+        });
+
+        // Send button
+        document.getElementById('sendBtn').addEventListener('click', () => {
+            // Show success animation
+            successAnimation.classList.add('active');
+            navigator.vibrate && navigator.vibrate([50, 100, 50]);
+
+            setTimeout(() => {
+                successAnimation.classList.remove('active');
+                composeModal.classList.remove('active');
+
+                // Add new mail to inbox (at top)
+                const newMail = `
+                    <div class="mail-card" style="animation: slideInUp 0.5s ease-out;">
+                        <div class="mail-header">
+                            <span class="mail-icon">📌</span>
+                            <span class="mail-title">积分方案讨论</span>
+                            <span class="mail-badge">刚刚发送</span>
+                        </div>
+                        <div class="mail-meta">👤 你 → 运营节点、技术节点 • ⏱️ 刚刚</div>
+                        <div class="mail-action">🎯 需要决策</div>
+                        <div class="mail-attachments">
+                            <span class="attachment-badge">📎 产品流程图</span>
+                            <span class="attachment-badge">📊 数据分析</span>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('inbox').insertAdjacentHTML('afterbegin', newMail);
+            }, 1500);
+        });
+
+        // Click mail card to view detail
+        document.getElementById('inbox').addEventListener('click', (e) => {
+            const card = e.target.closest('.mail-card');
+            if (card) {
+                const mailId = card.dataset.id;
+                if (mailId && mailDetails[mailId]) {
+                    showMailDetail(mailDetails[mailId]);
+                    navigator.vibrate && navigator.vibrate(30);
+                }
+            }
+        });
+
+        // Show mail detail
+        function showMailDetail(mail) {
+            detailModal.classList.add('active');
+
+            const attachmentsHTML = mail.attachments.map(att => `
+                <div class="attachment-item">
+                    <div class="attachment-icon">${att.icon}</div>
+                    <div class="attachment-info">
+                        <div class="attachment-name">${att.name}</div>
+                        <div class="attachment-desc">${att.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('detailContent').innerHTML = `
+                <div class="detail-subject">
+                    <span>${mail.icon}</span>
+                    <span>${mail.subject}</span>
+                </div>
+
+                <div class="detail-meta-grid">
+                    <div class="detail-meta-item">
+                        <div class="detail-meta-label">来自</div>
+                        <div class="detail-meta-value">${mail.from}</div>
+                    </div>
+                    <div class="detail-meta-item">
+                        <div class="detail-meta-label">时间</div>
+                        <div class="detail-meta-value">${mail.time}</div>
+                    </div>
+                    <div class="detail-meta-item">
+                        <div class="detail-meta-label">行动点</div>
+                        <div class="detail-meta-value">${mail.actionType}</div>
+                    </div>
+                    <div class="detail-meta-item">
+                        <div class="detail-meta-label">期望响应</div>
+                        <div class="detail-meta-value">4小时内</div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">
+                        <span>💭</span>
+                        <span>核心内容</span>
+                    </div>
+                    <div class="detail-text">${mail.content.replace(/\n/g, '<br>')}</div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">
+                        <span>📎</span>
+                        <span>附件（${mail.attachments.length}）</span>
+                    </div>
+                    <div class="attachment-list">
+                        ${attachmentsHTML}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">
+                        <span>🤖</span>
+                        <span>AI洞察</span>
+                    </div>
+                    <div class="detail-text">${mail.aiInsight.replace(/\n/g, '<br>')}</div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary">❌ 拒绝</button>
+                    <button class="btn btn-primary">✅ 同意方案A</button>
+                </div>
+            `;
+        }
+
+        // Close detail modal
+        detailBack.addEventListener('click', () => {
+            detailModal.classList.remove('active');
+        });
+
+        // Swipe gestures on mail cards (simplified)
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.getElementById('inbox').addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.getElementById('inbox').addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            if (Math.abs(swipeDistance) > 100) {
+                if (swipeDistance > 0) {
+                    // Swipe right - quick reply
+                    gestureHint.textContent = '👈 左滑快速回复';
+                } else {
+                    // Swipe left - archive
+                    gestureHint.textContent = '👉 右滑查看详情';
+                }
+                gestureHint.classList.add('active');
+                setTimeout(() => gestureHint.classList.remove('active'), 2000);
+            }
+        }
+    </script>
+</body>
+</html>

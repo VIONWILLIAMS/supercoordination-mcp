@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>超协体短邮系统 v2.0 - 三层协作架构</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            padding: 8px 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 内容区域 */
+        .content-area {
+            display: none;
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        /* 短邮列表 */
+        .mail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mail-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .mail-card:active {
+            transform: scale(0.98);
+        }
+
+        .mail-card.pending-offline {
+            border: 2px solid #f59e0b;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(251, 191, 36, 0.1));
+        }
+
+        .mail-card.pending-offline::before {
+            content: "📅 待线下对齐";
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #f59e0b;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .mail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .sender-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sender-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .sender-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sender-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1f2937;
+        }
+
+        .mail-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .project-tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mail-intent {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .intent-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .intent-text {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .mail-content {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .mail-attachments {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .attachment {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* AI路由建议 */
+        .ai-suggestion {
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .ai-suggestion-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ai-icon {
+            width: 30px;
+            height: 30px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .ai-suggestion-title {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 14px;
+        }
+
+        .ai-reason {
+            font-size: 13px;
+            color: #78350f;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .ai-reason-item {
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .ai-reason-item::before {
+            content: "├─";
+            position: absolute;
+            left: 0;
+            color: #d97706;
+        }
+
+        .ai-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .ai-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ai-btn-primary {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .ai-btn-primary:active {
+            background: #d97706;
+        }
+
+        .ai-btn-secondary {
+            background: white;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        /* 周六开放日 */
+        .saturday-schedule {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .schedule-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .schedule-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .schedule-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .schedule-date {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -24px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+        }
+
+        .timeline-dot.active {
+            background: #667eea;
+        }
+
+        .timeline-time {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 3px solid #667eea;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .timeline-details {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .project-sessions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .project-session {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 3px solid #10b981;
+        }
+
+        .session-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .session-info {
+            font-size: 12px;
+            color: #6b7280;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .session-info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .agenda-topics {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .agenda-topic {
+            font-size: 12px;
+            color: #4b5563;
+            padding: 4px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .agenda-topic::before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: #f59e0b;
+        }
+
+        /* 决策链视图 */
+        .decision-chain {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .chain-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .chain-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .chain-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .chain-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chain-node {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .chain-node.online {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        .chain-node.offline {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+
+        .chain-node.completed {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            opacity: 0.7;
+        }
+
+        .chain-node-type {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .chain-node.online .chain-node-type {
+            color: #2563eb;
+        }
+
+        .chain-node.offline .chain-node-type {
+            color: #d97706;
+        }
+
+        .chain-node.completed .chain-node-type {
+            color: #059669;
+        }
+
+        .chain-node-content {
+            font-size: 14px;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .chain-node-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .chain-arrow {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 20px;
+            height: 15px;
+        }
+
+        /* 撰写按钮 */
+        .compose-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .compose-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 详情模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 20px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 25px 25px 0 0;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .close-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        /* 线下对齐记录表单 */
+        .offline-record-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input, .form-textarea {
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .participants-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .participant-chip {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+
+            .nav-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .compose-btn {
+                width: 55px;
+                height: 55px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="inbox">📬 收件箱</button>
+            <button class="nav-tab" data-tab="saturday">📅 周六开放日</button>
+            <button class="nav-tab" data-tab="chain">🔗 决策链</button>
+        </div>
+        <div class="user-avatar">A</div>
+    </div>
+
+    <!-- 收件箱 -->
+    <div class="content-area active" id="inbox">
+        <div class="mail-list">
+            <!-- 短邮1: 带AI路由建议 -->
+            <div class="mail-card" data-mail-id="1">
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">B</div>
+                        <div class="sender-details">
+                            <div class="sender-name">Bob (设计师)</div>
+                            <div class="mail-time">2小时前</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">Project-X</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">🎨 决策请求：UI配色方案选择</div>
+                </div>
+
+                <div class="mail-content">
+                    我准备了三个配色方案：<br>
+                    方案A - 高对比度（适合夜间）<br>
+                    方案B - 温暖色系（更舒适）<br>
+                    方案C - 中性色（通用性强）<br><br>
+                    需要团队一起讨论决定。
+                </div>
+
+                <div class="mail-attachments">
+                    <div class="attachment">🎨</div>
+                    <div class="attachment">🎨</div>
+                    <div class="attachment">🎨</div>
+                </div>
+
+                <!-- AI路由建议 -->
+                <div class="ai-suggestion">
+                    <div class="ai-suggestion-header">
+                        <div class="ai-icon">🤖</div>
+                        <div class="ai-suggestion-title">AI建议：这个话题很适合线下深度讨论</div>
+                    </div>
+
+                    <div class="ai-reason">
+                        <div class="ai-reason-item">涉及美学权衡（无客观答案）</div>
+                        <div class="ai-reason-item">需要3个人的意见一致</div>
+                        <div class="ai-reason-item">历史数据：类似问题线下平均用时12分钟</div>
+                        <div class="ai-reason-item">线上可能需要5-7条短邮往返</div>
+                    </div>
+
+                    <div style="background: white; padding: 12px; border-radius: 10px; margin-top: 10px;">
+                        <div style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">📅 建议安排</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #1f2937;">Project-X 对齐会议</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 5px;">
+                            本周六 10:00-11:00 · 良渚创意工作室<br>
+                            参与: Design(你) + Dev + Product
+                        </div>
+                    </div>
+
+                    <div class="ai-actions">
+                        <button class="ai-btn ai-btn-primary" onclick="bookOffline(1)">📅 预约周六对齐</button>
+                        <button class="ai-btn ai-btn-secondary" onclick="continueOnline(1)">💬 现在线上讨论</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 短邮2: 已标记待线下对齐 -->
+            <div class="mail-card pending-offline" data-mail-id="2">
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">C</div>
+                        <div class="sender-details">
+                            <div class="sender-name">Charlie (开发)</div>
+                            <div class="mail-time">昨天</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">Project-X</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">⚡ 重大决策：发版时间表调整</div>
+                </div>
+
+                <div class="mail-content">
+                    当前进度：设计90%，开发70%<br><br>
+                    是否推迟发版？需要权衡市场时机 vs 产品质量。<br>
+                    这个决定影响后续3个月的规划。
+                </div>
+
+                <div style="background: #fffbeb; border: 1px solid #f59e0b; border-radius: 12px; padding: 12px; margin-top: 12px;">
+                    <div style="font-size: 12px; color: #92400e; font-weight: 600; margin-bottom: 5px;">
+                        ✓ 已安排线下对齐
+                    </div>
+                    <div style="font-size: 13px; color: #78350f;">
+                        本周六 10:00 Project-X会议议程<br>
+                        将在15分钟内深度讨论决策
+                    </div>
+                </div>
+            </div>
+
+            <!-- 短邮3: 普通线上协作 -->
+            <div class="mail-card" data-mail-id="3">
+                <div class="mail-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar">D</div>
+                        <div class="sender-details">
+                            <div class="sender-name">David (产品)</div>
+                            <div class="mail-time">30分钟前</div>
+                        </div>
+                    </div>
+                    <div class="project-tag">Project-Y</div>
+                </div>
+
+                <div class="mail-intent">
+                    <div class="intent-label">意图识别</div>
+                    <div class="intent-text">ℹ️ 信息同步：用户测试数据</div>
+                </div>
+
+                <div class="mail-content">
+                    本周完成了20个用户访谈：<br>
+                    • 核心功能满意度 4.2/5<br>
+                    • 最常用功能：短邮发送<br>
+                    • 改进建议：增加语音输入<br><br>
+                    完整报告见附件。
+                </div>
+
+                <div class="mail-attachments">
+                    <div class="attachment">📊</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 周六开放日 -->
+    <div class="content-area" id="saturday">
+        <div class="saturday-schedule">
+            <div class="schedule-header">
+                <div class="schedule-title">🌟 周六开放日</div>
+                <div class="schedule-subtitle">Hyper-Collaborative Organism · Saturday Open Day</div>
+            </div>
+
+            <div class="schedule-date">
+                📅 本周六 2026年2月8日 · 良渚创意工作室
+            </div>
+
+            <div class="timeline">
+                <!-- 早茶 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">🕘 09:00 - 09:30</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">早茶 + 非正式聊天</div>
+                        <div class="timeline-details">
+                            📍 咖啡厅/茶坊<br>
+                            👥 所有参与者自由参加<br>
+                            🎯 拉开序幕，放松心情，非正式碰撞
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目对齐时间 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot active"></div>
+                    <div class="timeline-time">🕙 09:30 - 12:00</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">项目对齐时间（并行进行）</div>
+                        <div class="timeline-details">
+                            多个项目同时在不同会议室进行对齐
+                        </div>
+
+                        <div class="project-sessions">
+                            <!-- Project-X 对齐 -->
+                            <div class="project-session">
+                                <div class="session-name">Project-X 对齐会议</div>
+                                <div class="session-info">
+                                    <div class="session-info-item">⏰ 10:00-11:00</div>
+                                    <div class="session-info-item">📍 会议室1</div>
+                                    <div class="session-info-item">👥 Design + Dev + PM</div>
+                                </div>
+                                <div class="agenda-topics">
+                                    <div class="agenda-topic">UI配色方案决策（来自短邮#1）</div>
+                                    <div class="agenda-topic">发版时间表调整（来自短邮#2）</div>
+                                    <div class="agenda-topic">下周迭代计划对齐</div>
+                                </div>
+                            </div>
+
+                            <!-- Project-Y 对齐 -->
+                            <div class="project-session">
+                                <div class="session-name">Project-Y 对齐会议</div>
+                                <div class="session-info">
+                                    <div class="session-info-item">⏰ 10:30-11:30</div>
+                                    <div class="session-info-item">📍 会议室2</div>
+                                    <div class="session-info-item">👥 Product + Backend + QA</div>
+                                </div>
+                                <div class="agenda-topics">
+                                    <div class="agenda-topic">用户测试结果讨论</div>
+                                    <div class="agenda-topic">功能优先级排序</div>
+                                </div>
+                            </div>
+
+                            <!-- Project-Z 新项目启动 -->
+                            <div class="project-session">
+                                <div class="session-name">Project-Z 新项目启动</div>
+                                <div class="session-info">
+                                    <div class="session-info-item">⏰ 11:00-12:00</div>
+                                    <div class="session-info-item">📍 大会议室</div>
+                                    <div class="session-info-item">👥 所有相关团队</div>
+                                </div>
+                                <div class="agenda-topics">
+                                    <div class="agenda-topic">项目概述与目标对齐</div>
+                                    <div class="agenda-topic">团队分工与协作方式</div>
+                                    <div class="agenda-topic">第一阶段里程碑规划</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 集中进餐 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">🍽️ 12:00 - 13:30</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">集中进餐 + 跨项目交流</div>
+                        <div class="timeline-details">
+                            📍 共享餐厅/院落<br>
+                            👥 所有参与者必须一起吃（强制跨项目混合）<br>
+                            🎯 信息跨流转、创意碰撞、关系加深、仪式感增强<br>
+                            🤖 AI助手实时投射各项目进度数据
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 创新讨论 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">🕐 13:30 - 14:30</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">创新讨论 / 学习分享</div>
+                        <div class="timeline-details">
+                            💡 跨项目创意头脑风暴<br>
+                            📚 技术分享（10分钟快速分享）<br>
+                            🔄 反思回顾（本周最失败的决策与学习）<br>
+                            🎨 自由参与，整个生态的学习积累
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自由活动 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">🕒 14:30 - 15:30</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">自由活动 / 组织游戏</div>
+                        <div class="timeline-details">
+                            🗣️ 深度讨论遗留问题<br>
+                            👥 一对一技术交流<br>
+                            🎮 玩集体小游戏<br>
+                            🎨 参观有趣的作品<br>
+                            ☕ 就是闲聊
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); padding: 15px; border-radius: 12px; margin-top: 25px; text-align: center;">
+                <div style="font-size: 14px; color: #059669; font-weight: 600;">
+                    ✓ 周六开放日不是强制，而是生态节日
+                </div>
+                <div style="font-size: 13px; color: #047857; margin-top: 5px;">
+                    让参与本身成为有价值的事
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 决策链视图 -->
+    <div class="content-area" id="chain">
+        <div class="decision-chain">
+            <div class="chain-header">
+                <div class="chain-title">🔗 Project-X 决策链</div>
+                <div class="chain-subtitle">跟踪从线上到线下的完整决策过程</div>
+            </div>
+
+            <div class="chain-flow">
+                <!-- 完成的线上短邮 -->
+                <div class="chain-node online completed">
+                    <div class="chain-node-type">✓ 线上短邮 (已完成)</div>
+                    <div class="chain-node-content">
+                        项目启动对齐：确定核心功能范围
+                    </div>
+                    <div class="chain-node-meta">
+                        2月1日 14:30 · 参与者: Alice, Bob, Charlie · 2条短邮达成共识
+                    </div>
+                </div>
+
+                <div class="chain-arrow">↓</div>
+
+                <!-- 进行中的线上短邮 -->
+                <div class="chain-node online">
+                    <div class="chain-node-type">📬 线上短邮 (进行中)</div>
+                    <div class="chain-node-content">
+                        UI配色方案选择：3个方案权衡中
+                    </div>
+                    <div class="chain-node-meta">
+                        2月3日 12:00 · 参与者: Bob, Alice, Charlie · AI建议转线下
+                    </div>
+                </div>
+
+                <div class="chain-arrow">↓</div>
+
+                <!-- 待进行的线下对齐 -->
+                <div class="chain-node offline">
+                    <div class="chain-node-type">📅 线下对齐 (已预约)</div>
+                    <div class="chain-node-content">
+                        周六对齐会议：UI配色 + 发版时间表
+                    </div>
+                    <div class="chain-node-meta">
+                        2月8日 10:00-11:00 · 良渚创意工作室 · 会议室1<br>
+                        议题: 2个待线下短邮 + 下周迭代计划
+                    </div>
+                </div>
+
+                <div class="chain-arrow">↓</div>
+
+                <!-- 预期的后续行动 -->
+                <div class="chain-node online" style="opacity: 0.5; border-style: dashed;">
+                    <div class="chain-node-type">📋 后续行动 (预期)</div>
+                    <div class="chain-node-content">
+                        线下对齐后的执行任务同步
+                    </div>
+                    <div class="chain-node-meta">
+                        预计2月8日会议后通过短邮分配行动项
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #eff6ff; padding: 15px; border-radius: 12px; margin-top: 25px; border-left: 3px solid #3b82f6;">
+                <div style="font-size: 13px; color: #1e40af; font-weight: 600; margin-bottom: 8px;">
+                    💡 决策链洞察
+                </div>
+                <div style="font-size: 12px; color: #1e3a8a; line-height: 1.6;">
+                    • 短邮不仅是消息，而是决策链的原子单元<br>
+                    • AI学习何时应该从线上转向线下<br>
+                    • 线下对齐结果会反馈到线上执行<br>
+                    • 完整过程记录在PWP，供SERE学习
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 撰写按钮 -->
+    <button class="compose-btn" onclick="openCompose()">✏️</button>
+
+    <!-- 线下对齐记录模态框 -->
+    <div class="modal" id="offlineRecordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📝 线下对齐记录</div>
+                <button class="close-btn" onclick="closeModal('offlineRecordModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form class="offline-record-form" onsubmit="submitOfflineRecord(event)">
+                    <div class="form-group">
+                        <label class="form-label">项目名称</label>
+                        <input type="text" class="form-input" value="Project-X" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">会议时间</label>
+                        <input type="text" class="form-input" value="2026-02-08 10:00-11:00" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">参与者</label>
+                        <div class="participants-list">
+                            <div class="participant-chip">Alice (PM)</div>
+                            <div class="participant-chip">Bob (Design)</div>
+                            <div class="participant-chip">Charlie (Dev)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">议题1：UI配色方案决策</label>
+                        <textarea class="form-textarea" placeholder="讨论内容、决策结果、理由...&#10;&#10;例如：&#10;讨论了3个方案的优缺点，最终选择方案B+C的混合...&#10;理由：用户测试显示对方案B偏好更高..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">行动项</label>
+                        <textarea class="form-textarea" placeholder="具体的后续行动任务...&#10;&#10;例如：&#10;• Bob负责在周二前完成新设计稿&#10;• Charlie负责周四前完成关键功能开发"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">对齐质量（1-5分）</label>
+                        <input type="number" class="form-input" min="1" max="5" value="5" placeholder="参与者满意度评分">
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        ✓ 保存对齐记录
+                    </button>
+                </form>
+
+                <div style="background: #f0fdf4; padding: 12px; border-radius: 10px; margin-top: 15px; font-size: 12px; color: #047857;">
+                    💡 提示：此记录将自动存入项目数据库，供PWP追踪和SERE学习
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签切换
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 更新标签样式
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // 切换内容区域
+                const targetTab = tab.dataset.tab;
+                document.querySelectorAll('.content-area').forEach(area => area.classList.remove('active'));
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // 预约线下对齐
+        function bookOffline(mailId) {
+            const card = document.querySelector(`[data-mail-id="${mailId}"]`);
+            card.classList.add('pending-offline');
+
+            // 移除AI建议区域
+            const suggestion = card.querySelector('.ai-suggestion');
+            suggestion.innerHTML = `
+                <div style="text-align: center; padding: 10px;">
+                    <div style="font-size: 40px; margin-bottom: 10px;">✓</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #059669; margin-bottom: 5px;">
+                        已成功预约周六对齐
+                    </div>
+                    <div style="font-size: 13px; color: #047857;">
+                        此短邮已加入周六 Project-X 对齐会议议程
+                    </div>
+                </div>
+            `;
+
+            // 3秒后自动关闭
+            setTimeout(() => {
+                suggestion.style.display = 'none';
+            }, 3000);
+        }
+
+        // 继续线上讨论
+        function continueOnline(mailId) {
+            const card = document.querySelector(`[data-mail-id="${mailId}"]`);
+            const suggestion = card.querySelector('.ai-suggestion');
+
+            suggestion.innerHTML = `
+                <div style="text-align: center; padding: 10px;">
+                    <div style="font-size: 40px; margin-bottom: 10px;">💬</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #2563eb; margin-bottom: 5px;">
+                        继续线上讨论
+                    </div>
+                    <div style="font-size: 13px; color: #1e40af;">
+                        已移除线下建议，可随时改变主意
+                    </div>
+                </div>
+            `;
+
+            // 3秒后自动关闭
+            setTimeout(() => {
+                suggestion.style.display = 'none';
+            }, 3000);
+        }
+
+        // 打开撰写界面
+        function openCompose() {
+            alert('撰写新短邮功能（使用之前的 shortmail-prototype.html 中的交互）');
+        }
+
+        // 点击短邮卡片查看详情或打开对齐记录
+        document.querySelectorAll('.mail-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // 如果点击的是按钮，不触发卡片点击
+                if (e.target.closest('button')) return;
+
+                const mailId = card.dataset.mailId;
+                const isPendingOffline = card.classList.contains('pending-offline');
+
+                if (isPendingOffline && mailId === '2') {
+                    // 如果是待线下对齐的短邮，可以打开对齐记录表单
+                    openModal('offlineRecordModal');
+                } else {
+                    alert(`查看短邮 #${mailId} 详情`);
+                }
+            });
+        });
+
+        // 模态框管理
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 提交线下对齐记录
+        function submitOfflineRecord(e) {
+            e.preventDefault();
+
+            alert('✓ 线下对齐记录已保存！\n\n记录已存入项目数据库：\n• PWP追踪协作过程\n• SERE提取学习规律\n• System 3计算激励\n\n相关行动项已自动分配到参与者');
+
+            closeModal('offlineRecordModal');
+        }
+
+        // 点击模态框背景关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
