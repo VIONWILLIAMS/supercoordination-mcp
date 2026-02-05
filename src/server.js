@@ -1,12 +1,9 @@
-const dotenv = require('dotenv');
-const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
-dotenv.config({ path: envFile });
-
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const { PrismaClient } = require('@prisma/client');
@@ -15,7 +12,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // WebSocket服务
-const { initializeWebSocket, getOnlineUsersCount, getOnlineUsers } = require('./modules/websocket');
+const { initializeWebSocket, getOnlineUsersCount, getOnlineUsers } = require('./websocket');
 
 // 引入认证模块
 const {
@@ -26,7 +23,7 @@ const {
   loginValidation,
   authenticateToken,
   optionalAuth
-} = require('./modules/auth');
+} = require('./auth');
 
 // 引入AI守门人模块
 const {
@@ -40,7 +37,7 @@ const {
   getAllCandidates,
   requireMember,
   requireAdmin
-} = require('./modules/aiGatekeeper');
+} = require('./aiGatekeeper');
 
 // 引入项目管理模块
 const {
@@ -61,18 +58,11 @@ const {
   getProjectStats,
   getProjectLeaderboard,
   getRecommendedMembers
-} = require('./modules/projects');
+} = require('./projects');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const LAN_HOST = process.env.LAN_HOST || '192.168.1.3';
-
-// Railway 等反向代理环境需要信任代理，否则限流会报 X-Forwarded-For 错误
-app.set('trust proxy', 1);
-
-const CORS_ORIGINS = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim()).filter(Boolean)
-  : ['*'];
+const DATA_FILE = path.join(__dirname, '../data/store.json');
 
 // ========================================
 // 安全中间件
@@ -99,8 +89,8 @@ app.use((req, res, next) => {
 
 // 通用限流器（所有API）
 const generalLimiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15分钟
-  max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10), // 限制100个请求
+  windowMs: 15 * 60 * 1000, // 15分钟
+  max: 100, // 限制100个请求
   message: { success: false, message: '请求过于频繁，请稍后再试' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -108,8 +98,8 @@ const generalLimiter = rateLimit({
 
 // 认证API限流器（防暴力破解）
 const authLimiter = rateLimit({
-  windowMs: parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS || '300000', 10), // 5分钟
-  max: parseInt(process.env.AUTH_RATE_LIMIT_MAX || '100', 10), // 限制100次登录尝试
+  windowMs: 5 * 60 * 1000, // 5分钟
+  max: 100, // 限制100次登录尝试
   skipSuccessfulRequests: true,
   message: { success: false, message: '登录尝试过多，请稍后再试' },
 });
@@ -118,83 +108,115 @@ const authLimiter = rateLimit({
 app.use('/api/', generalLimiter);
 
 // 基础中间件
-app.use(cors({
-  origin: CORS_ORIGINS.includes('*') ? '*' : CORS_ORIGINS
-}));
+app.use(cors());
 app.use(bodyParser.json());
+
+// 统一错误处理中间件
+app.use((err, req, res, next) => {
+  console.error('[ERROR]', err);
+
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || '服务器内部错误',
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
 
 // 静态文件服务（Web仪表盘）
 app.use(express.static(path.join(__dirname, '../public')));
 
 // ========================================
-// 数据存储（Prisma - Workspace Task/Member）
+// 数据存储（JSON持久化 - 按用户隔离）
 // ========================================
 
-function normalizeArray(value) {
-  return Array.isArray(value) ? value : [];
+// 数据结构：userId -> Map(itemId -> item)
+const store = {
+  tasks: new Map(),     // Map<userId, Map<taskId, task>>
+  members: new Map(),   // Map<userId, Map<memberId, member>>
+  resources: new Map()  // Map<userId, Map<resourceId, resource>>
+};
+
+// 获取或创建用户的数据Map
+function getUserStore(storeType, userId) {
+  if (!store[storeType].has(userId)) {
+    store[storeType].set(userId, new Map());
+  }
+  return store[storeType].get(userId);
 }
 
-function toIso(value) {
-  if (!value) return value;
-  return value instanceof Date ? value.toISOString() : value;
+// 保存数据到JSON文件（用户隔离版本）
+function saveData() {
+  try {
+    const data = {
+      tasks: Array.from(store.tasks.entries()).map(([userId, userTasks]) =>
+        [userId, Array.from(userTasks.entries())]
+      ),
+      members: Array.from(store.members.entries()).map(([userId, userMembers]) =>
+        [userId, Array.from(userMembers.entries())]
+      ),
+      resources: Array.from(store.resources.entries()).map(([userId, userResources]) =>
+        [userId, Array.from(userResources.entries())]
+      ),
+      saved_at: new Date().toISOString()
+    };
+
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+
+    let totalTasks = 0, totalMembers = 0;
+    store.tasks.forEach(userTasks => totalTasks += userTasks.size);
+    store.members.forEach(userMembers => totalMembers += userMembers.size);
+
+    console.log('[数据持久化] 已保存:', totalTasks, '个任务,', totalMembers, '个成员,', store.tasks.size, '个用户');
+  } catch (error) {
+    console.error('[数据持久化] 保存失败:', error.message);
+  }
 }
 
-function toApiMember(member) {
-  return {
-    id: member.id,
-    name: member.name,
-    skills: normalizeArray(member.skills),
-    wuxing_profile: member.wuxingProfile || { 火: 20, 金: 20, 木: 20, 水: 20, 土: 20 },
-    status: member.status,
-    created_at: toIso(member.createdAt),
-    user_id: member.ownerId
-  };
-}
+// 从JSON文件加载数据（用户隔离版本）
+function loadData() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
 
-function toApiTask(task, assignedMemberName = null) {
-  return {
-    id: task.id,
-    title: task.title,
-    description: task.description,
-    wuxing: task.wuxing || null,
-    priority: task.priority || 'B',
-    skills_required: normalizeArray(task.skillsRequired),
-    status: task.status,
-    progress: task.progress,
-    assigned_to: task.assignedMemberId || null,
-    assigned_to_name: assignedMemberName,
-    created_by: task.createdByUserId,
-    reward_points: task.rewardPoints,
-    notes: task.notes || null,
-    aiExecutionResult: task.aiExecutionResult || null,
-    multiAI: task.multiAI || null,
-    created_at: toIso(task.createdAt),
-    updated_at: toIso(task.updatedAt)
-  };
-}
+      // 检查数据格式，兼容旧格式
+      if (data.tasks && Array.isArray(data.tasks) && data.tasks.length > 0) {
+        // 检查是否是新格式（用户隔离）
+        if (Array.isArray(data.tasks[0]) && data.tasks[0].length === 2 && typeof data.tasks[0][0] === 'string') {
+          // 新格式：[[userId, [[taskId, task]]]]
+          store.tasks = new Map(data.tasks.map(([userId, userTasks]) =>
+            [userId, new Map(userTasks)]
+          ));
+          store.members = new Map(data.members.map(([userId, userMembers]) =>
+            [userId, new Map(userMembers)]
+          ));
+          store.resources = new Map(data.resources.map(([userId, userResources]) =>
+            [userId, new Map(userResources)]
+          ));
+        } else {
+          // 旧格式：[[taskId, task]] - 迁移到默认用户
+          console.log('[数据持久化] 检测到旧格式数据，迁移到用户隔离模式');
+          const defaultUserId = 'legacy-user';
+          store.tasks.set(defaultUserId, new Map(data.tasks));
+          store.members.set(defaultUserId, new Map(data.members));
+          store.resources.set(defaultUserId, new Map(data.resources || []));
+        }
+      }
 
-async function getWorkspaceMembers(ownerId) {
-  return prisma.workspaceMember.findMany({
-    where: { ownerId }
-  });
-}
+      let totalTasks = 0, totalMembers = 0;
+      store.tasks.forEach(userTasks => totalTasks += userTasks.size);
+      store.members.forEach(userMembers => totalMembers += userMembers.size);
 
-async function getWorkspaceTasks(ownerId) {
-  return prisma.workspaceTask.findMany({
-    where: { ownerId }
-  });
-}
-
-async function getWorkspaceMember(ownerId, memberId) {
-  return prisma.workspaceMember.findFirst({
-    where: { id: memberId, ownerId }
-  });
-}
-
-async function getWorkspaceTask(ownerId, taskId) {
-  return prisma.workspaceTask.findFirst({
-    where: { id: taskId, ownerId }
-  });
+      console.log('[数据持久化] 已加载:', totalTasks, '个任务,', totalMembers, '个成员,', store.tasks.size, '个用户');
+      console.log('[数据持久化] 上次保存时间:', data.saved_at);
+      return true;
+    } else {
+      console.log('[数据持久化] 未找到数据文件，使用空存储');
+      return false;
+    }
+  } catch (error) {
+    console.error('[数据持久化] 加载失败:', error.message);
+    return false;
+  }
 }
 
 // ========================================
@@ -214,7 +236,7 @@ app.get('/api/auth/me', authenticateToken, getCurrentUser);
 // 方案评分与引用系统 API
 // ========================================
 
-const solutionsRouter = require('./modules/solutions');
+const solutionsRouter = require('./solutions');
 app.use('/api/solutions', solutionsRouter);
 
 // ========================================
@@ -249,7 +271,7 @@ app.get('/api/projects/:projectId/recommended-members', authenticateToken, requi
 // PWP决策交流API（短邮系统）
 // ========================================
 
-const pwpRouter = require('./modules/pwp');
+const pwpRouter = require('./pwp');
 app.use('/api/pwp', pwpRouter);
 
 // ========================================
@@ -391,7 +413,7 @@ app.post('/api/ticket/redeem', async (req, res) => {
 
     // 生成token
     const jwt = require('jsonwebtoken');
-    const JWT_SECRET = process.env.JWT_SECRET || 'supercoordination-secret-key-change-in-production';
+    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
     const authToken = jwt.sign(
       { userId: user.id, email: user.email },
       JWT_SECRET,
@@ -871,25 +893,35 @@ app.post('/mcp/tools/call', authenticateToken, requireMember, async (req, res) =
 // ========================================
 
 async function registerMember(args, userId) {
-  const member = await prisma.workspaceMember.create({
-    data: {
-      ownerId: userId,
-      name: args.name,
-      skills: args.skills || [],
-      wuxingProfile: args.wuxing_profile || { 火: 20, 金: 20, 木: 20, 水: 20, 土: 20 },
-      status: 'active'
-    }
-  });
+  const memberId = uuidv4();
+  const member = {
+    id: memberId,
+    name: args.name,
+    skills: args.skills || [],
+    wuxing_profile: args.wuxing_profile || {
+      火: 20, 金: 20, 木: 20, 水: 20, 土: 20
+    },
+    status: 'active',
+    created_at: new Date().toISOString(),
+    user_id: userId  // 关联到用户
+  };
+
+  const userMembers = getUserStore('members', userId);
+  userMembers.set(memberId, member);
+  saveData();
 
   return {
     success: true,
-    member_id: member.id,
+    member_id: memberId,
     message: `✅ 成员 ${args.name} 注册成功！`,
-    member: toApiMember(member)
+    member: member
   };
 }
 
 async function createTask(args, userId) {
+  const { PrismaClient } = require('@prisma/client');
+  const prisma = new PrismaClient();
+
   try {
     // 检查用户积分
     const user = await prisma.user.findUnique({
@@ -897,77 +929,84 @@ async function createTask(args, userId) {
       select: { pointsBalance: true }
     });
 
-    const TASK_COST = parseInt(process.env.CREATE_TASK_COST || '10', 10); // 创建任务消耗积分
+    const TASK_COST = 10; // 创建任务消耗10积分
 
-    if (!user || user.pointsBalance < TASK_COST) {
+    if (user.pointsBalance < TASK_COST) {
+      await prisma.$disconnect();
       return {
         success: false,
         message: `❌ 积分不足！创建任务需要${TASK_COST}积分，当前余额${user.pointsBalance}积分`
       };
     }
 
-    const rewardPoints = args.reward_points || parseInt(process.env.COMPLETE_TASK_REWARD || '20', 10);
-    const taskId = uuidv4();
-
-    const task = await prisma.$transaction(async (tx) => {
-      const created = await tx.workspaceTask.create({
-        data: {
-          id: taskId,
-          ownerId: userId,
-          title: args.title,
-          description: args.description,
-          wuxing: args.wuxing || null,
-          priority: args.priority || 'B',
-          skillsRequired: args.skills_required || [],
-          status: 'pending',
-          progress: 0,
-          assignedMemberId: null,
-          createdByUserId: userId,
-          rewardPoints: rewardPoints
-        }
-      });
-
-      await tx.user.update({
-        where: { id: userId },
-        data: { pointsBalance: { decrement: TASK_COST } }
-      });
-
-      await tx.pointsTransaction.create({
-        data: {
-          userId,
-          amount: -TASK_COST,
-          transactionType: 'create_task',
-          relatedEntityType: 'task',
-          relatedEntityId: taskId,
-          description: `创建任务：${args.title}`
-        }
-      });
-
-      return created;
+    // 扣除积分
+    await prisma.user.update({
+      where: { id: userId },
+      data: { pointsBalance: { decrement: TASK_COST } }
     });
+
+    // 记录交易
+    const taskId = uuidv4();
+    await prisma.pointsTransaction.create({
+      data: {
+        userId,
+        amount: -TASK_COST,
+        transactionType: 'create_task',
+        relatedEntityType: 'task',
+        relatedEntityId: taskId,
+        description: `创建任务：${args.title}`
+      }
+    });
+
+    await prisma.$disconnect();
+
+    // 创建任务
+    const task = {
+      id: taskId,
+      title: args.title,
+      description: args.description,
+      wuxing: args.wuxing || null,
+      priority: args.priority || 'B',
+      skills_required: args.skills_required || [],
+      status: 'pending',
+      progress: 0,
+      assigned_to: null,
+      created_by: userId,  // 创建者
+      reward_points: 20,   // 完成任务奖励积分
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    const userTasks = getUserStore('tasks', userId);
+    userTasks.set(taskId, task);
+    saveData();
 
     return {
       success: true,
       task_id: taskId,
       message: `✅ 任务创建成功（消耗${TASK_COST}积分）：${args.title}`,
-      task: toApiTask(task),
+      task: task,
       points_spent: TASK_COST,
       remaining_balance: user.pointsBalance - TASK_COST
     };
   } catch (error) {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    await prisma.$disconnect();
     throw error;
   }
 }
 
 async function findBestMatch(args, userId) {
-  const task = await getWorkspaceTask(userId, args.task_id);
+  const userTasks = getUserStore('tasks', userId);
+  const task = userTasks.get(args.task_id);
   if (!task) {
     throw new Error('❌ 任务不存在');
   }
 
   const strategy = args.strategy || 'hybrid';
-  const members = await getWorkspaceMembers(userId);
-  const tasks = await getWorkspaceTasks(userId);
+  const userMembers = getUserStore('members', userId);
+  const members = Array.from(userMembers.values());
 
   if (members.length === 0) {
     return {
@@ -983,26 +1022,24 @@ async function findBestMatch(args, userId) {
 
     // 1. 技能匹配分数（40%权重）
     if (strategy === 'skill' || strategy === 'hybrid') {
-      const requiredSkills = normalizeArray(task.skillsRequired);
-      const memberSkills = normalizeArray(member.skills);
-      const skillMatch = requiredSkills.filter(skill =>
-        memberSkills.includes(skill)
+      const skillMatch = task.skills_required.filter(skill =>
+        member.skills.includes(skill)
       ).length;
-      const skillScore = requiredSkills.length > 0
-        ? (skillMatch / requiredSkills.length) * 40
+      const skillScore = task.skills_required.length > 0
+        ? (skillMatch / task.skills_required.length) * 40
         : 20;
       score += skillScore;
       breakdown.skill_score = Math.round(skillScore);
-      breakdown.skill_match = requiredSkills.filter(s => memberSkills.includes(s));
+      breakdown.skill_match = task.skills_required.filter(s => member.skills.includes(s));
     }
 
     // 2. 五行匹配分数（30%权重）
     if (strategy === 'wuxing' || strategy === 'hybrid') {
-      if (task.wuxing && member.wuxingProfile && member.wuxingProfile[task.wuxing]) {
-        const wuxingScore = member.wuxingProfile[task.wuxing] * 0.3;
+      if (task.wuxing && member.wuxing_profile && member.wuxing_profile[task.wuxing]) {
+        const wuxingScore = member.wuxing_profile[task.wuxing] * 0.3;
         score += wuxingScore;
         breakdown.wuxing_score = Math.round(wuxingScore);
-        breakdown.wuxing_strength = member.wuxingProfile[task.wuxing];
+        breakdown.wuxing_strength = member.wuxing_profile[task.wuxing];
       } else {
         score += 15;
         breakdown.wuxing_score = 15;
@@ -1011,8 +1048,8 @@ async function findBestMatch(args, userId) {
 
     // 3. 负载分数（30%权重）
     if (strategy === 'load' || strategy === 'hybrid') {
-      const memberTasks = tasks
-        .filter(t => t.assignedMemberId === member.id && t.status !== 'completed');
+      const memberTasks = Array.from(userTasks.values())
+        .filter(t => t.assigned_to === member.id && t.status !== 'completed');
       const loadScore = Math.max(0, 30 - (memberTasks.length * 5));
       score += loadScore;
       breakdown.load_score = Math.round(loadScore);
@@ -1041,13 +1078,16 @@ async function findBestMatch(args, userId) {
     task_info: {
       title: task.title,
       wuxing: task.wuxing,
-      skills_required: normalizeArray(task.skillsRequired)
+      skills_required: task.skills_required
     }
   };
 }
 
 async function assignTask(args, userId) {
-  const task = await getWorkspaceTask(userId, args.task_id);
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
+  const task = userTasks.get(args.task_id);
   if (!task) {
     throw new Error('❌ 任务不存在');
   }
@@ -1056,7 +1096,7 @@ async function assignTask(args, userId) {
 
   if (args.member_id) {
     // 手动指定成员
-    assignedMember = await getWorkspaceMember(userId, args.member_id);
+    assignedMember = userMembers.get(args.member_id);
     if (!assignedMember) {
       throw new Error('❌ 指定成员不存在');
     }
@@ -1066,55 +1106,52 @@ async function assignTask(args, userId) {
     if (!match.best_match) {
       throw new Error('❌ 未找到合适的成员');
     }
-    assignedMember = await getWorkspaceMember(userId, match.best_match.member_id);
+    assignedMember = userMembers.get(match.best_match.member_id);
   }
 
-  const updatedTask = await prisma.workspaceTask.update({
-    where: { id: task.id },
-    data: {
-      assignedMemberId: assignedMember.id,
-      status: 'in_progress'
-    }
-  });
+  task.assigned_to = assignedMember.id;
+  task.status = 'in_progress';
+  task.updated_at = new Date().toISOString();
+  saveData();
 
   return {
     success: true,
-    message: `✅ 任务《${updatedTask.title}》已分配给 ${assignedMember.name}`,
-    task: toApiTask(updatedTask, assignedMember.name),
+    message: `✅ 任务《${task.title}》已分配给 ${assignedMember.name}`,
+    task: task,
     member: {
       id: assignedMember.id,
       name: assignedMember.name,
-      skills: normalizeArray(assignedMember.skills)
+      skills: assignedMember.skills
     }
   };
 }
 
 async function getMyTasks(args, userId) {
-  const member = await getWorkspaceMember(userId, args.member_id);
+  const userMembers = getUserStore('members', userId);
+  const userTasks = getUserStore('tasks', userId);
+
+  const member = userMembers.get(args.member_id);
   if (!member) {
     throw new Error('❌ 成员不存在');
   }
 
-  const where = {
-    ownerId: userId,
-    assignedMemberId: args.member_id
-  };
-  if (args.status && args.status !== 'all') {
-    where.status = args.status;
-  }
-
-  const tasks = await prisma.workspaceTask.findMany({ where });
-  tasks.sort((a, b) => {
-    const priorityOrder = { S: 4, A: 3, B: 2, C: 1 };
-    return priorityOrder[b.priority] - priorityOrder[a.priority];
-  });
+  const tasks = Array.from(userTasks.values())
+    .filter(task => {
+      if (task.assigned_to !== args.member_id) return false;
+      if (args.status && args.status !== 'all' && task.status !== args.status) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      const priorityOrder = { S: 4, A: 3, B: 2, C: 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
 
   return {
     success: true,
     member_name: member.name,
     member_id: member.id,
     total_tasks: tasks.length,
-    tasks: tasks.map(t => toApiTask(t, member.name)),
+    tasks: tasks,
     summary: {
       pending: tasks.filter(t => t.status === 'pending').length,
       in_progress: tasks.filter(t => t.status === 'in_progress').length,
@@ -1125,26 +1162,33 @@ async function getMyTasks(args, userId) {
 }
 
 async function updateTaskStatus(args, userId) {
-  const task = await getWorkspaceTask(userId, args.task_id);
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
+  const task = userTasks.get(args.task_id);
   if (!task) {
     throw new Error('❌ 任务不存在');
   }
 
   const oldStatus = task.status;
-  const updatedTask = await prisma.workspaceTask.update({
-    where: { id: task.id },
-    data: {
-      status: args.status,
-      progress: args.progress !== undefined ? args.progress : task.progress,
-      notes: args.notes ? args.notes : task.notes
-    }
-  });
+  task.status = args.status;
+
+  if (args.progress !== undefined) {
+    task.progress = args.progress;
+  }
+  if (args.notes) {
+    task.notes = args.notes;
+  }
+  task.updated_at = new Date().toISOString();
 
   // 如果任务完成，发放积分奖励
   let pointsAwarded = 0;
-  if (args.status === 'completed' && oldStatus !== 'completed' && updatedTask.assignedMemberId) {
+  if (args.status === 'completed' && oldStatus !== 'completed' && task.assigned_to) {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
     try {
-      const REWARD_POINTS = updatedTask.rewardPoints || parseInt(process.env.COMPLETE_TASK_REWARD || '20', 10);
+      const REWARD_POINTS = task.reward_points || 20;
 
       // 给执行者发放积分
       await prisma.user.update({
@@ -1165,25 +1209,31 @@ async function updateTaskStatus(args, userId) {
       });
 
       pointsAwarded = REWARD_POINTS;
+      await prisma.$disconnect();
     } catch (error) {
+      await prisma.$disconnect();
       console.error('积分发放失败:', error);
     }
   }
 
+  saveData();
+
   return {
     success: true,
-    message: `✅ 任务《${updatedTask.title}》状态已更新：${oldStatus} → ${args.status}${pointsAwarded > 0 ? `\n🎁 获得奖励：${pointsAwarded}积分` : ''}`,
-    task: toApiTask(updatedTask),
-    assigned_to: updatedTask.assignedMemberId ? (await getWorkspaceMember(userId, updatedTask.assignedMemberId))?.name : '未分配',
+    message: `✅ 任务《${task.title}》状态已更新：${oldStatus} → ${args.status}${pointsAwarded > 0 ? `\n🎁 获得奖励：${pointsAwarded}积分` : ''}`,
+    task: task,
+    assigned_to: task.assigned_to ? userMembers.get(task.assigned_to)?.name : '未分配',
     points_awarded: pointsAwarded
   };
 }
 
 async function getTeamDashboard(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
   const view = args.view || 'overview';
-  const tasks = await getWorkspaceTasks(userId);
-  const members = await getWorkspaceMembers(userId);
-  const memberMap = new Map(members.map(m => [m.id, m]));
+  const tasks = Array.from(userTasks.values());
+  const members = Array.from(userMembers.values());
 
   const dashboard = {
     view: view,
@@ -1225,7 +1275,7 @@ async function getTeamDashboard(args, userId) {
 
     case 'progress':
       dashboard.member_progress = members.map(member => {
-        const memberTasks = tasks.filter(t => t.assignedMemberId === member.id);
+        const memberTasks = tasks.filter(t => t.assigned_to === member.id);
         const avgProgress = memberTasks.length > 0
           ? memberTasks.reduce((sum, t) => sum + t.progress, 0) / memberTasks.length
           : 0;
@@ -1246,8 +1296,8 @@ async function getTeamDashboard(args, userId) {
         .map(t => ({
           task_id: t.id,
           title: t.title,
-          assigned_to: memberMap.get(t.assignedMemberId)?.name || '未分配',
-          blocked_since: toIso(t.updatedAt)
+          assigned_to: userMembers.get(t.assigned_to)?.name || '未分配',
+          blocked_since: t.updated_at
         }));
       break;
   }
@@ -1256,8 +1306,10 @@ async function getTeamDashboard(args, userId) {
 }
 
 async function checkWuxingBalance(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+
   const timeframe = args.timeframe || 'week';
-  const tasks = await getWorkspaceTasks(userId);
+  const tasks = Array.from(userTasks.values());
 
   // 计算当前五行分布
   const currentDistribution = {
@@ -1315,43 +1367,47 @@ async function checkWuxingBalance(args, userId) {
 }
 
 async function listAllMembers(args, userId) {
-  const members = await getWorkspaceMembers(userId);
-  const tasks = await getWorkspaceTasks(userId);
+  const userMembers = getUserStore('members', userId);
+  const userTasks = getUserStore('tasks', userId);
 
-  const memberStats = members.map(m => ({
+  const members = Array.from(userMembers.values()).map(m => ({
     id: m.id,
     name: m.name,
-    skills: normalizeArray(m.skills),
-    wuxing_profile: m.wuxingProfile,
-    task_count: tasks.filter(t => t.assignedMemberId === m.id && t.status !== 'completed').length
+    skills: m.skills,
+    wuxing_profile: m.wuxing_profile,
+    task_count: Array.from(userTasks.values()).filter(t => t.assigned_to === m.id && t.status !== 'completed').length
   }));
 
   return {
     success: true,
-    total_members: memberStats.length,
-    members: memberStats
+    total_members: members.length,
+    members: members
   };
 }
 
 async function listAllTasks(args, userId) {
+  const userTasks = getUserStore('tasks', userId);
+  const userMembers = getUserStore('members', userId);
+
   const statusFilter = args.status || 'all';
 
-  let tasks = await getWorkspaceTasks(userId);
-  const members = await getWorkspaceMembers(userId);
-  const memberMap = new Map(members.map(m => [m.id, m]));
+  let tasks = Array.from(userTasks.values());
 
   if (statusFilter !== 'all') {
     tasks = tasks.filter(t => t.status === statusFilter);
   }
 
   // 添加成员名称
-  const output = tasks.map(t => toApiTask(t, t.assignedMemberId ? memberMap.get(t.assignedMemberId)?.name : '未分配'));
+  tasks = tasks.map(t => ({
+    ...t,
+    assigned_to_name: t.assigned_to ? userMembers.get(t.assigned_to)?.name : '未分配'
+  }));
 
   return {
     success: true,
-    total_tasks: output.length,
+    total_tasks: tasks.length,
     status_filter: statusFilter,
-    tasks: output
+    tasks: tasks
   };
 }
 
@@ -1364,10 +1420,10 @@ app.get('/api/tasks', authenticateToken, requireMember, async (req, res) => {
   try {
     const userId = req.userId;
     const { status, created_by_me, assigned_to_me } = req.query;
+    const userTasks = getUserStore('tasks', userId);
+    const userMembers = getUserStore('members', userId);
 
-    let tasks = await getWorkspaceTasks(userId);
-    const members = await getWorkspaceMembers(userId);
-    const memberMap = new Map(members.map(m => [m.id, m]));
+    let tasks = Array.from(userTasks.values());
 
     // 状态筛选
     if (status && status !== 'all') {
@@ -1376,29 +1432,33 @@ app.get('/api/tasks', authenticateToken, requireMember, async (req, res) => {
 
     // 我创建的任务
     if (created_by_me === 'true') {
-      tasks = tasks.filter(t => t.createdByUserId === userId);
+      tasks = tasks.filter(t => t.created_by === userId);
     }
 
     // 分配给我的任务（通过member_id匹配）
     if (assigned_to_me === 'true') {
-      const myMember = members[0];
+      // 找到当前用户关联的member
+      const myMember = Array.from(userMembers.values()).find(m => m.user_id === userId);
       if (myMember) {
-        tasks = tasks.filter(t => t.assignedMemberId === myMember.id);
+        tasks = tasks.filter(t => t.assigned_to === myMember.id);
       } else {
         tasks = [];
       }
     }
 
     // 添加成员名称
-    const output = tasks.map(t => toApiTask(t, t.assignedMemberId ? memberMap.get(t.assignedMemberId)?.name : null));
+    tasks = tasks.map(t => ({
+      ...t,
+      assigned_to_name: t.assigned_to ? userMembers.get(t.assigned_to)?.name : null
+    }));
 
     // 按创建时间排序（最新在前）
-    output.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    tasks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     res.json({
       success: true,
-      tasks: output,
-      total: output.length
+      tasks,
+      total: tasks.length
     });
   } catch (error) {
     console.error('获取任务列表失败:', error);
@@ -1414,7 +1474,10 @@ app.get('/api/tasks/:id', authenticateToken, requireMember, async (req, res) => 
   try {
     const userId = req.userId;
     const taskId = req.params.id;
-    const task = await getWorkspaceTask(userId, taskId);
+    const userTasks = getUserStore('tasks', userId);
+    const userMembers = getUserStore('members', userId);
+
+    const task = userTasks.get(taskId);
 
     if (!task) {
       return res.status(404).json({
@@ -1423,14 +1486,11 @@ app.get('/api/tasks/:id', authenticateToken, requireMember, async (req, res) => 
       });
     }
 
-    const assignedMember = task.assignedMemberId
-      ? await getWorkspaceMember(userId, task.assignedMemberId)
-      : null;
-
     // 添加关联信息
     const taskWithDetails = {
-      ...toApiTask(task, assignedMember?.name || null),
-      assigned_member: assignedMember ? toApiMember(assignedMember) : null
+      ...task,
+      assigned_to_name: task.assigned_to ? userMembers.get(task.assigned_to)?.name : null,
+      assigned_member: task.assigned_to ? userMembers.get(task.assigned_to) : null
     };
 
     res.json({
@@ -1533,19 +1593,23 @@ app.post('/api/tasks/:id/assign', authenticateToken, requireMember, async (req, 
 app.get('/api/members', authenticateToken, requireMember, async (req, res) => {
   try {
     const userId = req.userId;
-    const members = await getWorkspaceMembers(userId);
-    const tasks = await getWorkspaceTasks(userId);
+    const userMembers = getUserStore('members', userId);
+    const userTasks = getUserStore('tasks', userId);
 
-    const output = members.map(m => ({
-      ...toApiMember(m),
-      task_count: tasks.filter(t => t.assignedMemberId === m.id && t.status !== 'completed').length,
-      completed_count: tasks.filter(t => t.assignedMemberId === m.id && t.status === 'completed').length
+    const members = Array.from(userMembers.values()).map(m => ({
+      ...m,
+      task_count: Array.from(userTasks.values()).filter(t =>
+        t.assigned_to === m.id && t.status !== 'completed'
+      ).length,
+      completed_count: Array.from(userTasks.values()).filter(t =>
+        t.assigned_to === m.id && t.status === 'completed'
+      ).length
     }));
 
     res.json({
       success: true,
-      members: output,
-      total: output.length
+      members,
+      total: members.length
     });
   } catch (error) {
     console.error('获取成员列表失败:', error);
@@ -1561,7 +1625,10 @@ app.get('/api/members/:id', authenticateToken, requireMember, async (req, res) =
   try {
     const userId = req.userId;
     const memberId = req.params.id;
-    const member = await getWorkspaceMember(userId, memberId);
+    const userMembers = getUserStore('members', userId);
+    const userTasks = getUserStore('tasks', userId);
+
+    const member = userMembers.get(memberId);
 
     if (!member) {
       return res.status(404).json({
@@ -1571,9 +1638,9 @@ app.get('/api/members/:id', authenticateToken, requireMember, async (req, res) =
     }
 
     // 获取成员的任务历史
-    const tasks = (await getWorkspaceTasks(userId))
-      .filter(t => t.assignedMemberId === memberId)
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    const tasks = Array.from(userTasks.values())
+      .filter(t => t.assigned_to === memberId)
+      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     // 统计数据
     const stats = {
@@ -1586,8 +1653,8 @@ app.get('/api/members/:id', authenticateToken, requireMember, async (req, res) =
     res.json({
       success: true,
       member: {
-        ...toApiMember(member),
-        tasks: tasks.slice(0, 10).map(t => toApiTask(t, member.name)), // 最近10个任务
+        ...member,
+        tasks: tasks.slice(0, 10), // 最近10个任务
         stats
       }
     });
@@ -1888,12 +1955,16 @@ app.get('/api/tasks/recommended', authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
 
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
     // 1. 获取当前用户信息和画像
     const user = await prisma.user.findUnique({
       where: { id: userId }
     });
 
     if (!user) {
+      await prisma.$disconnect();
       return res.status(404).json({ success: false, message: '用户不存在' });
     }
 
@@ -1901,25 +1972,27 @@ app.get('/api/tasks/recommended', authenticateToken, async (req, res) => {
     const memberSkills = user.pwpProfile?.skills || [];
 
     // 2. 获取所有待分配的任务
-    const allTasks = await getWorkspaceTasks(userId);
+    const userTasks = getUserStore('tasks', userId);
+    const allTasks = Array.from(userTasks.values());
 
     // 筛选可推荐的任务（未分配或待处理）
     const availableTasks = allTasks.filter(t =>
-      !t.assignedMemberId &&
+      !t.assigned_to &&
       (t.status === 'pending' || !t.status)
     );
 
     // 3. 获取用户当前进行中的任务数量
     const currentTaskCount = allTasks.filter(t =>
-      t.status === 'pending' || t.status === 'in_progress'
+      t.assigned_to === userId &&
+      (t.status === 'pending' || t.status === 'in_progress')
     ).length;
 
     // 4. 计算每个任务的推荐分数
     const recommendations = availableTasks.map(task => {
       // 将任务的五行属性转换为数值格式
-      const taskWuxing = {};
+      const taskWuxing = task.requiredWuxing || {};
       // 如果任务只有单一五行属性，创建对应的wuxing对象
-      if (task.wuxing) {
+      if (task.wuxing && !task.requiredWuxing) {
         const wuxingMap = { '火': 'fire', '金': 'metal', '木': 'wood', '水': 'water', '土': 'earth' };
         const element = wuxingMap[task.wuxing];
         if (element) {
@@ -1927,7 +2000,7 @@ app.get('/api/tasks/recommended', authenticateToken, async (req, res) => {
         }
       }
 
-      const taskSkills = normalizeArray(task.skillsRequired);
+      const taskSkills = task.skills_required || [];
 
       const wuxingMatch = calculateWuxingMatch(taskWuxing, memberWuxing);
       const skillMatch = calculateSkillMatch(taskSkills, memberSkills);
@@ -1942,7 +2015,7 @@ app.get('/api/tasks/recommended', authenticateToken, async (req, res) => {
         workloadScore * 0.1;
 
       return {
-        task: toApiTask(task),
+        task,
         score: Math.round(totalScore),
         reasons: {
           wuxingMatch: Math.round(wuxingMatch),
@@ -1956,6 +2029,8 @@ app.get('/api/tasks/recommended', authenticateToken, async (req, res) => {
     // 5. 排序并返回Top5
     recommendations.sort((a, b) => b.score - a.score);
     const top5 = recommendations.slice(0, 5);
+
+    await prisma.$disconnect();
 
     res.json({
       success: true,
@@ -2163,6 +2238,9 @@ app.post('/api/ai/chat', authenticateToken, async (req, res) => {
       return res.status(400).json({ success: false, message: '请输入消息内容' });
     }
 
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
     // 1. 获取当前用户信息
     const currentUser = await prisma.user.findUnique({
       where: { id: userId }
@@ -2171,14 +2249,15 @@ app.post('/api/ai/chat', authenticateToken, async (req, res) => {
     // 2. 获取任务信息（如果提供了taskId）
     let taskContext = '';
     if (taskId) {
-      const task = await getWorkspaceTask(userId, taskId);
+      const userTasks = getUserStore('tasks', userId);
+      const task = userTasks.get(taskId);
       if (task) {
         taskContext = `
 当前任务信息：
 - 标题：${task.title}
 - 描述：${task.description || '暂无描述'}
 - 五行属性：${task.wuxing || '未设置'}
-- 所需技能：${normalizeArray(task.skillsRequired).join(', ') || '暂无'}
+- 所需技能：${task.skills_required?.join(', ') || '暂无'}
 - 优先级：${task.priority || 'B'}
 - 当前进度：${task.progress || 0}%
 - 状态：${task.status}
@@ -2229,6 +2308,8 @@ ${memberContext}
 
     // 5. 调用Claude API
     const aiResponse = await callClaudeAPI(systemPrompt, message, conversationHistory);
+
+    await prisma.$disconnect();
 
     res.json({
       success: true,
@@ -2399,21 +2480,29 @@ app.post('/api/ai-members/:id/execute-task', authenticateToken, async (req, res)
     const { taskId } = req.body;
     const userId = req.userId;
 
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
     // 1. 验证是AI成员
     const aiMember = await prisma.user.findUnique({
       where: { id: aiMemberId }
     });
 
     if (!aiMember || !aiMember.email?.includes('@supercoordination.ai')) {
+      await prisma.$disconnect();
       return res.status(404).json({ success: false, message: 'AI成员不存在' });
     }
 
     // 2. 获取任务
-    const task = await getWorkspaceTask(userId, taskId);
+    const userTasks = getUserStore('tasks', userId);
+    const task = userTasks.get(taskId);
 
     if (!task) {
+      await prisma.$disconnect();
       return res.status(404).json({ success: false, message: '任务不存在' });
     }
+
+    await prisma.$disconnect();
 
     // 3. 启动AI执行（异步）
     executeTaskWithAI(aiMember, task, userId).catch(err => {
@@ -2434,30 +2523,14 @@ app.post('/api/ai-members/:id/execute-task', authenticateToken, async (req, res)
 // AI任务执行函数（异步）
 async function executeTaskWithAI(aiMember, task, userId) {
   try {
-    let workspaceAIMember = await prisma.workspaceMember.findFirst({
-      where: { ownerId: userId, name: aiMember.username }
-    });
-    if (!workspaceAIMember) {
-      workspaceAIMember = await prisma.workspaceMember.create({
-        data: {
-          ownerId: userId,
-          name: aiMember.username,
-          skills: aiMember.pwpProfile?.skills || [],
-          wuxingProfile: aiMember.pwpProfile?.wuxing || { 火: 20, 金: 20, 木: 20, 水: 20, 土: 20 },
-          status: 'active'
-        }
-      });
-    }
+    const userTasks = getUserStore('tasks', userId);
 
     // 1. 更新任务状态为进行中
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: {
-        status: 'in_progress',
-        progress: 10,
-        assignedMemberId: workspaceAIMember.id
-      }
-    });
+    task.status = 'in_progress';
+    task.progress = 10;
+    task.assigned_to = aiMember.id;
+    task.updated_at = new Date().toISOString();
+    saveData();
 
     // 2. 构建AI提示词
     const skills = aiMember.pwpProfile?.skills || [];
@@ -2469,7 +2542,7 @@ async function executeTaskWithAI(aiMember, task, userId) {
 当前任务：
 标题：${task.title}
 描述：${task.description || '暂无描述'}
-所需技能：${normalizeArray(task.skillsRequired).join(', ') || '暂无'}
+所需技能：${task.skills_required?.join(', ') || '暂无'}
 
 请完成这个任务，并给出：
 1. 具体的执行步骤
@@ -2494,27 +2567,22 @@ async function executeTaskWithAI(aiMember, task, userId) {
     const completion = completionMatch ? Math.min(100, Math.max(0, parseInt(completionMatch[1]))) : 90;
 
     // 5. 更新任务
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: {
-        progress: completion,
-        status: completion >= 90 ? 'completed' : 'in_progress',
-        aiExecutionResult: result,
-        notes: `AI执行完成，完成度：${completion}%`
-      }
-    });
+    task.progress = completion;
+    task.status = completion >= 90 ? 'completed' : 'in_progress';
+    task.aiExecutionResult = result;
+    task.updated_at = new Date().toISOString();
+    task.notes = `AI执行完成，完成度：${completion}%`;
+
+    saveData();
 
     console.log(`[AI] ${aiMember.username} 完成任务 "${task.title}"，完成度：${completion}%`);
 
   } catch (error) {
     console.error('[AI] Execution error:', error);
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: {
-        status: 'blocked',
-        notes: `AI执行失败: ${error.message}`
-      }
-    });
+    task.status = 'blocked';
+    task.notes = `AI执行失败: ${error.message}`;
+    task.updated_at = new Date().toISOString();
+    saveData();
   }
 }
 
@@ -2529,11 +2597,15 @@ app.post('/api/tasks/:id/multi-ai-collaborate', authenticateToken, async (req, r
     const userId = req.userId;
 
     // 1. 获取任务
-    const task = await getWorkspaceTask(userId, taskId);
+    const userTasks = getUserStore('tasks', userId);
+    const task = userTasks.get(taskId);
 
     if (!task) {
       return res.status(404).json({ success: false, message: '任务不存在' });
     }
+
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
 
     // 2. 获取Coordinator AI
     const coordinatorAI = await prisma.user.findFirst({
@@ -2543,6 +2615,7 @@ app.post('/api/tasks/:id/multi-ai-collaborate', authenticateToken, async (req, r
     });
 
     if (!coordinatorAI) {
+      await prisma.$disconnect();
       return res.status(404).json({
         success: false,
         message: '请先创建Coordinator AI成员'
@@ -2556,25 +2629,22 @@ app.post('/api/tasks/:id/multi-ai-collaborate', authenticateToken, async (req, r
       }
     });
 
+    await prisma.$disconnect();
+
     // 4. 初始化多AI协作状态
-    const multiAI = {
+    task.multiAI = {
       enabled: true,
       coordinator: coordinatorAI.id,
       status: 'analyzing',
       subtasks: [],
       startedAt: new Date().toISOString()
     };
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: {
-        status: 'in_progress',
-        progress: 5,
-        multiAI
-      }
-    });
+    task.status = 'in_progress';
+    task.progress = 5;
+    saveData();
 
     // 5. 启动多AI协作流程（异步）
-    startMultiAICollaboration(task.id, coordinatorAI, allAIMembers, userId).catch(err => {
+    startMultiAICollaboration(task, coordinatorAI, allAIMembers, userId).catch(err => {
       console.error('[MultiAI] Collaboration error:', err);
     });
 
@@ -2590,36 +2660,23 @@ app.post('/api/tasks/:id/multi-ai-collaborate', authenticateToken, async (req, r
 });
 
 // 多AI协作主流程
-async function startMultiAICollaboration(taskId, coordinatorAI, allAIMembers, userId) {
-  try {
-    const task = await getWorkspaceTask(userId, taskId);
-    if (!task) {
-      console.error('[MultiAI] 任务不存在，终止协作');
-      return;
-    }
-    let multiAI = task.multiAI || {
-      enabled: true,
-      coordinator: coordinatorAI.id,
-      status: 'analyzing',
-      subtasks: [],
-      startedAt: new Date().toISOString()
-    };
+async function startMultiAICollaboration(task, coordinatorAI, allAIMembers, userId) {
+  const userTasks = getUserStore('tasks', userId);
 
+  try {
     // === 阶段1：Coordinator分析并拆解任务 ===
     console.log(`[MultiAI] Coordinator开始分析任务: ${task.title}`);
 
-    multiAI.status = 'analyzing';
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: { progress: 10, multiAI }
-    });
+    task.multiAI.status = 'analyzing';
+    task.progress = 10;
+    saveData();
 
     const analysisPrompt = `你是Coordinator AI，负责协调团队AI成员完成复杂任务。
 
 当前任务：
 标题：${task.title}
 描述：${task.description || '暂无描述'}
-所需技能：${normalizeArray(task.skillsRequired).join(', ') || '暂无'}
+所需技能：${task.skills_required?.join(', ') || '暂无'}
 
 可用的AI成员类型：
 - code_master: 负责代码开发
@@ -2662,17 +2719,15 @@ async function startMultiAICollaboration(taskId, coordinatorAI, allAIMembers, us
     // === 阶段2：分配子任务给对应AI并行执行 ===
     console.log(`[MultiAI] 拆解为${analysis.subtasks.length}个子任务`);
 
-    multiAI.status = 'executing';
-    multiAI.subtasks = analysis.subtasks.map((st, idx) => ({
+    task.multiAI.status = 'executing';
+    task.multiAI.subtasks = analysis.subtasks.map((st, idx) => ({
       id: `subtask-${idx}`,
       ...st,
       status: 'pending',
       result: null
     }));
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: { progress: 20, multiAI }
-    });
+    task.progress = 20;
+    saveData();
 
     // 并行执行子任务
     const subtaskPromises = analysis.subtasks.map(async (subtask, index) => {
@@ -2686,12 +2741,9 @@ async function startMultiAICollaboration(taskId, coordinatorAI, allAIMembers, us
       console.log(`[MultiAI] ${memberName} 开始处理: ${subtask.title}`);
 
       // 更新子任务状态
-      multiAI.subtasks[index].status = 'in_progress';
-      multiAI.subtasks[index].aiMember = memberName;
-      await prisma.workspaceTask.update({
-        where: { id: task.id },
-        data: { multiAI }
-      });
+      task.multiAI.subtasks[index].status = 'in_progress';
+      task.multiAI.subtasks[index].aiMember = memberName;
+      saveData();
 
       // 调用AI执行子任务
       const executionPrompt = `你是${memberName}，专长：${AI_MEMBER_PRESETS[subtask.aiType]?.skills?.join(', ') || '通用能力'}
@@ -2707,13 +2759,10 @@ async function startMultiAICollaboration(taskId, coordinatorAI, allAIMembers, us
       console.log(`[MultiAI] ${memberName} 完成: ${subtask.title}`);
 
       // 更新子任务结果
-      multiAI.subtasks[index].status = 'completed';
-      multiAI.subtasks[index].result = result;
-      const progress = Math.min(80, 20 + (index + 1) * (60 / analysis.subtasks.length));
-      await prisma.workspaceTask.update({
-        where: { id: task.id },
-        data: { multiAI, progress }
-      });
+      task.multiAI.subtasks[index].status = 'completed';
+      task.multiAI.subtasks[index].result = result;
+      task.progress = Math.min(80, 20 + (index + 1) * (60 / analysis.subtasks.length));
+      saveData();
 
       return {
         subtask,
@@ -2729,11 +2778,9 @@ async function startMultiAICollaboration(taskId, coordinatorAI, allAIMembers, us
     // === 阶段3：Coordinator汇总结果 ===
     console.log(`[MultiAI] Coordinator汇总结果`);
 
-    multiAI.status = 'summarizing';
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: { progress: 85, multiAI }
-    });
+    task.multiAI.status = 'summarizing';
+    task.progress = 85;
+    saveData();
 
     const summaryPrompt = `你是Coordinator AI，所有AI成员已完成任务，请汇总结果。
 
@@ -2755,39 +2802,28 @@ ${r.result}
     const finalReport = await callClaudeAPI(summaryPrompt, '请汇总所有结果');
 
     // === 阶段4：更新任务状态 ===
-    multiAI.status = 'completed';
-    multiAI.finalReport = finalReport;
-    multiAI.completedAt = new Date().toISOString();
+    task.multiAI.status = 'completed';
+    task.multiAI.finalReport = finalReport;
+    task.multiAI.completedAt = new Date().toISOString();
 
-    await prisma.workspaceTask.update({
-      where: { id: task.id },
-      data: {
-        status: 'completed',
-        progress: 100,
-        notes: '多AI协作完成，等待人类审核',
-        aiExecutionResult: finalReport,
-        multiAI
-      }
-    });
+    task.status = 'completed';
+    task.progress = 100;
+    task.notes = '多AI协作完成，等待人类审核';
+    task.aiExecutionResult = finalReport;
+    task.updated_at = new Date().toISOString();
+
+    saveData();
 
     console.log(`[MultiAI] 任务完成: ${task.title}`);
 
   } catch (error) {
     console.error('[MultiAI] 执行失败:', error);
-    const task = await getWorkspaceTask(userId, taskId);
-    if (task) {
-      const multiAI = task.multiAI || { enabled: true };
-      multiAI.status = 'failed';
-      multiAI.error = error.message;
-      await prisma.workspaceTask.update({
-        where: { id: task.id },
-        data: {
-          status: 'blocked',
-          notes: `多AI协作失败: ${error.message}`,
-          multiAI
-        }
-      });
-    }
+    task.multiAI.status = 'failed';
+    task.multiAI.error = error.message;
+    task.status = 'blocked';
+    task.notes = `多AI协作失败: ${error.message}`;
+    task.updated_at = new Date().toISOString();
+    saveData();
   }
 }
 
@@ -2797,7 +2833,8 @@ app.get('/api/tasks/:id/multi-ai-progress', authenticateToken, async (req, res) 
     const taskId = req.params.id;
     const userId = req.userId;
 
-    const task = await getWorkspaceTask(userId, taskId);
+    const userTasks = getUserStore('tasks', userId);
+    const task = userTasks.get(taskId);
 
     if (!task) {
       return res.status(404).json({
@@ -2839,7 +2876,7 @@ app.get('/api/admin/overview', authenticateToken, requireAdmin, async (req, res)
       prisma.user.count({ where: { role: 'admin' } }),
       prisma.user.count({ where: { status: 'member' } }),
       prisma.user.count({ where: { status: 'candidate' } }),
-      prisma.user.count({ where: { email: { endsWith: '@supercoordination.ai' } } })
+      prisma.user.count({ where: { email: { endsWith: '@ai.supercoord.local' } } })
     ]);
 
     // 统计任务（使用Prisma）
@@ -2894,9 +2931,9 @@ app.get('/api/admin/users', authenticateToken, requireAdmin, async (req, res) =>
     if (role) where.role = role;
     if (status) where.status = status;
     if (isAI === 'true') {
-      where.email = { endsWith: '@supercoordination.ai' };
+      where.email = { endsWith: '@ai.supercoord.local' };
     } else if (isAI === 'false') {
-      where.NOT = { email: { endsWith: '@supercoordination.ai' } };
+      where.NOT = { email: { endsWith: '@ai.supercoord.local' } };
     }
     if (search) {
       where.OR = [
@@ -2929,7 +2966,7 @@ app.get('/api/admin/users', authenticateToken, requireAdmin, async (req, res) =>
       success: true,
       users: users.map(u => ({
         ...u,
-        isAI: u.email.endsWith('@supercoordination.ai')
+        isAI: u.email.endsWith('@ai.supercoord.local')
       })),
       pagination: {
         page: parseInt(page),
@@ -2948,6 +2985,9 @@ app.get('/api/admin/users', authenticateToken, requireAdmin, async (req, res) =>
 app.get('/api/admin/users/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
     const user = await prisma.user.findUnique({
       where: { id },
       include: {
@@ -2963,20 +3003,28 @@ app.get('/api/admin/users/:id', authenticateToken, requireAdmin, async (req, res
     });
 
     if (!user) {
+      await prisma.$disconnect();
       return res.status(404).json({ success: false, message: '用户不存在' });
     }
 
     // 获取用户的任务统计
-    const [taskCount, completedTaskCount] = await Promise.all([
-      prisma.workspaceTask.count({ where: { ownerId: id } }),
-      prisma.workspaceTask.count({ where: { ownerId: id, status: 'completed' } })
-    ]);
+    let taskCount = 0, completedTaskCount = 0;
+    store.tasks.forEach(userTasks => {
+      userTasks.forEach(task => {
+        if (task.assigned_to === id || task.created_by === id) {
+          taskCount++;
+          if (task.status === 'completed') completedTaskCount++;
+        }
+      });
+    });
+
+    await prisma.$disconnect();
 
     res.json({
       success: true,
       user: {
         ...user,
-        isAI: user.email.endsWith('@supercoordination.ai'),
+        isAI: user.email.endsWith('@ai.supercoord.local'),
         taskStats: {
           total: taskCount,
           completed: completedTaskCount
@@ -3344,27 +3392,30 @@ app.get('/api/admin/analytics/tasks', authenticateToken, requireAdmin, async (re
       byWuxing: { '火': 0, '金': 0, '木': 0, '水': 0, '土': 0, '未设置': 0 }
     };
 
-    const tasks = await prisma.workspaceTask.findMany();
-    tasks.forEach(task => {
-      stats.total++;
-      switch(task.status) {
-        case 'pending': stats.pending++; break;
-        case 'in_progress': stats.inProgress++; break;
-        case 'completed': stats.completed++; break;
-        case 'blocked': stats.blocked++; break;
-      }
+    store.tasks.forEach(userTasks => {
+      userTasks.forEach(task => {
+        if (task.status !== 'deleted') {
+          stats.total++;
+          switch(task.status) {
+            case 'pending': stats.pending++; break;
+            case 'in_progress': stats.inProgress++; break;
+            case 'completed': stats.completed++; break;
+            case 'blocked': stats.blocked++; break;
+          }
 
-      // 按优先级统计
-      if (task.priority && stats.byPriority[task.priority] !== undefined) {
-        stats.byPriority[task.priority]++;
-      }
+          // 按优先级统计
+          if (task.priority && stats.byPriority[task.priority] !== undefined) {
+            stats.byPriority[task.priority]++;
+          }
 
-      // 按五行统计
-      if (task.wuxing && stats.byWuxing[task.wuxing] !== undefined) {
-        stats.byWuxing[task.wuxing]++;
-      } else {
-        stats.byWuxing['未设置']++;
-      }
+          // 按五行统计
+          if (task.wuxing && stats.byWuxing[task.wuxing] !== undefined) {
+            stats.byWuxing[task.wuxing]++;
+          } else {
+            stats.byWuxing['未设置']++;
+          }
+        }
+      });
     });
 
     // 计算完成率
@@ -3454,10 +3505,13 @@ app.get('/api/admin/analytics/points', authenticateToken, requireAdmin, async (r
 // GET /api/admin/analytics/ai-usage - AI使用统计
 app.get('/api/admin/analytics/ai-usage', authenticateToken, requireAdmin, async (req, res) => {
   try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
     // 获取AI成员
     const aiMembers = await prisma.user.findMany({
       where: {
-        email: { endsWith: '@supercoordination.ai' }
+        email: { endsWith: '@ai.supercoord.local' }
       },
       select: {
         id: true,
@@ -3472,31 +3526,38 @@ app.get('/api/admin/analytics/ai-usage', authenticateToken, requireAdmin, async 
     const aiMemberTaskStats = {};
 
     aiMembers.forEach(ai => {
-      aiMemberTaskStats[ai.username] = { name: ai.username, assigned: 0, completed: 0 };
+      aiMemberTaskStats[ai.id] = { name: ai.username, assigned: 0, completed: 0 };
     });
 
-    const tasks = await prisma.workspaceTask.findMany({
-      include: { assignee: true }
-    });
-
-    tasks.forEach(task => {
-      if (task.assignee && aiMemberTaskStats[task.assignee.name]) {
-        aiTaskCount++;
-        aiMemberTaskStats[task.assignee.name].assigned++;
-        if (task.status === 'completed') {
-          aiCompletedTaskCount++;
-          aiMemberTaskStats[task.assignee.name].completed++;
+    store.tasks.forEach(userTasks => {
+      userTasks.forEach(task => {
+        if (task.assigned_to && aiMemberTaskStats[task.assigned_to]) {
+          aiTaskCount++;
+          aiMemberTaskStats[task.assigned_to].assigned++;
+          if (task.status === 'completed') {
+            aiCompletedTaskCount++;
+            aiMemberTaskStats[task.assigned_to].completed++;
+          }
         }
-      }
+      });
     });
 
     // 统计多AI协作次数
-    const multiAICount = tasks.filter(task => !!task.multiAI).length;
+    let multiAICount = 0;
+    store.tasks.forEach(userTasks => {
+      userTasks.forEach(task => {
+        if (task.multiAI) {
+          multiAICount++;
+        }
+      });
+    });
 
     // 找出最活跃的AI
     const mostActiveAI = Object.entries(aiMemberTaskStats)
       .map(([id, stats]) => ({ id, ...stats }))
       .sort((a, b) => b.assigned - a.assigned)[0];
+
+    await prisma.$disconnect();
 
     res.json({
       success: true,
@@ -3507,7 +3568,7 @@ app.get('/api/admin/analytics/ai-usage', authenticateToken, requireAdmin, async 
         multiAICount,
         aiMembers: aiMembers.map(ai => ({
           ...ai,
-          stats: aiMemberTaskStats[ai.username]
+          stats: aiMemberTaskStats[ai.id]
         })),
         mostActiveAI: mostActiveAI || null
       }
@@ -3528,7 +3589,7 @@ app.get('/api/admin/analytics/wuxing', authenticateToken, requireAdmin, async (r
       where: {
         pwpCompleted: true,
         NOT: {
-          email: { endsWith: '@supercoordination.ai' }
+          email: { endsWith: '@ai.supercoord.local' }
         }
       },
       select: { pwpProfile: true }
@@ -3598,7 +3659,7 @@ app.get('/api/admin/settings', authenticateToken, requireAdmin, async (req, res)
         },
         ai: {
           apiKeyConfigured: !!process.env.ANTHROPIC_API_KEY,
-          defaultModel: process.env.ANTHROPIC_MODEL || process.env.AI_MODEL || 'claude-sonnet-4-20250514',
+          defaultModel: process.env.AI_MODEL || 'claude-sonnet-4-5-20250514',
           maxTokens: parseInt(process.env.AI_MAX_TOKENS) || 1024
         },
         system: {
@@ -3662,49 +3723,27 @@ app.post('/api/admin/approve-all-candidates', authenticateToken, requireAdmin, a
   }
 });
 
-// 统一错误处理中间件（需放在所有路由之后）
-app.use((err, req, res, next) => {
-  console.error('[ERROR]', err);
-
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || '服务器内部错误',
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
-  });
-});
-
 // ========================================
 // 健康检查
 // ========================================
 
 app.get('/health', (req, res) => {
-  Promise.all([
-    prisma.workspaceTask.count(),
-    prisma.workspaceMember.count()
-  ]).then(([taskCount, memberCount]) => {
-    res.json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      stats: {
-        tasks: taskCount,
-        members: memberCount
-      }
-    });
-  }).catch(() => {
-    res.json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      stats: {
-        tasks: 0,
-        members: 0
-      }
-    });
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    stats: {
+      tasks: store.tasks.size,
+      members: store.members.size
+    }
   });
 });
 
 // ========================================
 // 启动服务器
 // ========================================
+
+// 启动时加载数据
+loadData();
 
 // 创建HTTP服务器
 const server = http.createServer(app);
@@ -3722,19 +3761,11 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('     超协体 · 人机协同MCP服务器 v2.0 启动成功！');
   console.log('🌟════════════════════════════════════════════════════🌟');
   console.log('');
-  Promise.all([
-    prisma.workspaceTask.count(),
-    prisma.workspaceMember.count()
-  ]).then(([taskCount, memberCount]) => {
-    console.log(`[数据加载] Workspace Tasks: ${taskCount}, Workspace Members: ${memberCount}`);
-  }).catch(() => {
-    console.log('[数据加载] Workspace 数据统计失败');
-  });
   console.log(`📍 本地访问: http://localhost:${PORT}`);
-  console.log(`📍 局域网访问: http://${LAN_HOST}:${PORT}`);
+  console.log(`📍 局域网访问: http://192.168.1.3:${PORT}`);
   console.log(`🌐 Web仪表盘: http://localhost:${PORT}`);
-  console.log(`🔗 MCP Manifest: http://${LAN_HOST}:${PORT}/mcp/manifest`);
-  console.log(`💚 Health Check: http://${LAN_HOST}:${PORT}/health`);
+  console.log(`🔗 MCP Manifest: http://192.168.1.3:${PORT}/mcp/manifest`);
+  console.log(`💚 Health Check: http://192.168.1.3:${PORT}/health`);
   console.log(`⚡ WebSocket服务: ws://localhost:${PORT}`);
   console.log('');
   console.log('📋 可用工具（10个）:');
@@ -3750,7 +3781,7 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('  🔟 list_all_tasks         - 列出所有任务');
   console.log('');
   console.log('👥 社区协作模式：邻居可通过局域网连接');
-  console.log(`   配置地址：http://${LAN_HOST}:${PORT}/mcp`);
+  console.log('   配置地址：http://192.168.1.3:3000/mcp');
   console.log('');
   console.log('⚡ 五行飞轮已启动，等待连接...');
   console.log('');
