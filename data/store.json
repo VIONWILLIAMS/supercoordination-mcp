@@ -1,70 +1,107 @@
 {
   "tasks": [
     [
-      "ccb2b9cb-3a5f-4b38-b40e-99f7092ba5c7",
-      {
-        "id": "ccb2b9cb-3a5f-4b38-b40e-99f7092ba5c7",
-        "title": "撰写超协体社区推广文案",
-        "description": "向楼里邻居介绍超协体的核心价值，包括朋友圈文案、楼栋群公告、邀请短信",
-        "wuxing": "火",
-        "priority": "A",
-        "skills_required": [
-          "写作",
-          "内容创作",
-          "文案策划"
+      "c2acfba1-bde5-4783-a6c7-de05880b256d",
+      [
+        [
+          "b8435d5e-1439-4a4b-9fda-1ff00cd1e407",
+          {
+            "id": "b8435d5e-1439-4a4b-9fda-1ff00cd1e407",
+            "title": "开发用户画像分析功能",
+            "description": "实现基于五行理论的用户画像可视化分析模块，包括雷达图展示和匹配度计算",
+            "wuxing": null,
+            "priority": "high",
+            "skills_required": [],
+            "status": "pending",
+            "progress": 0,
+            "assigned_to": null,
+            "created_by": "c2acfba1-bde5-4783-a6c7-de05880b256d",
+            "reward_points": 20,
+            "created_at": "2026-02-01T17:01:00.281Z",
+            "updated_at": "2026-02-01T17:01:00.281Z"
+          }
         ],
-        "status": "pending",
-        "progress": 0,
-        "assigned_to": null,
-        "created_at": "2026-01-20T17:41:21.279Z",
-        "updated_at": "2026-01-20T17:41:21.279Z"
-      }
+        [
+          "ef1663cc-28b5-459a-a257-058b5ce138e3",
+          {
+            "id": "ef1663cc-28b5-459a-a257-058b5ce138e3",
+            "title": "重新设计管理后台UI界面",
+            "description": "优化管理后台的用户体验，采用现代化设计风格，提升操作效率",
+            "wuxing": null,
+            "priority": "medium",
+            "skills_required": [],
+            "status": "pending",
+            "progress": 0,
+            "assigned_to": null,
+            "created_by": "c2acfba1-bde5-4783-a6c7-de05880b256d",
+            "reward_points": 20,
+            "created_at": "2026-02-01T17:01:01.606Z",
+            "updated_at": "2026-02-01T17:01:01.606Z"
+          }
+        ],
+        [
+          "3bcfecae-23f1-4522-9997-f703a2dc1279",
+          {
+            "id": "3bcfecae-23f1-4522-9997-f703a2dc1279",
+            "title": "用户行为数据分析报告",
+            "description": "分析过去一个月的用户行为数据，生成增长报告和优化建议",
+            "wuxing": null,
+            "priority": "high",
+            "skills_required": [],
+            "status": "pending",
+            "progress": 0,
+            "assigned_to": null,
+            "created_by": "c2acfba1-bde5-4783-a6c7-de05880b256d",
+            "reward_points": 20,
+            "created_at": "2026-02-01T17:01:02.910Z",
+            "updated_at": "2026-02-01T17:01:02.910Z"
+          }
+        ],
+        [
+          "2389df6f-e9e8-4980-964e-3a3c02dd10e5",
+          {
+            "id": "2389df6f-e9e8-4980-964e-3a3c02dd10e5",
+            "title": "策划用户增长活动方案",
+            "description": "设计一个引流拉新的运营活动，目标获取1000名新用户",
+            "wuxing": null,
+            "priority": "high",
+            "skills_required": [],
+            "status": "pending",
+            "progress": 0,
+            "assigned_to": null,
+            "created_by": "c2acfba1-bde5-4783-a6c7-de05880b256d",
+            "reward_points": 20,
+            "created_at": "2026-02-01T17:01:19.453Z",
+            "updated_at": "2026-02-01T17:01:19.453Z"
+          }
+        ],
+        [
+          "b6fb974e-270d-4fea-9187-6c25f672ec22",
+          {
+            "id": "b6fb974e-270d-4fea-9187-6c25f672ec22",
+            "title": "系统性能优化与监控",
+            "description": "优化数据库查询性能，添加APM监控，提升系统响应速度50%",
+            "wuxing": null,
+            "priority": "medium",
+            "skills_required": [],
+            "status": "pending",
+            "progress": 0,
+            "assigned_to": null,
+            "created_by": "c2acfba1-bde5-4783-a6c7-de05880b256d",
+            "reward_points": 20,
+            "created_at": "2026-02-01T17:01:20.763Z",
+            "updated_at": "2026-02-01T17:01:20.763Z"
+          }
+        ]
+      ]
     ]
   ],
   "members": [
     [
-      "8587f8bb-a740-467e-9a8e-ccc80eec04a2",
-      {
-        "id": "8587f8bb-a740-467e-9a8e-ccc80eec04a2",
-        "name": "十笔",
-        "skills": [
-          "写作",
-          "内容创作",
-          "文案"
-        ],
-        "wuxing_profile": {
-          "木": 25,
-          "水": 25,
-          "火": 20,
-          "金": 15,
-          "土": 15
-        },
-        "status": "active",
-        "created_at": "2026-01-20T17:40:37.970Z"
-      }
-    ],
-    [
-      "728a1bc4-789b-4afc-87f7-d4b2990b1f17",
-      {
-        "id": "728a1bc4-789b-4afc-87f7-d4b2990b1f17",
-        "name": "Claude_助手",
-        "skills": [
-          "AI协作",
-          "代码生成",
-          "架构设计"
-        ],
-        "wuxing_profile": {
-          "火": 5,
-          "金": 30,
-          "木": 40,
-          "水": 20,
-          "土": 5
-        },
-        "status": "active",
-        "created_at": "2026-01-31T00:30:57.119Z"
-      }
+      "c2acfba1-bde5-4783-a6c7-de05880b256d",
+      []
     ]
   ],
   "resources": [],
-  "saved_at": "2026-01-31T00:30:57.119Z"
+  "saved_at": "2026-02-01T17:01:20.763Z"
 }
