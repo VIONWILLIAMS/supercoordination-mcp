@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -50,8 +49,6 @@ model User {
   ownedProjects        Project[]          @relation("ProjectOwner")
   projectMemberships   ProjectMember[]
   pwpRecords           PWPRecord[]
-  workspaceMembers     WorkspaceMember[]
-  workspaceTasks       WorkspaceTask[]
 
   @@index([pwpCompleted])
   @@index([status])
@@ -346,53 +343,4 @@ model PWPRecord {
   @@index([status])
   @@index([occurredAt(sort: Desc)])
   @@map("pwp_records")
-}
-
-// 工作区成员（用于任务匹配/协作）
-model WorkspaceMember {
-  id            String   @id @default(uuid())
-  ownerId       String   @map("owner_id")
-  name          String
-  skills        Json     @default("[]")
-  wuxingProfile Json     @default("{\"火\":20,\"金\":20,\"木\":20,\"水\":20,\"土\":20}") @map("wuxing_profile")
-  status        String   @default("active")
-
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  assignedTasks WorkspaceTask[] @relation("WorkspaceTaskAssignee")
-
-  @@index([ownerId])
-  @@map("workspace_members")
-}
-
-// 工作区任务（用于轻量级任务与MCP工具）
-model WorkspaceTask {
-  id               String   @id @default(uuid())
-  ownerId          String   @map("owner_id")
-  title            String
-  description      String?  @db.Text
-  wuxing           String?
-  priority         String   @default("B")
-  skillsRequired   Json     @default("[]") @map("skills_required")
-  status           String   @default("pending")
-  progress         Int      @default(0)
-  assignedMemberId String?  @map("assigned_member_id")
-  createdByUserId  String   @map("created_by_user_id")
-  rewardPoints     Int      @default(20) @map("reward_points")
-  notes            String?  @db.Text
-  aiExecutionResult String? @db.Text @map("ai_execution_result")
-  multiAI          Json?    @map("multi_ai")
-
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
-
-  owner            User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  assignee         WorkspaceMember? @relation("WorkspaceTaskAssignee", fields: [assignedMemberId], references: [id], onDelete: SetNull)
-
-  @@index([ownerId])
-  @@index([assignedMemberId])
-  @@index([status])
-  @@map("workspace_tasks")
 }
