@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#545BE8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的工作台 - 超协体</title>
@@ -21,7 +16,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -33,7 +28,7 @@
 
         /* 顶部导航栏 */
         .topbar {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 16px 24px;
             margin-bottom: 20px;
@@ -52,7 +47,7 @@
         .logo {
             font-size: 24px;
             font-weight: bold;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -67,11 +62,11 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--surface-50);
+            color: white;
             font-weight: bold;
             font-size: 18px;
         }
@@ -83,33 +78,33 @@
 
         .username {
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
         }
 
         .points {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .points-value {
-            color: var(--warning);
+            color: #ffa726;
             font-weight: 600;
         }
 
         .btn-logout {
             padding: 8px 16px;
-            background: var(--surface-50);
+            background: #f5f5f5;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
-            color: var(--text-secondary);
+            color: #666;
             transition: all 0.3s;
         }
 
         .btn-logout:hover {
-            background: var(--surface-200);
-            color: var(--text-main);
+            background: #e0e0e0;
+            color: #333;
         }
 
         /* 导航菜单 */
@@ -121,7 +116,7 @@
 
         .nav-link {
             padding: 8px 16px;
-            color: var(--text-secondary);
+            color: #666;
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
@@ -129,13 +124,13 @@
         }
 
         .nav-link:hover {
-            background: var(--surface-100);
-            color: var(--text-main);
+            background: #f0f0f0;
+            color: #333;
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         @media (max-width: 900px) {
@@ -166,7 +161,7 @@
 
         /* 卡片样式 */
         .card {
-            background: var(--surface-50);
+            background: white;
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -176,7 +171,7 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 16px;
-            color: var(--text-main);
+            color: #333;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -189,47 +184,42 @@
         /* 快速操作卡片 */
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 768px) {
             .quick-actions {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-template-columns: 1fr 1fr;
             }
         }
 
-        @media (max-width: 680px) {
-            .quick-actions {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
-        }
-
-        .quick-actions .action-btn {
-            padding: 20px 18px;
-            background: var(--surface-50);
-            color: var(--text-main);
-            border: 1px solid var(--surface-200);
-            border-radius: 999px;
+        .action-btn {
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             text-decoration: none;
             text-align: center;
-            min-height: 100px;
-            box-shadow: var(--shadow-hard);
         }
 
-        .quick-actions .action-btn:hover {
+        .action-btn:hover {
             transform: translateY(-2px);
-            border-color: rgba(84, 91, 232, 0.35);
-            box-shadow: var(--glow-purple);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-icon {
+            font-size: 24px;
         }
 
         /* 统计卡片 */
@@ -240,14 +230,14 @@
         .stat-value {
             font-size: 36px;
             font-weight: bold;
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
 
         .stat-label {
-            color: var(--text-secondary);
+            color: #666;
             font-size: 14px;
         }
 
@@ -255,7 +245,7 @@
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .empty-icon {
@@ -268,14 +258,14 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--text-secondary);
+            color: #999;
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid var(--surface-50);
-            border-top: 3px solid var(--brand-purple);
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -300,9 +290,9 @@
 
         .task-item {
             padding: 16px;
-            background: var(--surface-50);
+            background: #f8f9fa;
             border-radius: 10px;
-            border-left: 4px solid var(--brand-purple);
+            border-left: 4px solid #667eea;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
@@ -310,13 +300,13 @@
         }
 
         .task-item:hover {
-            background: var(--surface-100);
+            background: #f0f4ff;
             transform: translateX(4px);
         }
 
         .task-title {
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 8px;
         }
 
@@ -324,25 +314,25 @@
             display: flex;
             gap: 12px;
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .task-status {
             padding: 2px 8px;
-            background: rgba(59, 130, 246, 0.18);
-            color: var(--info);
+            background: #e3f2fd;
+            color: #1976d2;
             border-radius: 4px;
             font-size: 11px;
         }
 
         .task-status.completed {
-            background: rgba(34, 197, 94, 0.18);
-            color: var(--success);
+            background: #e8f5e9;
+            color: #388e3c;
         }
 
         .task-status.in-progress {
-            background: var(--surface-50)3e0;
-            color: var(--warning);
+            background: #fff3e0;
+            color: #f57c00;
         }
 
         /* 五行能量条 */
@@ -359,7 +349,7 @@
 
         .wuxing-progress {
             height: 8px;
-            background: var(--surface-200);
+            background: #e0e0e0;
             border-radius: 4px;
             overflow: hidden;
         }
@@ -369,16 +359,16 @@
             transition: width 0.5s;
         }
 
-        .wuxing-fire { background: linear-gradient(90deg, var(--error), var(--error)); }
-        .wuxing-metal { background: linear-gradient(90deg, var(--warning), var(--warning)); }
-        .wuxing-wood { background: linear-gradient(90deg, var(--brand-mint), var(--brand-mint)); }
-        .wuxing-water { background: linear-gradient(90deg, var(--info), var(--info)); }
-        .wuxing-earth { background: linear-gradient(90deg, var(--brand-purple), var(--brand-purple-dark)); }
+        .wuxing-fire { background: linear-gradient(90deg, #ff6b6b, #ff2e63); }
+        .wuxing-metal { background: linear-gradient(90deg, #ffd93d, #f9ca24); }
+        .wuxing-wood { background: linear-gradient(90deg, #6bff92, #06d6a0); }
+        .wuxing-water { background: linear-gradient(90deg, #00d9ff, #4facfe); }
+        .wuxing-earth { background: linear-gradient(90deg, #c77dff, #9d4edd); }
 
         /* 候选者列表 */
         .candidate-item {
             padding: 16px;
-            background: var(--surface-50);
+            background: #f8f9fa;
             border-radius: 10px;
             margin-bottom: 12px;
             display: flex;
@@ -392,13 +382,13 @@
 
         .candidate-name {
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             margin-bottom: 4px;
         }
 
         .candidate-meta {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .candidate-actions {
@@ -417,8 +407,8 @@
         }
 
         .btn-approve {
-            background: var(--success);
-            color: var(--surface-50);
+            background: #4caf50;
+            color: white;
         }
 
         .btn-approve:hover {
@@ -426,8 +416,8 @@
         }
 
         .btn-reject {
-            background: var(--error);
-            color: var(--surface-50);
+            background: #f44336;
+            color: white;
         }
 
         .btn-reject:hover {
@@ -436,12 +426,12 @@
 
         /* 推荐任务样式 */
         .recommended-tasks-card {
-            background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .recommended-tasks-card .card-title {
-            color: var(--surface-50);
+            color: white;
         }
 
         .recommendation-badge {
@@ -461,7 +451,7 @@
 
         .recommended-task-card {
             background: rgba(255, 255, 255, 0.95);
-            color: var(--text-main);
+            color: #333;
             padding: 16px;
             border-radius: 12px;
             cursor: pointer;
@@ -484,7 +474,7 @@
 
         .rec-task-title {
             font-weight: 600;
-            color: var(--text-main);
+            color: #333;
             flex: 1;
             margin-right: 10px;
             line-height: 1.3;
@@ -492,19 +482,19 @@
 
         .match-score {
             display: inline-block;
-            background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
-            var(--surface-50)-space: nowrap;
+            white-space: nowrap;
         }
 
         .growth-badge {
             display: inline-block;
-            background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
-            color: var(--surface-50);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
             padding: 3px 8px;
             border-radius: 4px;
             font-size: 11px;
@@ -513,14 +503,14 @@
 
         .rec-task-meta {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #666;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
 
         .rec-task-meta span {
-            background: var(--surface-100);
+            background: #f3f4f6;
             padding: 2px 8px;
             border-radius: 4px;
         }
@@ -537,12 +527,9 @@
 
         .recommended-tasks-card .spinner {
             border-color: rgba(255,255,255,0.3);
-            border-top-color: var(--surface-50);
+            border-top-color: white;
         }
     </style>
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -551,16 +538,16 @@
             <div class="topbar-left">
                 <div class="logo">超协体</div>
                 <nav class="navbar-nav">
-                <a href="/dashboard.html" class="nav-link active">工作台</a>
-                <a href="/task-create.html" class="nav-link">创建任务</a>
-                <a href="/my-tasks.html" class="nav-link">我的任务</a>
-                <a href="/crystal-library.html" class="nav-link">晶体库</a>
-                <a href="/members.html" class="nav-link">成员</a>
-                <a href="/profile.html" class="nav-link">画像</a>
-            </nav>
-                <div style="display: flex; align-items: center; gap: 6px; margin-left: 16px; padding: 6px 12px; background: var(--surface-100); border-radius: 8px;">
-                    <span style="width: 8px; height: 8px; background: var(--brand-mint); border-radius: 50%; animation: pulse 2s infinite;"></span>
-                    <span style="font-size: 13px; color: var(--text-secondary);"><span class="online-count">0</span> 人在线</span>
+                    <a href="/dashboard.html" class="nav-link active">工作台</a>
+                    <a href="/task-create.html" class="nav-link">创建任务</a>
+                    <a href="/my-tasks.html" class="nav-link">我的任务</a>
+                    <a href="/crystal-library.html" class="nav-link">晶体库</a>
+                    <a href="/members.html" class="nav-link">成员</a>
+                    <a href="/profile.html" class="nav-link">画像</a>
+                </nav>
+                <div style="display: flex; align-items: center; gap: 6px; margin-left: 16px; padding: 6px 12px; background: #f0f4ff; border-radius: 8px;">
+                    <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></span>
+                    <span style="font-size: 13px; color: #666;"><span class="online-count">0</span> 人在线</span>
                 </div>
             </div>
             <div class="user-info">
@@ -579,32 +566,40 @@
         <div class="grid">
             <div class="card">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-lightning"></i></span>
+                    <span class="card-icon">⚡</span>
                     快速操作
                 </div>
                 <div class="quick-actions">
                     <a class="action-btn" href="/task-create.html">
+                        <span class="action-icon">📝</span>
                         <span>创建任务</span>
                     </a>
                     <a class="action-btn" href="/my-tasks.html">
+                        <span class="action-icon">📋</span>
                         <span>我的任务</span>
                     </a>
                     <button class="action-btn" onclick="issueTicketDialog()">
+                        <span class="action-icon">🎫</span>
                         <span>发门票</span>
                     </button>
                     <a class="action-btn" href="/members.html">
+                        <span class="action-icon">👥</span>
                         <span>查看成员</span>
                     </a>
                     <button class="action-btn" onclick="checkWuxingBalance()">
+                        <span class="action-icon">☯️</span>
                         <span>五行平衡</span>
                     </button>
                     <a class="action-btn" href="/crystal-library.html">
+                        <span class="action-icon">💡</span>
                         <span>浏览晶体</span>
                     </a>
                     <a class="action-btn" href="/profile.html">
+                        <span class="action-icon">🎨</span>
                         <span>填写画像</span>
                     </a>
-                    <a class="action-btn admin-only" href="/admin.html" id="adminPanelBtn" style="display: none;">
+                    <a class="action-btn admin-only" href="/admin.html" id="adminPanelBtn" style="display: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <span class="action-icon">&#9881;</span>
                         <span>管理后台</span>
                     </a>
                 </div>
@@ -613,7 +608,7 @@
             <!-- 统计数据 -->
             <div class="card stat-card">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-clipboard-text"></i></span>
+                    <span class="card-icon">📋</span>
                     我的任务
                 </div>
                 <div class="stat-value" id="myTaskCount">--</div>
@@ -622,7 +617,7 @@
 
             <div class="card stat-card">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-users"></i></span>
+                    <span class="card-icon">👥</span>
                     团队成员
                 </div>
                 <div class="stat-value" id="memberCount">--</div>
@@ -631,7 +626,7 @@
 
             <div class="card stat-card" onclick="window.location.href='/crystal-library.html'" style="cursor: pointer;">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-diamond"></i></span>
+                    <span class="card-icon">💎</span>
                     我的晶体
                 </div>
                 <div class="stat-value" id="myCrystalCount">--</div>
@@ -640,7 +635,7 @@
 
             <div class="card stat-card" onclick="window.location.href='/projects.html'" style="cursor: pointer;">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-rocket"></i></span>
+                    <span class="card-icon">🚀</span>
                     我的项目
                 </div>
                 <div class="stat-value" id="myProjectCount">--</div>
@@ -652,7 +647,7 @@
         <div class="grid" id="adminPanel" style="display: none;">
             <div class="card" style="grid-column: span 2;">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-shield"></i>️</span>
+                    <span class="card-icon">🛡️</span>
                     候选者管理（管理员）
                 </div>
                 <div id="candidatesList">
@@ -666,27 +661,27 @@
             <!-- AI成员管理 -->
             <div class="card" id="aiMembersCard">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-robot"></i></span>
+                    <span class="card-icon">🤖</span>
                     AI成员管理
                 </div>
                 <div class="ai-create-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
-                    <button onclick="createAIMember('code_master')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, var(--brand-mint) 0%, var(--success) 100%); color: var(--surface-50); border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
-                        <div style="font-size: 20px; margin-bottom: 4px;"><i class="ph-bold ph-laptop"></i></div>
+                    <button onclick="createAIMember('code_master')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">💻</div>
                         <div style="font-weight: 600;">CodeMaster</div>
                         <div style="font-size: 11px; opacity: 0.8;">代码开发</div>
                     </button>
-                    <button onclick="createAIMember('doc_writer')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%); color: var(--surface-50); border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
-                        <div style="font-size: 20px; margin-bottom: 4px;"><i class="ph-bold ph-note-pencil"></i></div>
+                    <button onclick="createAIMember('doc_writer')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">📝</div>
                         <div style="font-weight: 600;">DocWriter</div>
                         <div style="font-size: 11px; opacity: 0.8;">文档撰写</div>
                     </button>
-                    <button onclick="createAIMember('analyst')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%); color: var(--surface-50); border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
-                        <div style="font-size: 20px; margin-bottom: 4px;"><i class="ph-bold ph-chart-bar"></i></div>
+                    <button onclick="createAIMember('analyst')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">📊</div>
                         <div style="font-weight: 600;">Analyst</div>
                         <div style="font-size: 11px; opacity: 0.8;">数据分析</div>
                     </button>
-                    <button onclick="createAIMember('coordinator')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, var(--brand-purple-dark) 0%, var(--brand-purple-dark) 100%); color: var(--surface-50); border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
-                        <div style="font-size: 20px; margin-bottom: 4px;"><i class="ph-bold ph-target"></i></div>
+                    <button onclick="createAIMember('coordinator')" class="ai-type-btn" style="padding: 12px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; transition: transform 0.2s;">
+                        <div style="font-size: 20px; margin-bottom: 4px;">🎯</div>
                         <div style="font-weight: 600;">Coordinator</div>
                         <div style="font-size: 11px; opacity: 0.8;">项目协调</div>
                     </button>
@@ -704,7 +699,7 @@
         <div class="grid" id="recommendedTasksSection" style="display: none;">
             <div class="card recommended-tasks-card" style="grid-column: span 3;">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-target"></i></span>
+                    <span class="card-icon">🎯</span>
                     为你推荐
                     <span class="recommendation-badge">AI智能匹配</span>
                 </div>
@@ -721,7 +716,7 @@
         <div class="grid">
             <div class="card" style="grid-column: span 2;">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-push-pin"></i></span>
+                    <span class="card-icon">📌</span>
                     最近任务
                 </div>
                 <div id="taskList" class="task-list">
@@ -734,13 +729,13 @@
 
             <div class="card">
                 <div class="card-title">
-                    <span class="card-icon"><i class="ph-bold ph-yin-yang"></i>️</span>
+                    <span class="card-icon">☯️</span>
                     五行能量
                 </div>
                 <div id="wuxingEnergy">
                     <div class="wuxing-bar">
                         <div class="wuxing-label">
-                            <span><i class="ph-bold ph-fire"></i> 火</span>
+                            <span>🔥 火</span>
                             <span id="firePercent">20%</span>
                         </div>
                         <div class="wuxing-progress">
@@ -749,7 +744,7 @@
                     </div>
                     <div class="wuxing-bar">
                         <div class="wuxing-label">
-                            <span><i class="ph-bold ph-gear"></i>️ 金</span>
+                            <span>⚙️ 金</span>
                             <span id="metalPercent">20%</span>
                         </div>
                         <div class="wuxing-progress">
@@ -758,7 +753,7 @@
                     </div>
                     <div class="wuxing-bar">
                         <div class="wuxing-label">
-                            <span><i class="ph-bold ph-tree"></i> 木</span>
+                            <span>🌳 木</span>
                             <span id="woodPercent">20%</span>
                         </div>
                         <div class="wuxing-progress">
@@ -767,7 +762,7 @@
                     </div>
                     <div class="wuxing-bar">
                         <div class="wuxing-label">
-                            <span><i class="ph-bold ph-drop"></i> 水</span>
+                            <span>💧 水</span>
                             <span id="waterPercent">20%</span>
                         </div>
                         <div class="wuxing-progress">
@@ -776,7 +771,7 @@
                     </div>
                     <div class="wuxing-bar">
                         <div class="wuxing-label">
-                            <span><i class="ph-bold ph-mountains"></i>️ 土</span>
+                            <span>🏔️ 土</span>
                             <span id="earthPercent">20%</span>
                         </div>
                         <div class="wuxing-progress">
@@ -846,7 +841,7 @@
             const topbar = document.querySelector('.topbar');
             const banner = document.createElement('div');
             banner.style.cssText = `
-                background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(245, 158, 11, 0.18) 100%);
+                background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
                 padding: 12px 24px;
                 margin-bottom: 20px;
                 border-radius: 12px;
@@ -861,16 +856,16 @@
 
             banner.innerHTML = `
                 <div>
-                    <strong style="font-size: 15px; color: var(--text-main);"><i class="ph-bold ph-ticket"></i> 观察者模式</strong>
-                    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    <strong style="font-size: 15px; color: #333;">🎫 观察者模式</strong>
+                    <div style="font-size: 13px; color: #666; margin-top: 4px;">
                         AI评估进度：${aiScore}/80分 (${progress}%) ${progress >= 100 ? '- 即将收到邀请！' : ''}
                     </div>
                 </div>
                 ${aiScore >= 80 ? `
                     <button onclick="acceptInvitation()" style="
                         padding: 8px 16px;
-                        background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-                        color: var(--surface-50);
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
                         border: none;
                         border-radius: 8px;
                         cursor: pointer;
@@ -893,7 +888,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('<i class="ph-bold ph-confetti"></i> ' + data.message + '\n\n你的超协体序号：#' + data.member.serialNumber);
+                    alert('🎉 ' + data.message + '\n\n你的超协体序号：#' + data.member.serialNumber);
                     location.reload();
                 } else {
                     alert('接受邀请失败：' + data.message);
@@ -971,7 +966,7 @@
                 document.getElementById('mySolutionCount').textContent = '0';
                 document.getElementById('taskList').innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon"><i class="ph-bold ph-mailbox"></i></div>
+                        <div class="empty-icon">📭</div>
                         <div>暂无数据</div>
                     </div>
                 `;
@@ -985,12 +980,12 @@
 
             document.getElementById('taskList').innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon"><i class="ph-bold ph-lock"></i></div>
+                    <div class="empty-icon">🔒</div>
                     <div>观察者模式</div>
-                    <div style="font-size: 13px; margin-top: 8px; color: var(--text-secondary);">
+                    <div style="font-size: 13px; margin-top: 8px; color: #888;">
                         完善你的五行画像，等待AI评估后可解锁全部功能
                     </div>
-                    <a href="/profile.html" style="display: inline-block; margin-top: 16px; padding: 10px 20px; background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%); color: var(--surface-50); text-decoration: none; border-radius: 8px; font-weight: 600;">
+                    <a href="/profile.html" style="display: inline-block; margin-top: 16px; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
                         填写五行画像
                     </a>
                 </div>
@@ -1046,7 +1041,7 @@
             if (!recommendations || recommendations.length === 0) {
                 container.innerHTML = `
                     <div class="rec-empty-state">
-                        <div style="font-size: 36px; margin-bottom: 12px;"><i class="ph-bold ph-mailbox"></i></div>
+                        <div style="font-size: 36px; margin-bottom: 12px;">📭</div>
                         <div>暂无待分配任务</div>
                         <div style="font-size: 13px; margin-top: 8px; opacity: 0.7;">
                             所有任务都已分配，或者还没有创建任务
@@ -1066,8 +1061,8 @@
                 }
 
                 // 五行图标映射
-                const wuxingIcons = { '火': '<i class="ph-bold ph-fire"></i>', '金': '<i class="ph-bold ph-gear"></i>️', '木': '<i class="ph-bold ph-tree"></i>', '水': '<i class="ph-bold ph-drop"></i>', '土': '<i class="ph-bold ph-mountains"></i>️' };
-                const wuxingIcon = task.wuxing ? wuxingIcons[task.wuxing] || '<i class="ph-bold ph-yin-yang"></i>️' : '';
+                const wuxingIcons = { '火': '🔥', '金': '⚙️', '木': '🌳', '水': '💧', '土': '🏔️' };
+                const wuxingIcon = task.wuxing ? wuxingIcons[task.wuxing] || '☯️' : '';
 
                 return `
                     <a class="recommended-task-card" href="/task-detail.html?id=${task.id}">
@@ -1082,7 +1077,7 @@
                             <span>五行匹配 ${reasons.wuxingMatch}%</span>
                             <span>技能匹配 ${reasons.skillMatch}%</span>
                             ${task.wuxing ? `<span>${wuxingIcon} ${task.wuxing}</span>` : ''}
-                            <span><i class="ph-bold ph-gift"></i> ${task.reward_points || 20}积分</span>
+                            <span>🎁 ${task.reward_points || 20}积分</span>
                         </div>
                     </a>
                 `;
@@ -1104,7 +1099,7 @@
             if (!tasks || tasks.length === 0) {
                 taskListEl.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon"><i class="ph-bold ph-mailbox"></i></div>
+                        <div class="empty-icon">📭</div>
                         <div>暂无任务</div>
                         <div style="font-size: 13px; margin-top: 8px;">点击"创建任务"开始协作</div>
                     </div>
@@ -1125,9 +1120,9 @@
                         <div class="task-title">${escapeHtml(task.title)}</div>
                         <div class="task-meta">
                             <span class="task-status ${status.class}">${status.label}</span>
-                            ${task.wuxing ? `<span><i class="ph-bold ph-yin-yang"></i>️ ${task.wuxing}</span>` : ''}
-                            ${task.assigned_to_name ? `<span><i class="ph-bold ph-user"></i> ${escapeHtml(task.assigned_to_name)}</span>` : '<span style="color:var(--warning)">未分配</span>'}
-                            <span><i class="ph-bold ph-gift"></i> ${task.reward_points || 20}积分</span>
+                            ${task.wuxing ? `<span>☯️ ${task.wuxing}</span>` : ''}
+                            ${task.assigned_to_name ? `<span>👤 ${escapeHtml(task.assigned_to_name)}</span>` : '<span style="color:#f57c00">未分配</span>'}
+                            <span>🎁 ${task.reward_points || 20}积分</span>
                         </div>
                     </a>
                 `;
@@ -1136,7 +1131,7 @@
             // 添加查看更多链接
             if (tasks.length >= 5) {
                 taskListEl.innerHTML += `
-                    <a href="/my-tasks.html" style="text-align: center; padding: 12px; color: var(--brand-purple); font-size: 14px;">
+                    <a href="/my-tasks.html" style="text-align: center; padding: 12px; color: #667eea; font-size: 14px;">
                         查看全部任务 →
                     </a>
                 `;
@@ -1183,13 +1178,13 @@
                 if (data.content?.[0]?.text) {
                     const balance = JSON.parse(data.content[0].text);
 
-                    let message = '<i class="ph-bold ph-yin-yang"></i>️ 五行平衡分析\n\n';
+                    let message = '☯️ 五行平衡分析\n\n';
                     message += `火: ${balance.distribution.fire} (${balance.percentages.fire}%)\n`;
                     message += `金: ${balance.distribution.metal} (${balance.percentages.metal}%)\n`;
                     message += `木: ${balance.distribution.wood} (${balance.percentages.wood}%)\n`;
                     message += `水: ${balance.distribution.water} (${balance.percentages.water}%)\n`;
                     message += `土: ${balance.distribution.earth} (${balance.percentages.earth}%)\n`;
-                    message += `\n平衡状态: ${balance.isBalanced ? '<i class="ph-bold ph-check-circle"></i> 平衡' : '<i class="ph-bold ph-warning"></i>️ 不平衡'}\n`;
+                    message += `\n平衡状态: ${balance.isBalanced ? '✅ 平衡' : '⚠️ 不平衡'}\n`;
 
                     if (balance.recommendations?.length > 0) {
                         message += `\n建议:\n${balance.recommendations.join('\n')}`;
@@ -1229,7 +1224,7 @@
 
                 if (data.success) {
                     const ticketUrl = data.ticketUrl;
-                    alert(`<i class="ph-bold ph-check-circle"></i> 门票发放成功！\n\n接收者：${recipientEmail}\n\n门票链接：\n${ticketUrl}\n\n请将此链接发送给对方。`);
+                    alert(`✅ 门票发放成功！\n\n接收者：${recipientEmail}\n\n门票链接：\n${ticketUrl}\n\n请将此链接发送给对方。`);
 
                     // 可选：复制到剪贴板
                     if (navigator.clipboard) {
@@ -1256,7 +1251,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    let message = `<i class="ph-bold ph-money"></i> 积分历史（当前余额：${data.balance}）\n\n`;
+                    let message = `💰 积分历史（当前余额：${data.balance}）\n\n`;
 
                     if (data.transactions.length === 0) {
                         message += '暂无交易记录';
@@ -1294,7 +1289,7 @@
                 } else {
                     document.getElementById('candidatesList').innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-icon"><i class="ph-bold ph-x-circle"></i></div>
+                            <div class="empty-icon">❌</div>
                             <div>加载失败：${data.message}</div>
                         </div>
                     `;
@@ -1303,7 +1298,7 @@
                 console.error('加载候选者失败:', error);
                 document.getElementById('candidatesList').innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon"><i class="ph-bold ph-x-circle"></i></div>
+                        <div class="empty-icon">❌</div>
                         <div>加载失败，请刷新重试</div>
                     </div>
                 `;
@@ -1317,7 +1312,7 @@
             if (!candidates || candidates.length === 0) {
                 listEl.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon"><i class="ph-bold ph-check-circle"></i></div>
+                        <div class="empty-icon">✅</div>
                         <div>暂无待审核候选者</div>
                     </div>
                 `;
@@ -1331,15 +1326,15 @@
                         <div class="candidate-info">
                             <div class="candidate-name">${candidate.username}</div>
                             <div class="candidate-meta">
-                                <i class="ph-bold ph-envelope-simple"></i> ${candidate.email} | <i class="ph-bold ph-calendar"></i> ${joinedDate}
+                                📧 ${candidate.email} | 📅 ${joinedDate}
                             </div>
                         </div>
                         <div class="candidate-actions">
                             <button class="btn-approve" onclick="approveCandidate('${candidate.id}', '${candidate.username}')">
-                                <i class="ph-bold ph-check-circle"></i> 批准
+                                ✅ 批准
                             </button>
                             <button class="btn-reject" onclick="rejectCandidate('${candidate.id}', '${candidate.username}')">
-                                <i class="ph-bold ph-x-circle"></i> 拒绝
+                                ❌ 拒绝
                             </button>
                         </div>
                     </div>
@@ -1360,7 +1355,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(`<i class="ph-bold ph-check-circle"></i> 已批准 ${candidateName}！\n\n超协体序号：#${data.member.serialNumber}`);
+                    alert(`✅ 已批准 ${candidateName}！\n\n超协体序号：#${data.member.serialNumber}`);
                     await loadCandidates(); // 刷新列表
                 } else {
                     alert('批准失败：' + data.message);
@@ -1443,7 +1438,7 @@
             } catch (error) {
                 console.error('Failed to load AI members:', error);
                 document.getElementById('aiMembersList').innerHTML = `
-                    <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                    <div style="text-align: center; color: #999; padding: 20px;">
                         加载失败
                     </div>
                 `;
@@ -1456,7 +1451,7 @@
 
             if (!aiMembers || aiMembers.length === 0) {
                 container.innerHTML = `
-                    <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                    <div style="text-align: center; color: #999; padding: 20px;">
                         暂无AI成员，点击上方按钮创建
                     </div>
                 `;
@@ -1464,20 +1459,20 @@
             }
 
             const typeIcons = {
-                'code_master': '<i class="ph-bold ph-laptop"></i>',
-                'doc_writer': '<i class="ph-bold ph-note-pencil"></i>',
-                'analyst': '<i class="ph-bold ph-chart-bar"></i>',
-                'coordinator': '<i class="ph-bold ph-target"></i>'
+                'code_master': '💻',
+                'doc_writer': '📝',
+                'analyst': '📊',
+                'coordinator': '🎯'
             };
 
             container.innerHTML = aiMembers.map(ai => `
-                <div style="display: flex; align-items: center; padding: 12px; background: var(--surface-50); border-radius: 10px; margin-bottom: 8px;">
-                    <div style="font-size: 24px; margin-right: 12px;">${typeIcons[ai.aiType] || '<i class="ph-bold ph-robot"></i>'}</div>
+                <div style="display: flex; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 10px; margin-bottom: 8px;">
+                    <div style="font-size: 24px; margin-right: 12px;">${typeIcons[ai.aiType] || '🤖'}</div>
                     <div style="flex: 1;">
                         <div style="font-weight: 600; font-size: 14px;">#${String(ai.serialNumber).padStart(3, '0')} ${escapeHtml(ai.username)}</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">${ai.pwpProfile?.skills?.slice(0, 2).join(', ') || ''}</div>
+                        <div style="font-size: 12px; color: #666;">${ai.pwpProfile?.skills?.slice(0, 2).join(', ') || ''}</div>
                     </div>
-                    <a href="/member-detail.html?id=${ai.id}&type=community" style="padding: 6px 12px; background: var(--brand-purple); color: var(--surface-50); text-decoration: none; border-radius: 6px; font-size: 12px;">
+                    <a href="/member-detail.html?id=${ai.id}&type=community" style="padding: 6px 12px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; font-size: 12px;">
                         详情
                     </a>
                 </div>
@@ -1583,7 +1578,5 @@
             });
         }
     </script>
-
-    <script src="/js/pwa.js" defer></script>
 </body>
 </html>
