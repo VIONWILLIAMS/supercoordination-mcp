@@ -1,0 +1,178 @@
+// 短邮系统数据模型扩展
+// 将这些模型添加到 schema.prisma 的末尾
+
+// ========================================
+// 短邮核心模型
+// ========================================
+
+// 短邮表（移动端协作的核心）
+model ShortMail {
+  id                String   @id @default(uuid())
+
+  // 基本信息
+  fromUserId        String   @map("from_user_id")
+  toUserId          String   @map("to_user_id")
+  projectId         String?  @map("project_id") // 关联项目（可选）
+
+  // 短邮内容
+  summary           String   @db.Text // 摘要（必填）
+  content           Json?    // 详细内容（富文本、多模态）
+  attachments       Json     @default("[]") // 附件：图片、文件、链接
+
+  // 协议类型（AI自动识别）
+  protocolType      String?  @map("protocol_type") // TASK_ASSIGNMENT | DELIVERABLE_SUBMISSION | FEEDBACK_REQUEST | DECISION_REQUIRED | GENERAL
+
+  // AI辅助
+  aiSuggestions     Json?    @map("ai_suggestions") // AI建议的响应选项
+  decisionFramework Json?    @map("decision_framework") // AI生成的决策框架
+  shouldBeOffline   Boolean  @default(false) @map("should_be_offline") // AI建议是否转线下
+  offlineReason     String?  @map("offline_reason") // 建议线下的理由
+  complexity        Int?     @default(0) // 复杂度评分 1-10
+
+  // 状态管理
+  status            String   @default("pending") // pending | read | responded | offline_scheduled | archived
+  priority          String   @default("medium") // low | medium | high | urgent
+
+  // 响应数据
+  response          Json?    // 接收者的响应内容
+  respondedAt       DateTime? @map("responded_at")
+
+  // 对话关联
+  replyToId         String?  @map("reply_to_id") // 回复哪条短邮
+  conversationId    String?  @map("conversation_id") // 对话线程ID
+
+  // 线下对齐关联
+  offlineSyncId     String?  @map("offline_sync_id") // 关联的线下对齐
+
+  // 时间戳
+  createdAt         DateTime @default(now()) @map("created_at")
+  readAt            DateTime? @map("read_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // 关联
+  fromUser          User          @relation("SentShortMails", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser            User          @relation("ReceivedShortMails", fields: [toUserId], references: [id], onDelete: Cascade)
+  project           Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  replyTo           ShortMail?    @relation("ShortMailReplies", fields: [replyToId], references: [id])
+  replies           ShortMail[]   @relation("ShortMailReplies")
+  offlineSync       OfflineSync?  @relation(fields: [offlineSyncId], references: [id], onDelete: SetNull)
+
+  @@index([fromUserId])
+  @@index([toUserId])
+  @@index([projectId])
+  @@index([status])
+  @@index([priority])
+  @@index([conversationId])
+  @@index([createdAt(sort: Desc)])
+  @@map("short_mails")
+}
+
+// ========================================
+// 线下对齐模型
+// ========================================
+
+// 线下对齐表（周六开放日）
+model OfflineSync {
+  id                String   @id @default(uuid())
+
+  // 基本信息
+  projectId         String   @map("project_id")
+  title             String   // 对齐主题
+  description       String?  @db.Text
+
+  // 时间和地点
+  scheduledAt       DateTime @map("scheduled_at") // 预定时间
+  duration          Int?     // 预计时长（分钟）
+  location          String?  // 地点（简化版可以是固定地点）
+
+  // 参与者
+  participants      Json     @default("[]") // 参与者ID列表
+  facilitatorId     String?  @map("facilitator_id") // 主持人
+
+  // 议题（来自待线下的短邮）
+  agendaItems       Json     @default("[]") // 议题列表，每个议题关联shortmail_id
+
+  // 对齐记录
+  notes             Json?    // 对齐记录（决策、讨论内容）
+  decisions         Json?    // 具体决策
+  actionItems       Json?    @map("action_items") // 行动项
+
+  // 质量评分
+  satisfactionScore Decimal? @map("satisfaction_score") @db.Decimal(3, 2) // 参与者满意度 0-5
+  effectivenessScore Decimal? @map("effectiveness_score") @db.Decimal(3, 2) // 对齐有效性 0-5
+
+  // 状态
+  status            String   @default("scheduled") // scheduled | in_progress | completed | cancelled
+
+  // 时间戳
+  createdAt         DateTime @default(now()) @map("created_at")
+  completedAt       DateTime? @map("completed_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // 关联
+  project           Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  facilitator       User?        @relation(fields: [facilitatorId], references: [id], onDelete: SetNull)
+  shortMails        ShortMail[]  // 关联的短邮
+  pwpRecords        PWPRecord[]  // 生成的PWP记录
+
+  @@index([projectId])
+  @@index([scheduledAt])
+  @@index([status])
+  @@map("offline_syncs")
+}
+
+// ========================================
+// PWP记录模型
+// ========================================
+
+// PWP事件记录表（协作过程追踪）
+model PWPRecord {
+  id                String   @id @default(uuid())
+
+  // 用户和项目
+  userId            String   @map("user_id")
+  projectId         String?  @map("project_id")
+
+  // 事件类型
+  eventType         String   @map("event_type") // shortmail_sent | shortmail_received | shortmail_responded | offline_sync_attended | task_completed | etc.
+
+  // 事件数据
+  eventData         Json     @map("event_data") // 事件的详细数据（灵活存储）
+
+  // 关联实体
+  relatedEntityType String?  @map("related_entity_type") // ShortMail | OfflineSync | Task | Solution
+  relatedEntityId   String?  @map("related_entity_id")
+
+  // 时间戳
+  occurredAt        DateTime @default(now()) @map("occurred_at")
+
+  // 关联
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project           Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  offlineSync       OfflineSync? @relation(fields: [relatedEntityId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([eventType])
+  @@index([occurredAt(sort: Desc)])
+  @@map("pwp_records")
+}
+
+// ========================================
+// User模型扩展（在原有User模型中添加这些关联）
+// ========================================
+
+// 在 User model 的关联部分添加：
+// sentShortMails       ShortMail[]    @relation("SentShortMails")
+// receivedShortMails   ShortMail[]    @relation("ReceivedShortMails")
+// facilitatedSyncs     OfflineSync[]
+// pwpRecords           PWPRecord[]
+
+// ========================================
+// Project模型扩展（在原有Project模型中添加这些关联）
+// ========================================
+
+// 在 Project model 的关联部分添加：
+// shortMails           ShortMail[]
+// offlineSyncs         OfflineSync[]
+// pwpRecords           PWPRecord[]
