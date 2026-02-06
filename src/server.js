@@ -3739,6 +3739,33 @@ app.get('/health', (req, res) => {
 });
 
 // ========================================
+
+// ============================================
+// 五行指挥部 API 路由
+// ============================================
+const {
+  postMission, getMission,
+  updateStatus, checkStatus, getAllStatus,
+  postHandoff, getHandoff,
+  sendSignal, pollSignals,
+  saveExperience, searchExperience,
+  logTokens, getCostSummary
+} = require("./hq");
+
+app.post("/api/hq/mission", postMission);
+app.get("/api/hq/mission/:teamId", getMission);
+app.post("/api/hq/status", updateStatus);
+app.get("/api/hq/status/:teamId", checkStatus);
+app.get("/api/hq/status", getAllStatus);
+app.post("/api/hq/handoff", postHandoff);
+app.get("/api/hq/handoff/:taskId/:phase", getHandoff);
+app.post("/api/hq/signal", sendSignal);
+app.get("/api/hq/signal/:forTeam", pollSignals);
+app.post("/api/hq/experience", saveExperience);
+app.get("/api/hq/experience", searchExperience);
+app.post("/api/hq/cost", logTokens);
+app.get("/api/hq/cost/:taskId", getCostSummary);
+
 // 启动服务器
 // ========================================
 

@@ -344,3 +344,96 @@ model PWPRecord {
   @@index([occurredAt(sort: Desc)])
   @@map("pwp_records")
 }
+
+// ============================================
+// 五行指挥部 - HQ Coordination Tables
+// ============================================
+
+model Mission {
+  id        String   @id @default(uuid())
+  teamId    String   @map("team_id")
+  content   String   @db.Text
+  phase     Int      @default(1)
+  taskId    String?  @map("task_group_id")
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([teamId, status])
+  @@index([taskId])
+  @@map("hq_missions")
+}
+
+model TeamStatus {
+  id          String   @id @default(uuid())
+  teamId      String   @unique @map("team_id")
+  status      String   @default("idle")
+  progress    Int      @default(0)
+  currentTask String?  @map("current_task")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("hq_team_status")
+}
+
+model Handoff {
+  id           String   @id @default(uuid())
+  taskId       String   @map("task_group_id")
+  fromTeam     String   @map("from_team")
+  phase        Int
+  artifactType String   @map("artifact_type")
+  summary      String   @db.Text
+  filePaths    String?  @map("file_paths")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([taskId, phase])
+  @@map("hq_handoffs")
+}
+
+model Signal {
+  id         String   @id @default(uuid())
+  fromTeam   String   @map("from_team")
+  toTeam     String   @default("hq") @map("to_team")
+  signalType String   @map("signal_type")
+  message    String?  @db.Text
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([toTeam, read])
+  @@map("hq_signals")
+}
+
+model Experience {
+  id             String   @id @default(uuid())
+  taskId         String   @map("task_group_id")
+  taskName       String   @map("task_name")
+  classification String
+  complexity     String
+  teamSequence   String   @map("team_sequence") @db.Text
+  totalTokens    Int      @default(0) @map("total_tokens")
+  totalDuration  Int      @default(0) @map("total_duration")
+  totalCost      Float    @default(0) @map("total_cost")
+  firstPassRate  Float?   @map("first_pass_rate")
+  lessonsLearned String?  @map("lessons_learned") @db.Text
+  tags           String
+  fullRecord     String?  @map("full_record") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([tags])
+  @@index([classification])
+  @@map("hq_experiences")
+}
+
+model CostLog {
+  id            String   @id @default(uuid())
+  taskId        String   @map("task_group_id")
+  teamId        String   @map("team_id")
+  phase         Int
+  tokenCount    Int      @map("token_count")
+  model         String
+  estimatedCost Float    @default(0) @map("estimated_cost")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([taskId])
+  @@index([teamId])
+  @@map("hq_cost_logs")
+}
